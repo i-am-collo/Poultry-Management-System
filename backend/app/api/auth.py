@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.core.security import (
     create_access_token,
     create_refresh_token,
+    create_reset_token,
     decode_token,
     verify_password,
     verify_refresh_token,
@@ -24,6 +25,7 @@ from app.schemas.auth import (
     ResetPasswordRequest,
     UserResponse,
 )
+from app.services.email_services import send_welcome_email, send_password_reset_email
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -39,13 +41,20 @@ def serialize_user(user: User) -> UserResponse:
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED, response_model=MessageResponse)
-def register(user: RegisterRequest, db: Session = Depends(get_db)):
+async def register(user: RegisterRequest, db: Session = Depends(get_db)):
     existing_user = get_user_by_email(db, user.email)
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
 
     try:
-        create_user(db, user)
+        db_user = create_user(db, user)
+        
+        # Send welcome email asynchronously
+        try:
+            await send_welcome_email(email=user.email, name=user.name)
+        except Exception as e:
+            # Log email sending error but don't fail the registration
+            print(f"Failed to send welcome email to {user.email}: {str(e)}")
     except IntegrityError:
         db.rollback()
         raise HTTPException(status_code=400, detail="Email or phone already registered")
@@ -71,10 +80,22 @@ def login(user: LoginRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/forgot-password", response_model=ForgotPasswordResponse)
-def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
-    # Do not expose account existence details.
-    # TODO: integrate an email provider and send a reset link when the user exists.
-    _ = get_user_by_email(db, payload.email)
+async def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    # Do not expose account existence details
+    db_user = get_user_by_email(db, payload.email)
+    
+    if db_user:
+        try:
+            # Generate reset token
+            reset_token = create_reset_token(db_user.email)
+            
+            # Send password reset email
+            await send_password_reset_email(email=db_user.email, reset_token=reset_token)
+        except Exception as e:
+            # Log email sending error but don't fail the request
+            print(f"Failed to send password reset email to {payload.email}: {str(e)}")
+    
+    # Always return the same message regardless of whether email was sent or user exists
     return {"message": "If the email exists, password reset instructions will be sent."}
 
 
