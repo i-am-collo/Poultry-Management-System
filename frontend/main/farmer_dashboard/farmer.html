@@ -1,0 +1,3559 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmDirect PMS — Farmer Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Serif+Display&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════ */
+        :root {
+            --g900: #1b5e20;
+            --g800: #2e7d32;
+            --g700: #388e3c;
+            --g600: #43a047;
+            --g400: #66bb6a;
+            --g200: #a5d6a7;
+            --g100: #c8e6c9;
+            --g50: #e8f5e9;
+            --g20: #f1f8f1;
+            --earth: #6d4c41;
+            --earth-l: #a1887f;
+            --earth-pale: #efebe9;
+            --amber: #f59e0b;
+            --amber-pale: #fef3c7;
+            --red: #ef4444;
+            --red-pale: #fee2e2;
+            --blue: #3b82f6;
+            --blue-pale: #dbeafe;
+            --purple: #8b5cf6;
+            --purple-pale: #ede9fe;
+            --bg: #f4f8f4;
+            --white: #ffffff;
+            --border: #e0ece1;
+            --border-dk: #c4d9c6;
+            --t900: #14231a;
+            --t700: #2d4a35;
+            --t500: #4a7055;
+            --t300: #7da88a;
+            --t100: #b8d4bf;
+            --sw: 240px;
+            --th: 60px;
+            --r: 14px;
+            --rsm: 8px;
+            --shadow: 0 1px 3px rgba(46, 125, 50, .06), 0 4px 16px rgba(46, 125, 50, .08);
+            --shadow-lg: 0 8px 32px rgba(46, 125, 50, .16);
+            --shadow-hov: 0 6px 24px rgba(46, 125, 50, .18);
+            --tr: .2s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            color: var(--t900);
+            display: flex;
+            min-height: 100vh;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-x: hidden
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit
+        }
+
+        img {
+            max-width: 100%
+        }
+
+        /* ═══════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════ */
+        .sidebar {
+            width: var(--sw);
+            background: var(--g800);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 200;
+            overflow: hidden;
+            transition: transform var(--tr), width var(--tr);
+        }
+
+        .sb-head {
+            padding: 18px 20px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, .1);
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .sb-logo {
+            width: 36px;
+            height: 36px;
+            background: var(--g400);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0
+        }
+
+        .sb-brand-name {
+            font-family: 'DM Serif Display', serif;
+            font-size: 16px;
+            color: #fff;
+            line-height: 1.2
+        }
+
+        .sb-brand-tag {
+            font-size: 9px;
+            color: var(--g200);
+            letter-spacing: 1.2px;
+            text-transform: uppercase
+        }
+
+        .sb-nav {
+            flex: 1;
+            padding: 10px 0;
+            overflow-y: auto
+        }
+
+        .nav-grp {
+            padding: 8px 16px 3px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .3)
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 10px 12px;
+            margin: 1px 8px;
+            border-radius: var(--rsm);
+            cursor: pointer;
+            color: rgba(255, 255, 255, .6);
+            font-size: 13px;
+            font-weight: 500;
+            transition: all var(--tr);
+            position: relative
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, .1);
+            color: #fff
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, .16);
+            color: #fff;
+            font-weight: 600
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 6px;
+            bottom: 6px;
+            width: 3px;
+            background: var(--g200);
+            border-radius: 0 3px 3px 0
+        }
+
+        .nav-item svg {
+            width: 17px;
+            height: 17px;
+            flex-shrink: 0
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--amber);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            min-width: 17px;
+            height: 17px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px
+        }
+
+        .nav-item.danger {
+            color: rgba(255, 120, 120, .75)
+        }
+
+        .nav-item.danger:hover {
+            background: rgba(255, 100, 100, .12);
+            color: #ff8a80
+        }
+
+        .sb-foot {
+            padding: 12px 14px;
+            border-top: 1px solid rgba(255, 255, 255, .1);
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .f-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--g400), var(--g200));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--g900);
+            flex-shrink: 0
+        }
+
+        .f-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .f-role {
+            font-size: 10px;
+            color: var(--g200)
+        }
+
+        /* ═══════════════════════════════════════════
+   MAIN + TOPBAR
+═══════════════════════════════════════════ */
+        .main {
+            margin-left: var(--sw);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: margin-left var(--tr)
+        }
+
+        .topbar {
+            height: var(--th);
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 4px rgba(46, 125, 50, .05)
+        }
+
+        .menu-btn {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--g50);
+            border-radius: var(--rsm);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            color: var(--g800);
+            flex-shrink: 0
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: var(--t300)
+        }
+
+        .breadcrumb .cur {
+            font-weight: 700;
+            color: var(--t900);
+            font-size: 15px
+        }
+
+        .breadcrumb svg {
+            width: 11px;
+            height: 11px
+        }
+
+        .tb-search {
+            flex: 0 1 260px;
+            position: relative;
+            margin-left: auto
+        }
+
+        .tb-search input {
+            width: 100%;
+            padding: 7px 12px 7px 34px;
+            border: 1.5px solid var(--border);
+            border-radius: 22px;
+            font-size: 13px;
+            background: var(--g50);
+            color: var(--t900);
+            outline: none;
+            transition: border-color var(--tr), background var(--tr)
+        }
+
+        .tb-search input:focus {
+            border-color: var(--g600);
+            background: var(--white)
+        }
+
+        .tb-search svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--t300);
+            width: 14px;
+            height: 14px
+        }
+
+        .tb-actions {
+            display: flex;
+            align-items: center;
+            gap: 3px
+        }
+
+        .tb-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
+            border-radius: var(--rsm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--t500);
+            position: relative;
+            transition: background var(--tr), color var(--tr)
+        }
+
+        .tb-btn:hover {
+            background: var(--g50);
+            color: var(--g800)
+        }
+
+        .tb-btn svg {
+            width: 17px;
+            height: 17px
+        }
+
+        .notif-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 7px;
+            height: 7px;
+            background: var(--amber);
+            border-radius: 50%;
+            border: 2px solid var(--white)
+        }
+
+        .tb-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 10px 4px 4px;
+            border-radius: 22px;
+            cursor: pointer;
+            transition: background var(--tr);
+            margin-left: 4px
+        }
+
+        .tb-profile:hover {
+            background: var(--g50)
+        }
+
+        .tb-av {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--g600), var(--g200));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--g900)
+        }
+
+        .tb-pname {
+            font-size: 13px;
+            font-weight: 600
+        }
+
+        .tb-profile svg {
+            width: 13px;
+            height: 13px;
+            color: var(--t300)
+        }
+
+        /* CONTENT */
+        .content {
+            flex: 1;
+            padding: 22px;
+            overflow-y: auto
+        }
+
+        /* ═══════════════════════════════════════════
+   PAGE VISIBILITY
+═══════════════════════════════════════════ */
+        .page {
+            display: none;
+            animation: fadeUp .25s ease
+        }
+
+        .page.active {
+            display: block
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+   SHARED COMPONENTS
+═══════════════════════════════════════════ */
+        /* Section header */
+        .sec-hd {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            gap: 12px;
+            flex-wrap: wrap
+        }
+
+        .sec-title {
+            font-size: 16px;
+            font-weight: 700
+        }
+
+        .sec-sub {
+            font-size: 11px;
+            color: var(--t300);
+            margin-top: 1px
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 18px;
+            border-radius: var(--rsm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all var(--tr);
+            white-space: nowrap;
+            font-family: inherit;
+            line-height: 1
+        }
+
+        .btn svg {
+            width: 14px;
+            height: 14px
+        }
+
+        .btn-primary {
+            background: var(--g800);
+            color: #fff
+        }
+
+        .btn-primary:hover {
+            background: var(--g900);
+            box-shadow: var(--shadow-hov)
+        }
+
+        .btn-secondary {
+            background: var(--g50);
+            color: var(--g800);
+            border: 1.5px solid var(--g100)
+        }
+
+        .btn-secondary:hover {
+            background: var(--g100)
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--g800);
+            border: 1.5px solid var(--g700)
+        }
+
+        .btn-outline:hover {
+            background: var(--g50)
+        }
+
+        .btn-danger {
+            background: var(--red-pale);
+            color: var(--red);
+            border: 1.5px solid #fca5a5
+        }
+
+        .btn-danger:hover {
+            background: #fecaca
+        }
+
+        .btn-amber {
+            background: var(--amber-pale);
+            color: #92400e;
+            border: 1.5px solid #fcd34d
+        }
+
+        .btn-amber:hover {
+            background: #fde68a
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px
+        }
+
+        .btn-icon {
+            padding: 7px
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            box-shadow: var(--shadow);
+            overflow: hidden
+        }
+
+        .card-body {
+            padding: 18px 20px
+        }
+
+        .card-head {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px
+        }
+
+        .card-head-title {
+            font-size: 14px;
+            font-weight: 700
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600
+        }
+
+        .bg-green {
+            background: var(--g50);
+            color: var(--g800)
+        }
+
+        .bg-amber {
+            background: var(--amber-pale);
+            color: #92400e
+        }
+
+        .bg-red {
+            background: var(--red-pale);
+            color: #991b1b
+        }
+
+        .bg-blue {
+            background: var(--blue-pale);
+            color: #1e40af
+        }
+
+        .bg-purple {
+            background: var(--purple-pale);
+            color: #5b21b6
+        }
+
+        .bg-gray {
+            background: #f3f4f6;
+            color: #374151
+        }
+
+        /* Dot */
+        .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0
+        }
+
+        .dot-g {
+            background: var(--g600)
+        }
+
+        .dot-a {
+            background: var(--amber)
+        }
+
+        .dot-r {
+            background: var(--red)
+        }
+
+        .dot-b {
+            background: var(--blue)
+        }
+
+        .dot-gray {
+            background: #9ca3af
+        }
+
+        /* Table */
+        .table-wrap {
+            overflow-x: auto
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        thead th {
+            background: var(--g20);
+            padding: 9px 14px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--t500);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap
+        }
+
+        tbody td {
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--t700);
+            vertical-align: middle
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none
+        }
+
+        tbody tr:hover {
+            background: var(--g20)
+        }
+
+        /* Form */
+        .form-grp {
+            display: flex;
+            flex-direction: column;
+            gap: 5px
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--t700)
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            padding: 9px 12px;
+            border: 1.5px solid var(--border-dk);
+            border-radius: var(--rsm);
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--t900);
+            background: var(--white);
+            outline: none;
+            transition: border-color var(--tr), box-shadow var(--tr);
+            width: 100%
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--g600);
+            box-shadow: 0 0 0 3px rgba(67, 160, 71, .12)
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px
+        }
+
+        /* Toggle */
+        .toggle-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border)
+        }
+
+        .toggle-wrap:last-child {
+            border-bottom: none
+        }
+
+        .toggle-info {
+            flex: 1
+        }
+
+        .toggle-info-title {
+            font-size: 13px;
+            font-weight: 600
+        }
+
+        .toggle-info-sub {
+            font-size: 11px;
+            color: var(--t300);
+            margin-top: 1px
+        }
+
+        .tog {
+            width: 40px;
+            height: 22px;
+            border-radius: 11px;
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background var(--tr);
+            border: none;
+            outline: none
+        }
+
+        .tog.on {
+            background: var(--g600)
+        }
+
+        .tog.off {
+            background: #d1d5db
+        }
+
+        .tog-knob {
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            transition: left var(--tr);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .2)
+        }
+
+        .tog.on .tog-knob {
+            left: 21px
+        }
+
+        .tog.off .tog-knob {
+            left: 3px
+        }
+
+        /* Modal */
+        .modal-bd {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .35);
+            z-index: 500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(3px);
+            padding: 16px
+        }
+
+        .modal-bd.open {
+            display: flex
+        }
+
+        .modal-box {
+            background: var(--white);
+            border-radius: 16px;
+            width: 520px;
+            max-width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalIn .22s ease
+        }
+
+        @keyframes modalIn {
+            from {
+                transform: scale(.96);
+                opacity: 0
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1
+            }
+        }
+
+        .modal-head {
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .modal-title {
+            font-size: 15px;
+            font-weight: 700
+        }
+
+        .modal-close {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: var(--g50);
+            border-radius: 7px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--t500);
+            font-size: 16px
+        }
+
+        .modal-body {
+            padding: 18px 20px
+        }
+
+        .modal-foot {
+            padding: 12px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px
+        }
+
+        /* Grid */
+        .g2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px
+        }
+
+        .g3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px
+        }
+
+        .g4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px
+        }
+
+        .g-auto {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px
+        }
+
+        /* Alert strip */
+        .alert-strip {
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        .al-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: var(--rsm);
+            border: 1px solid
+        }
+
+        .al-warn {
+            background: var(--amber-pale);
+            border-color: #fcd34d
+        }
+
+        .al-danger {
+            background: var(--red-pale);
+            border-color: #fca5a5
+        }
+
+        .al-info {
+            background: var(--blue-pale);
+            border-color: #93c5fd
+        }
+
+        .al-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 14px
+        }
+
+        .al-text {
+            flex: 1
+        }
+
+        .al-title {
+            font-size: 12px;
+            font-weight: 700
+        }
+
+        .al-sub {
+            font-size: 11px;
+            color: var(--t500)
+        }
+
+        /* Chart bars */
+        .chart-wrap {
+            height: 160px;
+            background: var(--g20);
+            border-radius: var(--rsm);
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 12px 12px 0;
+            gap: 6px;
+            overflow: hidden
+        }
+
+        .bar {
+            flex: 1;
+            border-radius: 5px 5px 0 0;
+            min-width: 10px;
+            transition: opacity var(--tr)
+        }
+
+        .bar:hover {
+            opacity: .8
+        }
+
+        .bar-g {
+            background: linear-gradient(180deg, var(--g600), var(--g800))
+        }
+
+        .bar-s {
+            background: linear-gradient(180deg, var(--g200), var(--g400))
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-around;
+            font-size: 10px;
+            color: var(--t300);
+            margin-top: 6px;
+            padding: 0 12px
+        }
+
+        /* Progress */
+        .prog {
+            height: 6px;
+            background: var(--g100);
+            border-radius: 3px;
+            overflow: hidden
+        }
+
+        .prog-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: var(--g600)
+        }
+
+        /* Chip */
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            background: var(--g50);
+            color: var(--g800);
+            border: 1px solid var(--g100)
+        }
+
+        /* Action bar */
+        .act-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: var(--white);
+            padding: 10px 14px;
+            border-radius: var(--r);
+            border: 1px solid var(--border);
+            margin-bottom: 14px;
+            box-shadow: var(--shadow)
+        }
+
+        .filter-pill {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 13px;
+            border: 1.5px solid var(--border-dk);
+            border-radius: 22px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            background: var(--white);
+            transition: all var(--tr);
+            color: var(--t700);
+            font-family: inherit
+        }
+
+        .filter-pill:hover {
+            border-color: var(--g600);
+            color: var(--g800);
+            background: var(--g50)
+        }
+
+        .filter-pill.active {
+            border-color: var(--g700);
+            background: var(--g50);
+            color: var(--g800);
+            font-weight: 600
+        }
+
+        .filter-sel {
+            padding: 6px 26px 6px 11px;
+            border: 1.5px solid var(--border-dk);
+            border-radius: 22px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%234a7055' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 9px center;
+            appearance: none;
+            color: var(--t700);
+            font-family: inherit;
+            outline: none;
+            transition: border-color var(--tr)
+        }
+
+        .filter-sel:focus {
+            border-color: var(--g600)
+        }
+
+        /* Timeline */
+        .tl {
+            display: flex;
+            flex-direction: column
+        }
+
+        .tl-item {
+            display: flex;
+            gap: 12px;
+            position: relative
+        }
+
+        .tl-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 13px;
+            top: 28px;
+            width: 2px;
+            bottom: -8px;
+            background: var(--border)
+        }
+
+        .tl-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 2px solid var(--border);
+            background: var(--white)
+        }
+
+        .tl-dot svg {
+            width: 13px;
+            height: 13px
+        }
+
+        .tl-done {
+            background: var(--g50);
+            border-color: var(--g400);
+            color: var(--g800)
+        }
+
+        .tl-active {
+            background: var(--g800);
+            border-color: var(--g800);
+            color: #fff
+        }
+
+        .tl-pend {
+            background: var(--white);
+            border-color: #d1d5db;
+            color: #9ca3af
+        }
+
+        .tl-body {
+            padding-bottom: 18px;
+            flex: 1
+        }
+
+        .tl-title {
+            font-size: 13px;
+            font-weight: 600
+        }
+
+        .tl-date {
+            font-size: 11px;
+            color: var(--t300)
+        }
+
+        /* Welcome banner */
+        .welcome {
+            background: linear-gradient(135deg, var(--g800) 0%, var(--g600) 60%, var(--g400) 100%);
+            border-radius: var(--r);
+            padding: 22px 26px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+            position: relative;
+            overflow: hidden
+        }
+
+        .welcome::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 180px;
+            height: 180px;
+            background: rgba(255, 255, 255, .06);
+            border-radius: 50%
+        }
+
+        .welcome::after {
+            content: '';
+            position: absolute;
+            bottom: -70px;
+            right: 100px;
+            width: 240px;
+            height: 240px;
+            background: rgba(255, 255, 255, .04);
+            border-radius: 50%
+        }
+
+        .welcome h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 21px;
+            margin-bottom: 4px
+        }
+
+        .welcome p {
+            font-size: 12px;
+            opacity: .85
+        }
+
+        .welcome-date {
+            font-size: 11px;
+            opacity: .65;
+            margin-top: 5px
+        }
+
+        .welcome-emoji {
+            font-size: 52px;
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0
+        }
+
+        /* KPI Cards */
+        .kpi {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 16px 18px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: box-shadow var(--tr), transform var(--tr);
+            position: relative;
+            overflow: hidden
+        }
+
+        .kpi:hover {
+            box-shadow: var(--shadow-hov);
+            transform: translateY(-2px)
+        }
+
+        .kpi::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px
+        }
+
+        .kpi.k1::before {
+            background: linear-gradient(90deg, var(--g600), var(--g400))
+        }
+
+        .kpi.k2::before {
+            background: linear-gradient(90deg, var(--amber), #fbbf24)
+        }
+
+        .kpi.k3::before {
+            background: linear-gradient(90deg, var(--blue), #60a5fa)
+        }
+
+        .kpi.k4::before {
+            background: linear-gradient(90deg, var(--earth), var(--earth-l))
+        }
+
+        .kpi.k5::before {
+            background: linear-gradient(90deg, var(--purple), #a78bfa)
+        }
+
+        .kpi-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between
+        }
+
+        .kpi-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .kpi-icon svg {
+            width: 19px;
+            height: 19px
+        }
+
+        .ki-g {
+            background: var(--g50);
+            color: var(--g800)
+        }
+
+        .ki-a {
+            background: var(--amber-pale);
+            color: #92400e
+        }
+
+        .ki-b {
+            background: var(--blue-pale);
+            color: #1e40af
+        }
+
+        .ki-e {
+            background: var(--earth-pale);
+            color: var(--earth)
+        }
+
+        .ki-p {
+            background: var(--purple-pale);
+            color: #5b21b6
+        }
+
+        .kpi-chg {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 10px
+        }
+
+        .chg-up {
+            background: var(--g50);
+            color: var(--g800)
+        }
+
+        .chg-dn {
+            background: var(--red-pale);
+            color: var(--red)
+        }
+
+        .kpi-lbl {
+            font-size: 10px;
+            color: var(--t300);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px
+        }
+
+        .kpi-val {
+            font-family: 'DM Serif Display', serif;
+            font-size: 26px;
+            color: var(--t900);
+            line-height: 1
+        }
+
+        .kpi-sub {
+            font-size: 10px;
+            color: var(--t300)
+        }
+
+        /* Product card */
+        .prod-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: box-shadow var(--tr), transform var(--tr)
+        }
+
+        .prod-card:hover {
+            box-shadow: var(--shadow-hov);
+            transform: translateY(-2px)
+        }
+
+        .prod-img {
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px
+        }
+
+        .prod-body {
+            padding: 12px 14px
+        }
+
+        .prod-name {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 2px
+        }
+
+        .prod-sup {
+            font-size: 10px;
+            color: var(--t300);
+            margin-bottom: 7px
+        }
+
+        .prod-price {
+            font-family: 'DM Serif Display', serif;
+            font-size: 18px;
+            color: var(--g800);
+            margin-bottom: 10px
+        }
+
+        .prod-price span {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 10px;
+            color: var(--t300);
+            font-weight: 400
+        }
+
+        /* Cart bubble */
+        .cart-bubble {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--g800);
+            color: #fff;
+            padding: 11px 20px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all var(--tr);
+            z-index: 90
+        }
+
+        .cart-bubble:hover {
+            background: var(--g900);
+            transform: translateY(-2px)
+        }
+
+        .cart-n {
+            background: var(--amber);
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700
+        }
+
+        /* Settings tabs */
+        .stabs {
+            display: flex;
+            gap: 2px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 18px;
+            overflow-x: auto
+        }
+
+        .stab {
+            padding: 9px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--t300);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            white-space: nowrap;
+            transition: all var(--tr)
+        }
+
+        .stab.active {
+            color: var(--g800);
+            border-bottom-color: var(--g800)
+        }
+
+        .stab:hover {
+            color: var(--g700)
+        }
+
+        .spanel {
+            display: none
+        }
+
+        .spanel.active {
+            display: block
+        }
+
+        /* Payment card visual */
+        .pay-card {
+            background: linear-gradient(135deg, var(--g800), var(--g500, #66bb6a));
+            border-radius: 12px;
+            padding: 18px 20px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 12px
+        }
+
+        .pay-card::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, .08);
+            border-radius: 50%
+        }
+
+        .pay-card-num {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin: 12px 0 4px
+        }
+
+        .pay-card-label {
+            font-size: 10px;
+            opacity: .7
+        }
+
+        .pay-card-name {
+            font-size: 13px;
+            font-weight: 600
+        }
+
+        /* Overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .4);
+            z-index: 190
+        }
+
+        .overlay.show {
+            display: block
+        }
+
+        /* Toast */
+        .toast-wrap {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center
+        }
+
+        .toast {
+            background: var(--g900);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            animation: toastIn .25s ease;
+            white-space: nowrap
+        }
+
+        @keyframes toastIn {
+            from {
+                transform: translateY(10px);
+                opacity: 0
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+        /* ≥1600px */
+        @media(min-width:1600px) {
+            :root {
+                --sw: 260px
+            }
+
+            .content {
+                padding: 26px 30px
+            }
+
+            .kpi-val {
+                font-size: 30px
+            }
+        }
+
+        /* ≤1280px */
+        @media(max-width:1280px) {
+            .g4 {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        /* ≤1100px — icon sidebar */
+        @media(max-width:1100px) {
+            :root {
+                --sw: 64px
+            }
+
+            .sb-head {
+                padding: 14px 8px;
+                justify-content: center
+            }
+
+            .sb-brand {
+                display: none
+            }
+
+            .sb-logo {
+                margin: 0 auto
+            }
+
+            .nav-grp {
+                display: none
+            }
+
+            .nav-item {
+                justify-content: center;
+                padding: 11px 6px;
+                margin: 1px 4px
+            }
+
+            .nav-item span {
+                display: none
+            }
+
+            .nav-badge {
+                position: absolute;
+                top: 3px;
+                right: 3px;
+                min-width: 13px;
+                height: 13px;
+                font-size: 8px
+            }
+
+            .sb-foot {
+                justify-content: center;
+                padding: 10px 6px
+            }
+
+            .f-info {
+                display: none
+            }
+
+            .f-avatar {
+                margin: 0 auto
+            }
+
+            .tb-search {
+                flex: 0 1 200px
+            }
+
+            .g4 {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        /* ≤900px — off-canvas sidebar */
+        @media(max-width:900px) {
+            :root {
+                --sw: 0px
+            }
+
+            .sidebar {
+                width: 260px;
+                transform: translateX(-100%)
+            }
+
+            .sidebar.open {
+                transform: translateX(0)
+            }
+
+            .sb-head {
+                padding: 18px 20px 14px;
+                justify-content: flex-start
+            }
+
+            .sb-brand {
+                display: flex
+            }
+
+            .sb-logo {
+                margin: 0
+            }
+
+            .nav-grp {
+                display: block
+            }
+
+            .nav-item {
+                justify-content: flex-start;
+                padding: 10px 12px
+            }
+
+            .nav-item span {
+                display: block
+            }
+
+            .nav-badge {
+                position: static;
+                margin-left: auto
+            }
+
+            .sb-foot {
+                justify-content: flex-start;
+                padding: 12px 14px
+            }
+
+            .f-info {
+                display: block
+            }
+
+            .f-avatar {
+                margin: 0
+            }
+
+            .menu-btn {
+                display: flex
+            }
+
+            .main {
+                margin-left: 0
+            }
+
+            .tb-search {
+                flex: 1;
+                max-width: 220px
+            }
+
+            .tb-pname {
+                display: none
+            }
+
+            .g3 {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .content {
+                padding: 14px
+            }
+        }
+
+        /* ≤680px */
+        @media(max-width:680px) {
+            .content {
+                padding: 10px
+            }
+
+            .g2,
+            .g3,
+            .g4 {
+                grid-template-columns: 1fr
+            }
+
+            .g-auto {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .welcome {
+                flex-direction: column;
+                align-items: flex-start
+            }
+
+            .welcome-emoji {
+                display: none
+            }
+
+            .topbar {
+                padding: 0 10px;
+                gap: 8px
+            }
+
+            .tb-search {
+                flex: 1
+            }
+
+            .act-bar {
+                flex-wrap: wrap
+            }
+
+            .sec-hd {
+                flex-direction: column;
+                align-items: flex-start
+            }
+
+            /* Hide less important table columns on mobile */
+            .hide-sm {
+                display: none
+            }
+        }
+
+        /* ≤480px */
+        @media(max-width:480px) {
+            .g-auto {
+                grid-template-columns: 1fr
+            }
+
+            .kpi-val {
+                font-size: 22px
+            }
+
+            .welcome h1 {
+                font-size: 17px
+            }
+
+            .welcome {
+                padding: 16px 16px
+            }
+
+            .modal-box {
+                border-radius: 16px 16px 0 0
+            }
+
+            .modal-bd {
+                align-items: flex-end;
+                padding: 0
+            }
+
+            .cart-bubble {
+                bottom: 16px;
+                right: 16px;
+                padding: 9px 14px;
+                font-size: 12px
+            }
+        }
+
+        /* ≤360px */
+        @media(max-width:360px) {
+            .content {
+                padding: 8px
+            }
+
+            .topbar {
+                padding: 0 8px
+            }
+
+            .kpi-val {
+                font-size: 19px
+            }
+
+            .btn {
+                padding: 7px 12px;
+                font-size: 12px
+            }
+        }
+
+        /* Landscape mobile */
+        @media(max-height:480px) and (max-width:900px) {
+            .sidebar {
+                overflow-y: auto
+            }
+
+            .sb-nav {
+                padding: 4px 0
+            }
+
+            .nav-item {
+                padding: 8px 12px
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <!-- ════════ SIDEBAR ════════ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sb-head">
+            <div class="sb-logo">🐓</div>
+            <div class="sb-brand">
+                <div class="sb-brand-name">FarmDirect</div>
+                <div class="sb-brand-tag">PMS v2.0</div>
+            </div>
+        </div>
+        <nav class="sb-nav">
+            <div class="nav-grp">Main</div>
+            <div class="nav-item active" onclick="showPage('dashboard',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                    <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                    <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                    <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                </svg>
+                <span>Dashboard Overview</span>
+            </div>
+            <div class="nav-item" onclick="showPage('flock',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <span>Flock Inventory</span>
+            </div>
+            <div class="nav-item" onclick="showPage('orders',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+                    <rect x="9" y="3" width="6" height="4" rx="1" />
+                    <path d="M9 12h6M9 16h4" />
+                </svg>
+                <span>Buyer Orders</span>
+                <span class="nav-badge">5</span>
+            </div>
+            <div class="nav-item" onclick="showPage('market',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" />
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                    <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" />
+                    <path d="M2 7h20" />
+                </svg>
+                <span>Marketplace</span>
+            </div>
+            <div class="nav-grp">Insights</div>
+            <div class="nav-item" onclick="showPage('analytics',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10" />
+                    <line x1="12" y1="20" x2="12" y2="4" />
+                    <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+                <span>Analytics</span>
+            </div>
+            <div class="nav-grp">Account</div>
+            <div class="nav-item" onclick="showPage('settings',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+                <span>Account Settings</span>
+            </div>
+            <div class="nav-item danger" onclick="logout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                <span>Logout</span>
+            </div>
+        </nav>
+        <div class="sb-foot">
+            <div class="f-avatar">JM</div>
+            <div class="f-info">
+                <div class="f-name">John Mwangi</div>
+                <div class="f-role">Farm Manager · Kiambu</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ════════ MAIN ════════ -->
+    <div class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+            </button>
+            <div class="breadcrumb">
+                <span>FarmDirect</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m9 18 6-6-6-6" />
+                </svg>
+                <span class="cur" id="bc">Dashboard</span>
+            </div>
+            <div class="tb-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                </svg>
+                <input type="text" placeholder="Search birds, orders, supplies…">
+            </div>
+            <div class="tb-actions">
+                <button class="tb-btn" onclick="showToast('💬 No new messages')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                </button>
+                <button class="tb-btn" onclick="showToast('🔔 3 low-stock alerts!')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                    </svg>
+                    <span class="notif-dot"></span>
+                </button>
+            </div>
+            <div class="tb-profile" onclick="showPage('settings',document.querySelectorAll('.nav-item')[6])">
+                <div class="tb-av">JM</div>
+                <span class="tb-pname">John Mwangi</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m6 9 6 6 6-6" />
+                </svg>
+            </div>
+        </header>
+
+        <div class="content">
+
+            <!-- ═══════════════════════════════════════
+         PAGE 1: DASHBOARD OVERVIEW
+    ═══════════════════════════════════════ -->
+            <div id="page-dashboard" class="page active">
+
+                <div class="welcome">
+                    <div>
+                        <h1>Good morning, John! 🌱</h1>
+                        <p>Here's what's happening on your farm today.</p>
+                        <div class="welcome-date">Monday, 23 February 2026 · Kiambu County, Kenya</div>
+                    </div>
+                    <div class="welcome-emoji">🐔</div>
+                </div>
+
+                <!-- KPIs -->
+                <div class="g4" style="margin-bottom:20px">
+                    <div class="kpi k1">
+                        <div class="kpi-top">
+                            <div class="kpi-icon ki-g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                </svg></div><span class="kpi-chg chg-up">↑ 12%</span>
+                        </div>
+                        <div class="kpi-lbl">Total Birds</div>
+                        <div class="kpi-val">4,820</div>
+                        <div class="kpi-sub">Across 6 flock batches</div>
+                    </div>
+                    <div class="kpi k2">
+                        <div class="kpi-top">
+                            <div class="kpi-icon ki-a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+                                    <rect x="9" y="3" width="6" height="4" rx="1" />
+                                </svg></div><span class="kpi-chg chg-dn">↓ 3</span>
+                        </div>
+                        <div class="kpi-lbl">Pending Orders</div>
+                        <div class="kpi-val">18</div>
+                        <div class="kpi-sub">5 need urgent action</div>
+                    </div>
+                    <div class="kpi k3">
+                        <div class="kpi-top">
+                            <div class="kpi-icon ki-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg></div><span class="kpi-chg chg-up">↑ 28%</span>
+                        </div>
+                        <div class="kpi-lbl">Completed Orders</div>
+                        <div class="kpi-val">142</div>
+                        <div class="kpi-sub">This month</div>
+                    </div>
+                    <div class="kpi k4">
+                        <div class="kpi-top">
+                            <div class="kpi-icon ki-e"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+                                    <path d="M7 2v20" />
+                                    <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
+                                </svg></div><span class="kpi-chg chg-dn">↓ 15%</span>
+                        </div>
+                        <div class="kpi-lbl">Feed Stock</div>
+                        <div class="kpi-val">2.4 t</div>
+                        <div class="kpi-sub">Est. 12 days remaining</div>
+                    </div>
+                    <div class="kpi k5" style="grid-column:span 1">
+                        <div class="kpi-top">
+                            <div class="kpi-icon ki-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <line x1="12" y1="1" x2="12" y2="23" />
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                                </svg></div><span class="kpi-chg chg-up">↑ 34%</span>
+                        </div>
+                        <div class="kpi-lbl">Revenue This Month</div>
+                        <div class="kpi-val">KES 284K</div>
+                        <div class="kpi-sub">vs KES 212K last month</div>
+                    </div>
+                </div>
+
+                <!-- Charts + Alerts -->
+                <div class="g3" style="margin-bottom:20px">
+                    <div class="card" style="grid-column:span 2">
+                        <div class="card-head">
+                            <div>
+                                <div class="card-head-title">Mortality &amp; Growth Trend</div>
+                                <div style="font-size:10px;color:var(--t300)">Last 7 months</div>
+                            </div>
+                            <div style="display:flex;gap:10px;align-items:center">
+                                <span style="display:flex;align-items:center;gap:4px;font-size:10px"><span
+                                        style="width:9px;height:9px;border-radius:2px;background:var(--g600);display:inline-block"></span>Growth</span>
+                                <span style="display:flex;align-items:center;gap:4px;font-size:10px"><span
+                                        style="width:9px;height:9px;border-radius:2px;background:var(--g200);display:inline-block"></span>Mortality</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-wrap">
+                                <div class="bar bar-g" style="height:65%"></div>
+                                <div class="bar bar-s" style="height:18%"></div>
+                                <div class="bar bar-g" style="height:80%"></div>
+                                <div class="bar bar-s" style="height:12%"></div>
+                                <div class="bar bar-g" style="height:88%"></div>
+                                <div class="bar bar-s" style="height:8%"></div>
+                                <div class="bar bar-g" style="height:75%"></div>
+                                <div class="bar bar-s" style="height:15%"></div>
+                                <div class="bar bar-g" style="height:92%"></div>
+                                <div class="bar bar-s" style="height:6%"></div>
+                                <div class="bar bar-g" style="height:86%"></div>
+                                <div class="bar bar-s" style="height:10%"></div>
+                                <div class="bar bar-g" style="height:95%"></div>
+                                <div class="bar bar-s" style="height:9%"></div>
+                            </div>
+                            <div class="chart-labels">
+                                <span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-head">
+                            <div class="card-head-title">⚠️ Low Stock Alerts</div><span class="badge bg-red">3
+                                Critical</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert-strip">
+                                <div class="al-item al-danger">
+                                    <div class="al-icon">🐓</div>
+                                    <div class="al-text">
+                                        <div class="al-title">Layer Hens — Batch C</div>
+                                        <div class="al-sub">Only 42 remaining · Reorder needed</div>
+                                    </div>
+                                </div>
+                                <div class="al-item al-warn">
+                                    <div class="al-icon">🌾</div>
+                                    <div class="al-text">
+                                        <div class="al-title">Starter Feed</div>
+                                        <div class="al-sub">12 days left · Order more soon</div>
+                                    </div>
+                                </div>
+                                <div class="al-item al-info">
+                                    <div class="al-icon">💊</div>
+                                    <div class="al-text">
+                                        <div class="al-title">Newcastle Vaccine</div>
+                                        <div class="al-sub">Expiry in 8 days · Use or replace</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="card">
+                    <div class="card-head">
+                        <div class="card-head-title">Recent Buyer Orders</div>
+                        <button class="btn btn-secondary btn-sm"
+                            onclick="showPage('orders',document.querySelectorAll('.nav-item')[2])">View All</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Buyer</th>
+                                    <th class="hide-sm">Product</th>
+                                    <th>Amount</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>#ORD-2041</strong></td>
+                                    <td>Amara Kioni</td>
+                                    <td class="hide-sm">Broilers × 300</td>
+                                    <td>KES 144,000</td>
+                                    <td><span class="badge bg-green">Paid</span></td>
+                                    <td><span class="badge bg-blue">Processing</span></td>
+                                    <td><button class="btn btn-primary btn-sm"
+                                            onclick="showToast('Viewing #ORD-2041')">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#ORD-2040</strong></td>
+                                    <td>Peter Otieno</td>
+                                    <td class="hide-sm">Layer Hens × 150</td>
+                                    <td>KES 52,500</td>
+                                    <td><span class="badge bg-amber">Pending</span></td>
+                                    <td><span class="badge bg-amber">Awaiting</span></td>
+                                    <td><button class="btn btn-primary btn-sm"
+                                            onclick="showToast('Viewing #ORD-2040')">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#ORD-2039</strong></td>
+                                    <td>Grace Njoroge</td>
+                                    <td class="hide-sm">Eggs × 200 crates</td>
+                                    <td>KES 60,000</td>
+                                    <td><span class="badge bg-green">Paid</span></td>
+                                    <td><span class="badge bg-green">Delivered</span></td>
+                                    <td><button class="btn btn-secondary btn-sm"
+                                            onclick="showToast('Viewing receipt')">Receipt</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#ORD-2038</strong></td>
+                                    <td>David Mutua</td>
+                                    <td class="hide-sm">Chicks × 500</td>
+                                    <td>KES 37,500</td>
+                                    <td><span class="badge bg-green">Paid</span></td>
+                                    <td><span class="badge bg-blue">Shipped</span></td>
+                                    <td><button class="btn btn-primary btn-sm"
+                                            onclick="showToast('Tracking #ORD-2038')">Track</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#ORD-2037</strong></td>
+                                    <td>Susan Wambui</td>
+                                    <td class="hide-sm">Broilers × 80</td>
+                                    <td>KES 38,400</td>
+                                    <td><span class="badge bg-red">Overdue</span></td>
+                                    <td><span class="badge bg-red">On Hold</span></td>
+                                    <td><button class="btn btn-danger btn-sm"
+                                            onclick="showToast('Flagging #ORD-2037')">Flag</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════
+         PAGE 2: FLOCK INVENTORY
+    ═══════════════════════════════════════ -->
+            <div id="page-flock" class="page">
+                <div class="sec-hd">
+                    <div>
+                        <div class="sec-title">Flock Inventory Management</div>
+                        <div class="sec-sub">Manage all bird batches in one place</div>
+                    </div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap">
+                        <button class="btn btn-secondary" onclick="showToast('Opening bulk upload…')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>Bulk Upload
+                        </button>
+                        <button class="btn btn-primary" onclick="openModal('modal-flock')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19" />
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>Add New Flock
+                        </button>
+                    </div>
+                </div>
+
+                <div class="act-bar">
+                    <span
+                        style="font-size:10px;font-weight:700;color:var(--t300);text-transform:uppercase;letter-spacing:.5px">Filter:</span>
+                    <button class="filter-pill active" onclick="toggleFilter(this)">All Types</button>
+                    <button class="filter-pill" onclick="toggleFilter(this)">Broilers</button>
+                    <button class="filter-pill" onclick="toggleFilter(this)">Layers</button>
+                    <button class="filter-pill" onclick="toggleFilter(this)">Chicks</button>
+                    <button class="filter-pill" onclick="toggleFilter(this)">Kienyeji</button>
+                    <select class="filter-sel">
+                        <option>All Health</option>
+                        <option>Healthy</option>
+                        <option>Monitor</option>
+                        <option>Sick</option>
+                        <option>Quarantine</option>
+                    </select>
+                    <select class="filter-sel">
+                        <option>All Ages</option>
+                        <option>0–4 weeks</option>
+                        <option>4–8 weeks</option>
+                        <option>8+ weeks</option>
+                    </select>
+                    <input class="form-input"
+                        style="width:180px;border-radius:22px;font-size:12px;padding:6px 12px;margin-left:auto"
+                        placeholder="Search batch…">
+                </div>
+
+                <div class="card" style="margin-bottom:12px;">
+                    <div class="card-head">
+                        <div class="card-head-title">Live Flocks (API)</div>
+                        <button class="btn btn-secondary btn-sm" onclick="loadFarmerFlocks()">Refresh</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="live-flock-message" style="font-size:12px;color:var(--t300);margin-bottom:10px;"></div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Type</th>
+                                        <th>Breed</th>
+                                        <th>Qty</th>
+                                        <th>Age (wks)</th>
+                                        <th>Status</th>
+                                        <th>Feed/day</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="live-flocks-body">
+                                    <tr>
+                                        <td colspan="8">Loading flocks...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Batch ID</th>
+                                    <th>Bird Type</th>
+                                    <th class="hide-sm">Breed</th>
+                                    <th>Quantity</th>
+                                    <th>Age</th>
+                                    <th>Health</th>
+                                    <th class="hide-sm">Feed/day</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>BTC-001</strong></td>
+                                    <td><span class="chip">🍗 Broiler</span></td>
+                                    <td class="hide-sm">Ross 308</td>
+                                    <td>1,200</td>
+                                    <td>6 wks</td>
+                                    <td><span class="badge bg-green"><span class="dot dot-g"></span> Healthy</span></td>
+                                    <td class="hide-sm">240 kg</td>
+                                    <td>
+                                        <div style="display:flex;gap:6px"><button class="btn btn-secondary btn-sm"
+                                                onclick="showToast('Editing BTC-001')">Edit</button><button
+                                                class="btn btn-danger btn-sm"
+                                                onclick="showToast('Confirm delete?')">Del</button></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>BTC-002</strong></td>
+                                    <td><span class="chip">🥚 Layer</span></td>
+                                    <td class="hide-sm">Isa Brown</td>
+                                    <td>800</td>
+                                    <td>24 wks</td>
+                                    <td><span class="badge bg-green"><span class="dot dot-g"></span> Healthy</span></td>
+                                    <td class="hide-sm">120 kg</td>
+                                    <td>
+                                        <div style="display:flex;gap:6px"><button class="btn btn-secondary btn-sm"
+                                                onclick="showToast('Editing BTC-002')">Edit</button><button
+                                                class="btn btn-danger btn-sm"
+                                                onclick="showToast('Confirm delete?')">Del</button></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>BTC-003</strong></td>
+                                    <td><span class="chip">🐥 Chick</span></td>
+                                    <td class="hide-sm">KENBRO</td>
+                                    <td>2,500</td>
+                                    <td>2 wks</td>
+                                    <td><span class="badge bg-amber"><span class="dot dot-a"></span> Monitor</span></td>
+                                    <td class="hide-sm">75 kg</td>
+                                    <td>
+                                        <div style="display:flex;gap:6px"><button class="btn btn-secondary btn-sm"
+                                                onclick="showToast('Editing BTC-003')">Edit</button><button
+                                                class="btn btn-danger btn-sm"
+                                                onclick="showToast('Confirm delete?')">Del</button></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>BTC-004</strong></td>
+                                    <td><span class="chip">🐓 Kienyeji</span></td>
+                                    <td class="hide-sm">Imp. Kienyeji</td>
+                                    <td>180</td>
+                                    <td>10 wks</td>
+                                    <td><span class="badge bg-red"><span class="dot dot-r"></span> Sick</span></td>
+                                    <td class="hide-sm">27 kg</td>
+                                    <td>
+                                        <div style="display:flex;gap:6px"><button class="btn btn-secondary btn-sm"
+                                                onclick="showToast('Editing BTC-004')">Edit</button><button
+                                                class="btn btn-danger btn-sm"
+                                                onclick="showToast('Confirm delete?')">Del</button></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>BTC-005</strong></td>
+                                    <td><span class="chip">🍗 Broiler</span></td>
+                                    <td class="hide-sm">Cobb 500</td>
+                                    <td>140</td>
+                                    <td>4 wks</td>
+                                    <td><span class="badge bg-green"><span class="dot dot-g"></span> Healthy</span></td>
+                                    <td class="hide-sm">21 kg</td>
+                                    <td>
+                                        <div style="display:flex;gap:6px"><button class="btn btn-secondary btn-sm"
+                                                onclick="showToast('Editing BTC-005')">Edit</button><button
+                                                class="btn btn-danger btn-sm"
+                                                onclick="showToast('Confirm delete?')">Del</button></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════
+         PAGE 3: BUYER ORDERS
+    ═══════════════════════════════════════ -->
+            <div id="page-orders" class="page">
+                <div class="sec-hd">
+                    <div>
+                        <div class="sec-title">Buyer Orders</div>
+                        <div class="sec-sub">Manage and track all incoming orders</div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        <select class="filter-sel">
+                            <option>All Dates</option>
+                            <option>Today</option>
+                            <option>This Week</option>
+                            <option>This Month</option>
+                        </select>
+                        <select class="filter-sel">
+                            <option>All Statuses</option>
+                            <option>Pending</option>
+                            <option>Processing</option>
+                            <option>Shipped</option>
+                            <option>Delivered</option>
+                        </select>
+                        <input class="form-input" style="width:180px;border-radius:22px;font-size:12px;padding:6px 12px"
+                            placeholder="Search buyer, ID…">
+                    </div>
+                </div>
+
+                <div class="g4" style="margin-bottom:18px">
+                    <div class="card" style="border-top:3px solid var(--amber)">
+                        <div class="card-body" style="display:flex;align-items:center;gap:12px;padding:14px 16px">
+                            <div style="font-size:26px">⏳</div>
+                            <div>
+                                <div
+                                    style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--t300);font-weight:700">
+                                    Pending</div>
+                                <div style="font-family:'DM Serif Display',serif;font-size:22px">18</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="border-top:3px solid var(--blue)">
+                        <div class="card-body" style="display:flex;align-items:center;gap:12px;padding:14px 16px">
+                            <div style="font-size:26px">⚙️</div>
+                            <div>
+                                <div
+                                    style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--t300);font-weight:700">
+                                    Processing</div>
+                                <div style="font-family:'DM Serif Display',serif;font-size:22px">7</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="border-top:3px solid var(--g600)">
+                        <div class="card-body" style="display:flex;align-items:center;gap:12px;padding:14px 16px">
+                            <div style="font-size:26px">🚚</div>
+                            <div>
+                                <div
+                                    style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--t300);font-weight:700">
+                                    Shipped</div>
+                                <div style="font-family:'DM Serif Display',serif;font-size:22px">12</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="border-top:3px solid var(--g800)">
+                        <div class="card-body" style="display:flex;align-items:center;gap:12px;padding:14px 16px">
+                            <div style="font-size:26px">✅</div>
+                            <div>
+                                <div
+                                    style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--t300);font-weight:700">
+                                    Delivered</div>
+                                <div style="font-family:'DM Serif Display',serif;font-size:22px">142</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Buyer</th>
+                                    <th class="hide-sm">Product</th>
+                                    <th>Price</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                    <th class="hide-sm">Update Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>#ORD-2041</strong></td>
+                                    <td>
+                                        <div style="font-weight:600">Amara Kioni</div>
+                                        <div style="font-size:10px;color:var(--t300)">+254 712 345 678</div>
+                                    </td>
+                                    <td class="hide-sm">Broilers × 300</td>
+                                    <td>KES 144,000</td>
+                                    <td><span class="badge bg-green">Paid</span></td>
+                                    <td><span class="badge bg-blue">Processing</span></td>
+                                    <td class="hide-sm"><select class="filter-sel"
+                                            onchange="showToast('✅ Status updated!')">
+                                            <option>Processing</option>
+                                            <option>Shipped</option>
+                                            <option>Delivered</option>
+                                        </select></td>
+                                    <td>
+                                        <div style="display:flex;gap:4px"><button class="btn btn-primary btn-sm"
+                                                onclick="showToast('✅ Accepted!')">Accept</button><button
+                                                class="btn btn-danger btn-sm"
+                                                onclick="showToast('❌ Rejected')">Reject</button></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#ORD-2040</strong></td>
+                                    <td>
+                                        <div style="font-weight:600">Peter Otieno</div>
+                                        <div style="font-size:10px;color:var(--t300)">+254 733 987 654</div>
+                                    </td>
+                                    <td class="hide-sm">Layer Hens × 150</td>
+                                    <td>KES 52,500</td>
+                                    <td><span class="badge bg-amber">Pending</span></td>
+                                    <td><span class="badge bg-amber">Awaiting</span></td>
+                                    <td class="hide-sm"><select class="filter-sel"
+                                            onchange="showToast('✅ Status updated!')">
+                                            <option>Awaiting</option>
+                                            <option>Processing</option>
+                                            <option>Shipped</option>
+                                        </select></td>
+                                    <td>
+                                        <div style="display:flex;gap:4px"><button class="btn btn-primary btn-sm"
+                                                onclick="showToast('✅ Accepted!')">Accept</button><button
+                                                class="btn btn-danger btn-sm"
+                                                onclick="showToast('❌ Rejected')">Reject</button></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#ORD-2039</strong></td>
+                                    <td>
+                                        <div style="font-weight:600">Grace Njoroge</div>
+                                        <div style="font-size:10px;color:var(--t300)">Ngong Rd, Nairobi</div>
+                                    </td>
+                                    <td class="hide-sm">Eggs × 200 crates</td>
+                                    <td>KES 60,000</td>
+                                    <td><span class="badge bg-green">Paid</span></td>
+                                    <td><span class="badge bg-green">Delivered</span></td>
+                                    <td class="hide-sm"><span style="font-size:11px;color:var(--t300)">Completed</span>
+                                    </td>
+                                    <td><button class="btn btn-secondary btn-sm"
+                                            onclick="showToast('Viewing receipt')">Receipt</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#ORD-2038</strong></td>
+                                    <td>
+                                        <div style="font-weight:600">David Mutua</div>
+                                        <div style="font-size:10px;color:var(--t300)">+254 721 456 789</div>
+                                    </td>
+                                    <td class="hide-sm">Chicks × 500</td>
+                                    <td>KES 37,500</td>
+                                    <td><span class="badge bg-green">Paid</span></td>
+                                    <td><span class="badge bg-blue">Shipped</span></td>
+                                    <td class="hide-sm"><select class="filter-sel"
+                                            onchange="showToast('✅ Status updated!')">
+                                            <option>Shipped</option>
+                                            <option>Delivered</option>
+                                        </select></td>
+                                    <td><button class="btn btn-secondary btn-sm"
+                                            onclick="showToast('Tracking shipment')">Track</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>#ORD-2037</strong></td>
+                                    <td>
+                                        <div style="font-weight:600">Susan Wambui</div>
+                                        <div style="font-size:10px;color:var(--t300)">Thika Road, Nairobi</div>
+                                    </td>
+                                    <td class="hide-sm">Broilers × 80</td>
+                                    <td>KES 38,400</td>
+                                    <td><span class="badge bg-red">Overdue</span></td>
+                                    <td><span class="badge bg-red">On Hold</span></td>
+                                    <td class="hide-sm"><select class="filter-sel"
+                                            onchange="showToast('Status updated')">
+                                            <option>On Hold</option>
+                                            <option>Processing</option>
+                                        </select></td>
+                                    <td><button class="btn btn-danger btn-sm"
+                                            onclick="showToast('⚠️ Order flagged')">Flag</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════
+         PAGE 4: MARKETPLACE
+    ═══════════════════════════════════════ -->
+            <div id="page-market" class="page">
+                <div class="sec-hd">
+                    <div>
+                        <div class="sec-title">Marketplace — Suppliers</div>
+                        <div class="sec-sub">Order feed, medicines, and equipment from verified suppliers</div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        <select class="filter-sel">
+                            <option>All Categories</option>
+                            <option>Feed</option>
+                            <option>Medicines</option>
+                            <option>Equipment</option>
+                        </select>
+                        <select class="filter-sel">
+                            <option>All Prices</option>
+                            <option>Under KES 5K</option>
+                            <option>KES 5–20K</option>
+                            <option>KES 20K+</option>
+                        </select>
+                        <select class="filter-sel">
+                            <option>All Ratings</option>
+                            <option>4★ &amp; above</option>
+                            <option>5★ only</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+                    <button class="filter-pill active" onclick="toggleFilter(this)">🌾 All</button>
+                    <button class="filter-pill" onclick="toggleFilter(this)">🌾 Feed</button>
+                    <button class="filter-pill" onclick="toggleFilter(this)">💊 Medicines</button>
+                    <button class="filter-pill" onclick="toggleFilter(this)">🔧 Equipment</button>
+                    <button class="filter-pill" onclick="toggleFilter(this)">🥚 Packaging</button>
+                </div>
+
+                <div class="g-auto" style="margin-bottom:22px">
+                    <div class="prod-card">
+                        <div class="prod-img" style="background:var(--g50)">🌾</div>
+                        <div class="prod-body">
+                            <div class="prod-name">Broiler Starter Mash 50kg</div>
+                            <div class="prod-sup">Agro-Feeds Ltd · ⭐ 4.9 (215)</div>
+                            <div class="prod-price">KES 1,250 <span>/ bag</span></div>
+                            <div style="display:flex;gap:6px"><button class="btn btn-primary" style="flex:1"
+                                    onclick="showToast('Added to cart 🛒')">Order Now</button><button
+                                    class="btn btn-secondary btn-icon" onclick="showToast('Saved!')">♡</button></div>
+                        </div>
+                    </div>
+                    <div class="prod-card">
+                        <div class="prod-img" style="background:#fef9c3">💊</div>
+                        <div class="prod-body">
+                            <div class="prod-name">Newcastle Disease Vaccine</div>
+                            <div class="prod-sup">VetPharma Kenya · ⭐ 4.7 (88)</div>
+                            <div class="prod-price">KES 8.20 <span>/ dose</span></div>
+                            <div style="display:flex;gap:6px"><button class="btn btn-primary" style="flex:1"
+                                    onclick="showToast('Added to cart 🛒')">Order Now</button><button
+                                    class="btn btn-secondary btn-icon" onclick="showToast('Saved!')">♡</button></div>
+                        </div>
+                    </div>
+                    <div class="prod-card">
+                        <div class="prod-img" style="background:#e0f2fe">🔧</div>
+                        <div class="prod-body">
+                            <div class="prod-name">Automatic Drinker System</div>
+                            <div class="prod-sup">Farm Tech Solutions · ⭐ 4.6 (54)</div>
+                            <div class="prod-price">KES 28,000 <span>/ set</span></div>
+                            <div style="display:flex;gap:6px"><button class="btn btn-primary" style="flex:1"
+                                    onclick="showToast('Added to cart 🛒')">Order Now</button><button
+                                    class="btn btn-secondary btn-icon" onclick="showToast('Saved!')">♡</button></div>
+                        </div>
+                    </div>
+                    <div class="prod-card">
+                        <div class="prod-img" style="background:var(--g50)">🌱</div>
+                        <div class="prod-body">
+                            <div class="prod-name">Layer Finisher Mash 50kg</div>
+                            <div class="prod-sup">Agro-Feeds Ltd · ⭐ 4.9 (215)</div>
+                            <div class="prod-price">KES 1,350 <span>/ bag</span></div>
+                            <div style="display:flex;gap:6px"><button class="btn btn-primary" style="flex:1"
+                                    onclick="showToast('Added to cart 🛒')">Order Now</button><button
+                                    class="btn btn-secondary btn-icon" onclick="showToast('Saved!')">♡</button></div>
+                        </div>
+                    </div>
+                    <div class="prod-card">
+                        <div class="prod-img" style="background:#fef3c7">🥚</div>
+                        <div class="prod-body">
+                            <div class="prod-name">Egg Tray Packaging ×200</div>
+                            <div class="prod-sup">PackagePro Kenya · ⭐ 4.4 (31)</div>
+                            <div class="prod-price">KES 4,800 <span>/ pack</span></div>
+                            <div style="display:flex;gap:6px"><button class="btn btn-primary" style="flex:1"
+                                    onclick="showToast('Added to cart 🛒')">Order Now</button><button
+                                    class="btn btn-secondary btn-icon" onclick="showToast('Saved!')">♡</button></div>
+                        </div>
+                    </div>
+                    <div class="prod-card">
+                        <div class="prod-img" style="background:#fce7f3">💉</div>
+                        <div class="prod-body">
+                            <div class="prod-name">Marek's Disease Vaccine</div>
+                            <div class="prod-sup">VetPharma Kenya · ⭐ 4.8 (102)</div>
+                            <div class="prod-price">KES 1,200 <span>/ 1000 doses</span></div>
+                            <div style="display:flex;gap:6px"><button class="btn btn-primary" style="flex:1"
+                                    onclick="showToast('Added to cart 🛒')">Order Now</button><button
+                                    class="btn btn-secondary btn-icon" onclick="showToast('Saved!')">♡</button></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Supplier Order Tracking -->
+                <div class="card">
+                    <div class="card-head">
+                        <div class="card-head-title">Supplier Order Tracking</div><span class="badge bg-blue">2
+                            Active</span>
+                    </div>
+                    <div class="card-body">
+                        <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)">
+                            <div
+                                style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+                                <div>
+                                    <div style="font-weight:700;font-size:14px">Agro-Feeds Starter Mash × 20 bags</div>
+                                    <div style="font-size:11px;color:var(--t300)">SUP-Order #4421 · Agro-Feeds Ltd</div>
+                                </div>
+                                <span class="badge bg-blue">In Transit</span>
+                            </div>
+                            <div class="tl">
+                                <div class="tl-item">
+                                    <div class="tl-dot tl-done"><svg viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg></div>
+                                    <div class="tl-body">
+                                        <div class="tl-title">Order Placed</div>
+                                        <div class="tl-date">Feb 20 · 09:15 AM</div>
+                                    </div>
+                                </div>
+                                <div class="tl-item">
+                                    <div class="tl-dot tl-done"><svg viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg></div>
+                                    <div class="tl-body">
+                                        <div class="tl-title">Payment Confirmed</div>
+                                        <div class="tl-date">Feb 20 · 10:32 AM</div>
+                                    </div>
+                                </div>
+                                <div class="tl-item">
+                                    <div class="tl-dot tl-active"><svg viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M5 12h14M12 5l7 7-7 7" />
+                                        </svg></div>
+                                    <div class="tl-body">
+                                        <div class="tl-title">Shipped — In Transit</div>
+                                        <div class="tl-date">Feb 22 · Expected today</div>
+                                    </div>
+                                </div>
+                                <div class="tl-item">
+                                    <div class="tl-dot tl-pend"><svg viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="6" />
+                                        </svg></div>
+                                    <div class="tl-body">
+                                        <div class="tl-title">Delivered</div>
+                                        <div class="tl-date">Estimated: Feb 23</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+                            <button class="btn btn-primary" onclick="showToast('Checkout initiated 🛒')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                                    height="14">
+                                    <circle cx="9" cy="21" r="1" />
+                                    <circle cx="20" cy="21" r="1" />
+                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                                </svg>View Cart (3 items)
+                            </button>
+                            <button class="btn btn-secondary" onclick="showToast('Cart cleared')">Clear Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════
+         PAGE 5: ANALYTICS
+    ═══════════════════════════════════════ -->
+            <div id="page-analytics" class="page">
+                <div class="sec-hd">
+                    <div>
+                        <div class="sec-title">Analytics &amp; Reports</div>
+                        <div class="sec-sub">Performance insights for your farm</div>
+                    </div>
+                    <div style="display:flex;gap:8px">
+                        <select class="filter-sel">
+                            <option>Last 7 Days</option>
+                            <option>This Month</option>
+                            <option>Last 3 Months</option>
+                            <option>This Year</option>
+                        </select>
+                        <button class="btn btn-secondary btn-sm" onclick="showToast('Downloading report…')">Export
+                            PDF</button>
+                    </div>
+                </div>
+
+                <div class="g4" style="margin-bottom:18px">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="kpi-lbl">FCR (Feed Conversion)</div>
+                            <div class="kpi-val" style="font-size:22px">1.82</div>
+                            <div class="kpi-sub" style="color:var(--g600)">↑ Better than 2.1 avg</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="kpi-lbl">Avg. Mortality Rate</div>
+                            <div class="kpi-val" style="font-size:22px">2.3%</div>
+                            <div class="kpi-sub" style="color:var(--g600)">↓ Down from 3.1%</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="kpi-lbl">Avg. Weight (Broiler)</div>
+                            <div class="kpi-val" style="font-size:22px">2.1 kg</div>
+                            <div class="kpi-sub" style="color:var(--g600)">↑ +0.2kg vs target</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="kpi-lbl">Revenue Per Bird</div>
+                            <div class="kpi-val" style="font-size:22px">KES 480</div>
+                            <div class="kpi-sub" style="color:var(--g600)">↑ Up 12% this month</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="g2" style="margin-bottom:18px">
+                    <div class="card">
+                        <div class="card-head">
+                            <div class="card-head-title">Monthly Revenue (KES)</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-wrap" style="height:180px">
+                                <div class="bar bar-g" style="height:45%"></div>
+                                <div class="bar bar-g" style="height:62%"></div>
+                                <div class="bar bar-g" style="height:55%"></div>
+                                <div class="bar bar-g" style="height:78%"></div>
+                                <div class="bar bar-g" style="height:68%"></div>
+                                <div class="bar bar-g" style="height:85%"></div>
+                                <div class="bar bar-g" style="height:96%"></div>
+                            </div>
+                            <div class="chart-labels">
+                                <span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head">
+                            <div class="card-head-title">Feed Efficiency &amp; Mortality</div>
+                        </div>
+                        <div class="card-body">
+                            <div style="display:flex;flex-direction:column;gap:14px">
+                                <div>
+                                    <div
+                                        style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+                                        <span>Starter Feed</span><span style="font-weight:600">840 kg</span></div>
+                                    <div class="prog">
+                                        <div class="prog-fill" style="width:84%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div
+                                        style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+                                        <span>Grower Feed</span><span style="font-weight:600">1,240 kg</span></div>
+                                    <div class="prog">
+                                        <div class="prog-fill" style="width:62%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div
+                                        style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+                                        <span>Finisher Feed</span><span style="font-weight:600">720 kg</span></div>
+                                    <div class="prog">
+                                        <div class="prog-fill" style="width:72%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div
+                                        style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+                                        <span>Mortality Rate</span><span
+                                            style="font-weight:600;color:var(--red)">2.3%</span></div>
+                                    <div class="prog">
+                                        <div class="prog-fill" style="width:23%;background:var(--red)"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <div class="card-head-title">Top Buyers This Month</div>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Buyer</th>
+                                    <th>Orders</th>
+                                    <th>Total Spent</th>
+                                    <th class="hide-sm">Most Ordered</th>
+                                    <th class="hide-sm">Last Order</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Amara Kioni</strong></td>
+                                    <td>12</td>
+                                    <td>KES 312,000</td>
+                                    <td class="hide-sm">Broilers</td>
+                                    <td class="hide-sm">Today</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Grace Njoroge</strong></td>
+                                    <td>8</td>
+                                    <td>KES 184,000</td>
+                                    <td class="hide-sm">Eggs</td>
+                                    <td class="hide-sm">Yesterday</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>David Mutua</strong></td>
+                                    <td>5</td>
+                                    <td>KES 92,000</td>
+                                    <td class="hide-sm">Chicks</td>
+                                    <td class="hide-sm">3 days ago</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Peter Otieno</strong></td>
+                                    <td>4</td>
+                                    <td>KES 74,500</td>
+                                    <td class="hide-sm">Layers</td>
+                                    <td class="hide-sm">5 days ago</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════
+         PAGE 6: ACCOUNT SETTINGS
+    ═══════════════════════════════════════ -->
+            <div id="page-settings" class="page">
+                <div class="sec-hd">
+                    <div>
+                        <div class="sec-title">Account Settings</div>
+                        <div class="sec-sub">Manage your profile, security, and preferences</div>
+                    </div>
+                </div>
+
+                <div class="stabs">
+                    <div class="stab active" onclick="switchTab(this,'tab-profile')">👤 Profile</div>
+                    <div class="stab" onclick="switchTab(this,'tab-security')">🔒 Security</div>
+                    <div class="stab" onclick="switchTab(this,'tab-payment')">💳 Payment</div>
+                    <div class="stab" onclick="switchTab(this,'tab-notifs')">🔔 Notifications</div>
+                </div>
+
+                <!-- PROFILE -->
+                <div id="tab-profile" class="spanel active">
+                    <div class="card">
+                        <div class="card-head">
+                            <div class="card-head-title">Farm Profile</div><button class="btn btn-primary btn-sm"
+                                onclick="showToast('✅ Profile saved!')">Save Changes</button>
+                        </div>
+                        <div class="card-body">
+                            <div
+                                style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid var(--border)">
+                                <div
+                                    style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--g600),var(--g200));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--g900);flex-shrink:0">
+                                    JM</div>
+                                <div>
+                                    <div style="font-weight:700;font-size:15px">John Mwangi</div>
+                                    <div style="font-size:11px;color:var(--t300);margin-bottom:8px">Sunrise Poultry Farm
+                                        · Kiambu County</div>
+                                    <button class="btn btn-secondary btn-sm"
+                                        onclick="showToast('Opening file picker…')">Change Photo</button>
+                                </div>
+                            </div>
+                            <div class="g2">
+                                <div class="form-grp"><label class="form-label">Full Name</label><input
+                                        class="form-input" value="John Mwangi"></div>
+                                <div class="form-grp"><label class="form-label">Farm Name</label><input
+                                        class="form-input" value="Sunrise Poultry Farm"></div>
+                                <div class="form-grp"><label class="form-label">Location</label><input
+                                        class="form-input" value="Kiambu County, Kenya"></div>
+                                <div class="form-grp"><label class="form-label">Phone Number</label><input
+                                        class="form-input" value="+254 712 000 001"></div>
+                                <div class="form-grp"><label class="form-label">Email Address</label><input
+                                        class="form-input" type="email" value="john.mwangi@farm.co.ke"></div>
+                                <div class="form-grp"><label class="form-label">Farm Size (acres)</label><input
+                                        class="form-input" value="4.5"></div>
+                            </div>
+                            <div class="form-grp" style="margin-top:14px"><label class="form-label">Farm
+                                    Description</label><textarea
+                                    class="form-textarea">Sunrise Poultry Farm is a family-run enterprise specializing in broiler and layer production. We supply fresh, healthy birds across Kiambu and Nairobi counties.</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECURITY -->
+                <div id="tab-security" class="spanel">
+                    <div class="g2">
+                        <div class="card">
+                            <div class="card-head">
+                                <div class="card-head-title">Change Password</div>
+                            </div>
+                            <div class="card-body">
+                                <div style="display:flex;flex-direction:column;gap:12px">
+                                    <div class="form-grp"><label class="form-label">Current Password</label><input
+                                            class="form-input" type="password" placeholder="••••••••"></div>
+                                    <div class="form-grp"><label class="form-label">New Password</label><input
+                                            class="form-input" type="password" placeholder="••••••••"></div>
+                                    <div class="form-grp"><label class="form-label">Confirm New Password</label><input
+                                            class="form-input" type="password" placeholder="••••••••"></div>
+                                    <button class="btn btn-primary" onclick="showToast('✅ Password updated!')">Update
+                                        Password</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-head">
+                                <div class="card-head-title">Two-Factor Authentication</div>
+                            </div>
+                            <div class="card-body">
+                                <div style="margin-bottom:16px">
+                                    <div style="font-size:13px;font-weight:600;margin-bottom:4px">2FA via SMS</div>
+                                    <div style="font-size:11px;color:var(--t300);margin-bottom:14px">Receive a one-time
+                                        code on your phone when signing in for extra security.</div>
+                                    <div style="display:flex;align-items:center;gap:12px">
+                                        <span id="tfa-lbl"
+                                            style="font-size:12px;font-weight:600;color:var(--t300)">Disabled</span>
+                                        <button class="tog off" id="tfa-tog" onclick="toggleTog('tfa-tog','tfa-lbl')">
+                                            <div class="tog-knob"></div>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div
+                                    style="background:var(--g50);border-radius:var(--rsm);padding:12px;font-size:12px;color:var(--t500)">
+                                    <strong>Linked phone:</strong> +254 712 000 001<br>
+                                    <button
+                                        style="background:none;border:none;color:var(--g800);font-weight:600;font-size:12px;cursor:pointer;padding:0;margin-top:6px"
+                                        onclick="showToast('Updating phone number…')">Change number →</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAYMENT -->
+                <div id="tab-payment" class="spanel">
+                    <div class="g2">
+                        <div>
+                            <div class="pay-card" style="margin-bottom:12px">
+                                <div style="font-size:11px;opacity:.7">Primary Account</div>
+                                <div class="pay-card-num">•••• •••• •••• 4521</div>
+                                <div style="display:flex;justify-content:space-between;align-items:flex-end">
+                                    <div>
+                                        <div class="pay-card-label">Cardholder</div>
+                                        <div class="pay-card-name">John Mwangi</div>
+                                    </div>
+                                    <div style="text-align:right">
+                                        <div class="pay-card-label">Expires</div>
+                                        <div class="pay-card-name">09/27</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                <button class="btn btn-secondary btn-sm" onclick="showToast('Adding payment method…')">+
+                                    Add Card</button>
+                                <button class="btn btn-danger btn-sm"
+                                    onclick="showToast('Removing card…')">Remove</button>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-head">
+                                <div class="card-head-title">M-Pesa Integration</div>
+                            </div>
+                            <div class="card-body">
+                                <div
+                                    style="display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:12px;background:var(--g50);border-radius:var(--rsm)">
+                                    <div style="font-size:28px">📱</div>
+                                    <div>
+                                        <div style="font-weight:700;font-size:13px">M-Pesa Mobile Money</div>
+                                        <div style="font-size:11px;color:var(--t300)">Linked to +254 712 000 001</div>
+                                    </div>
+                                    <span class="badge bg-green" style="margin-left:auto">Active</span>
+                                </div>
+                                <div class="form-grp" style="margin-bottom:12px"><label class="form-label">M-Pesa
+                                        Business Till No.</label><input class="form-input" value="542100"
+                                        placeholder="Enter till number"></div>
+                                <div class="form-grp"><label class="form-label">Paybill Account No.</label><input
+                                        class="form-input" value="JM-FARM-001" placeholder="Account number"></div>
+                                <button class="btn btn-primary" style="margin-top:12px;width:100%"
+                                    onclick="showToast('✅ M-Pesa settings saved!')">Save M-Pesa Settings</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NOTIFICATIONS -->
+                <div id="tab-notifs" class="spanel">
+                    <div class="card">
+                        <div class="card-head">
+                            <div class="card-head-title">Notification Preferences</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="toggle-wrap">
+                                <div class="toggle-info">
+                                    <div class="toggle-info-title">SMS Alerts</div>
+                                    <div class="toggle-info-sub">Receive critical farm alerts via SMS to your registered
+                                        phone</div>
+                                </div>
+                                <button class="tog on" id="sms-tog" onclick="toggleTog('sms-tog','sms-lbl')">
+                                    <div class="tog-knob"></div>
+                                </button>
+                            </div>
+                            <div class="toggle-wrap">
+                                <div class="toggle-info">
+                                    <div class="toggle-info-title">Email Notifications</div>
+                                    <div class="toggle-info-sub">Daily and weekly farm summary reports to your email
+                                    </div>
+                                </div>
+                                <button class="tog on" id="em-tog" onclick="toggleTog('em-tog','em-lbl')">
+                                    <div class="tog-knob"></div>
+                                </button>
+                            </div>
+                            <div class="toggle-wrap">
+                                <div class="toggle-info">
+                                    <div class="toggle-info-title">Order Alerts</div>
+                                    <div class="toggle-info-sub">Instant notification when a new order is placed or
+                                        updated</div>
+                                </div>
+                                <button class="tog on" id="ord-tog" onclick="toggleTog('ord-tog','ord-lbl')">
+                                    <div class="tog-knob"></div>
+                                </button>
+                            </div>
+                            <div class="toggle-wrap">
+                                <div class="toggle-info">
+                                    <div class="toggle-info-title">Low Stock Warnings</div>
+                                    <div class="toggle-info-sub">Alert when feed, medicines, or flock count drops below
+                                        threshold</div>
+                                </div>
+                                <button class="tog on" id="stk-tog" onclick="toggleTog('stk-tog','stk-lbl')">
+                                    <div class="tog-knob"></div>
+                                </button>
+                            </div>
+                            <div class="toggle-wrap">
+                                <div class="toggle-info">
+                                    <div class="toggle-info-title">Payment Confirmations</div>
+                                    <div class="toggle-info-sub">Notification when a buyer payment is confirmed or fails
+                                    </div>
+                                </div>
+                                <button class="tog on" id="pay-tog" onclick="toggleTog('pay-tog','pay-lbl')">
+                                    <div class="tog-knob"></div>
+                                </button>
+                            </div>
+                            <div class="toggle-wrap">
+                                <div class="toggle-info">
+                                    <div class="toggle-info-title">Supplier Offers</div>
+                                    <div class="toggle-info-sub">Promotions and deals from marketplace suppliers</div>
+                                </div>
+                                <button class="tog off" id="sup-tog" onclick="toggleTog('sup-tog','sup-lbl')">
+                                    <div class="tog-knob"></div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /content -->
+    </div><!-- /main -->
+
+    <!-- ════════ MODALS ════════ -->
+
+    <!-- Add Flock Modal -->
+    <div class="modal-bd" id="modal-flock" onclick="closeModalOnBack(event,'modal-flock')">
+        <div class="modal-box">
+            <div class="modal-head">
+                <div class="modal-title">Add New Flock Batch</div>
+                <button class="modal-close" onclick="closeModal('modal-flock')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="g2">
+                    <div class="form-grp"><label class="form-label">Bird Type *</label><select class="form-select"
+                            id="flockBirdType">
+                            <option value="">Select type</option>
+                            <option value="broiler">Broiler</option>
+                            <option value="layer">Layer</option>
+                            <option value="chick">Chick</option>
+                            <option value="kienyeji">Kienyeji</option>
+                            <option value="turkey">Turkey</option>
+                        </select></div>
+                    <div class="form-grp"><label class="form-label">Breed *</label><input class="form-input"
+                            id="flockBreed"
+                            placeholder="e.g. Ross 308, Isa Brown…"></div>
+                    <div class="form-grp"><label class="form-label">Quantity *</label><input class="form-input"
+                            id="flockQuantity"
+                            type="number" placeholder="Number of birds"></div>
+                    <div class="form-grp"><label class="form-label">Age (weeks) *</label><input class="form-input"
+                            id="flockAgeWeeks"
+                            type="number" placeholder="Current age in weeks"></div>
+                    <div class="form-grp"><label class="form-label">Health Status</label><select class="form-select"
+                            id="flockHealthStatus">
+                            <option value="healthy">Healthy</option>
+                            <option value="monitor">Monitor</option>
+                            <option value="sick">Sick</option>
+                            <option value="quarantine">Quarantine</option>
+                        </select></div>
+                    <div class="form-grp"><label class="form-label">Daily Feed Consumption (kg)</label><input
+                            class="form-input" id="flockDailyFeed" type="number" placeholder="kg per day"></div>
+                </div>
+                <div class="form-grp" style="margin-top:12px"><label class="form-label">Notes</label><textarea
+                        class="form-textarea" id="flockNotes" placeholder="Any additional notes about this batch…"></textarea></div>
+            </div>
+            <div class="modal-foot">
+                <button class="btn btn-secondary" onclick="closeModal('modal-flock')">Cancel</button>
+                <button class="btn btn-primary"
+                    onclick="createFlockFromModal()">Add Flock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-wrap" id="toastWrap"></div>
+
+    <script src="../../api-client.js"></script>
+    <script>
+        (function guardFarmerDashboard() {
+            const accessToken = localStorage.getItem('accessToken');
+            const role = localStorage.getItem('userRole');
+
+            if (!accessToken || !role || isTokenExpired(accessToken)) {
+                clearAuthAndRedirectToLogin();
+                return;
+            }
+
+            if (role !== 'farmer') {
+                redirectToRoleDashboard(role);
+            }
+        })();
+
+        function isTokenExpired(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+                const payload = JSON.parse(atob(padded));
+                if (!payload.exp) {
+                    return true;
+                }
+                return Date.now() >= payload.exp * 1000;
+            } catch {
+                return true;
+            }
+        }
+
+        function clearAuthAndRedirectToLogin() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userRole');
+            window.location.href = '../../auth/login/login.html';
+        }
+
+        function redirectToRoleDashboard(role) {
+            if (role === 'supplier') {
+                window.location.href = '../supplier-dashboard/supplier.html';
+                return;
+            }
+
+            if (role === 'buyer') {
+                window.location.href = '../buyer_dashboard/buyer.html';
+                return;
+            }
+
+            clearAuthAndRedirectToLogin();
+        }
+
+        function logout() {
+            clearAuthAndRedirectToLogin();
+        }
+
+        async function loadFarmerFlocks() {
+            const body = document.getElementById('live-flocks-body');
+            const message = document.getElementById('live-flock-message');
+
+            if (!body || typeof api === 'undefined') {
+                return;
+            }
+
+            body.innerHTML = '<tr><td colspan="8">Loading flocks...</td></tr>';
+            if (message) {
+                message.textContent = '';
+            }
+
+            try {
+                const flocks = await api.farmer.getFlocks();
+
+                if (!flocks.length) {
+                    body.innerHTML = '<tr><td colspan="8">No flocks found. Add your first flock using the modal.</td></tr>';
+                    return;
+                }
+
+                body.innerHTML = flocks.map((flock) => {
+                    const safeStatus = flock.health_status || 'healthy';
+                    return `
+                        <tr>
+                            <td><strong>#${flock.id}</strong></td>
+                            <td>${flock.bird_type}</td>
+                            <td>${flock.breed}</td>
+                            <td>${flock.quantity}</td>
+                            <td>${flock.age_weeks}</td>
+                            <td>${safeStatus}</td>
+                            <td>${Number(flock.daily_feed_kg || 0).toFixed(1)} kg</td>
+                            <td>
+                                <div style="display:flex;gap:6px">
+                                    <button class="btn btn-secondary btn-sm" onclick="quickEditFlock(${flock.id}, ${flock.quantity}, '${safeStatus}')">Edit</button>
+                                    <button class="btn btn-danger btn-sm" onclick="removeFlock(${flock.id})">Del</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                body.innerHTML = `<tr><td colspan="8">Failed to load flocks: ${error.message}</td></tr>`;
+            }
+        }
+
+        async function createFlockFromModal() {
+            const birdType = document.getElementById('flockBirdType')?.value || '';
+            const breed = document.getElementById('flockBreed')?.value?.trim() || '';
+            const quantityValue = document.getElementById('flockQuantity')?.value || '0';
+            const ageWeeksValue = document.getElementById('flockAgeWeeks')?.value || '0';
+            const healthStatus = document.getElementById('flockHealthStatus')?.value || 'healthy';
+            const feedValue = document.getElementById('flockDailyFeed')?.value || '0';
+            const notes = document.getElementById('flockNotes')?.value?.trim() || '';
+
+            const quantity = Number(quantityValue);
+            const ageWeeks = Number(ageWeeksValue);
+            const dailyFeed = Number(feedValue);
+
+            if (!birdType || !breed || !Number.isFinite(quantity) || quantity <= 0 || !Number.isFinite(ageWeeks) || ageWeeks < 0) {
+                showToast('Please provide valid bird type, breed, quantity, and age.');
+                return;
+            }
+
+            try {
+                await api.farmer.registerFlock({
+                    bird_type: birdType,
+                    breed,
+                    quantity,
+                    age_weeks: ageWeeks,
+                    health_status: healthStatus,
+                    daily_feed_kg: Number.isFinite(dailyFeed) ? dailyFeed : 0,
+                    notes: notes || null,
+                });
+
+                showToast('Flock created successfully.');
+                closeModal('modal-flock');
+                clearFlockModal();
+                await loadFarmerFlocks();
+            } catch (error) {
+                showToast(`Failed to create flock: ${error.message}`);
+            }
+        }
+
+        function clearFlockModal() {
+            const fields = ['flockBreed', 'flockQuantity', 'flockAgeWeeks', 'flockDailyFeed', 'flockNotes'];
+            fields.forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.value = '';
+                }
+            });
+            const birdType = document.getElementById('flockBirdType');
+            if (birdType) {
+                birdType.value = '';
+            }
+            const status = document.getElementById('flockHealthStatus');
+            if (status) {
+                status.value = 'healthy';
+            }
+        }
+
+        async function quickEditFlock(flockId, currentQuantity, currentStatus) {
+            const quantityInput = prompt('Update quantity', String(currentQuantity));
+            if (quantityInput === null) {
+                return;
+            }
+
+            const nextQuantity = Number(quantityInput);
+            if (!Number.isFinite(nextQuantity) || nextQuantity <= 0) {
+                showToast('Quantity must be a positive number.');
+                return;
+            }
+
+            const statusInput = prompt('Update health status (healthy/monitor/sick/quarantine)', currentStatus);
+            if (statusInput === null) {
+                return;
+            }
+
+            const normalizedStatus = statusInput.trim().toLowerCase();
+            const allowed = ['healthy', 'monitor', 'sick', 'quarantine'];
+            if (!allowed.includes(normalizedStatus)) {
+                showToast('Invalid status value.');
+                return;
+            }
+
+            try {
+                await api.farmer.updateFlock(flockId, {
+                    quantity: nextQuantity,
+                    health_status: normalizedStatus,
+                });
+                showToast('Flock updated.');
+                await loadFarmerFlocks();
+            } catch (error) {
+                showToast(`Failed to update flock: ${error.message}`);
+            }
+        }
+
+        async function removeFlock(flockId) {
+            const confirmed = confirm('Delete this flock?');
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                await api.farmer.deleteFlock(flockId);
+                showToast('Flock deleted.');
+                await loadFarmerFlocks();
+            } catch (error) {
+                showToast(`Failed to delete flock: ${error.message}`);
+            }
+        }
+
+        loadFarmerFlocks();
+        /* ── PAGE NAVIGATION ── */
+        const pageNames = { dashboard: 'Dashboard', flock: 'Flock Inventory', orders: 'Buyer Orders', market: 'Marketplace', analytics: 'Analytics', settings: 'Account Settings' };
+
+        function showPage(id, navEl) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const page = document.getElementById('page-' + id);
+            if (page) page.classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if (navEl) navEl.classList.add('active');
+            const bc = document.getElementById('bc');
+            if (bc) bc.textContent = pageNames[id] || id;
+            closeSidebar();
+            window.scrollTo(0, 0);
+
+            if (id === 'flock') {
+                loadFarmerFlocks();
+            }
+        }
+
+        /* ── SIDEBAR ── */
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('overlay');
+            sb.classList.toggle('open');
+            ov.classList.toggle('show');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        /* ── FILTER PILLS ── */
+        function toggleFilter(el) {
+            const parent = el.closest('.act-bar') || el.parentElement;
+            parent.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        /* ── MODAL ── */
+        function openModal(id) { document.getElementById(id).classList.add('open'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+        function closeModalOnBack(e, id) { if (e.target === e.currentTarget) closeModal(id); }
+
+        /* ── SETTINGS TABS ── */
+        function switchTab(el, panelId) {
+            el.closest('.stabs').querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            document.querySelectorAll('.spanel').forEach(p => p.classList.remove('active'));
+            const panel = document.getElementById(panelId);
+            if (panel) panel.classList.add('active');
+        }
+
+        /* ── TOGGLE ── */
+        function toggleTog(togId) {
+            const tog = document.getElementById(togId);
+            const isOn = tog.classList.contains('on');
+            tog.classList.toggle('on', !isOn);
+            tog.classList.toggle('off', isOn);
+            showToast(isOn ? '🔕 Notification disabled' : '✅ Notification enabled');
+        }
+
+        /* ── TOAST ── */
+        function showToast(msg) {
+            const wrap = document.getElementById('toastWrap');
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            wrap.appendChild(t);
+            setTimeout(() => {
+                t.style.opacity = '0';
+                t.style.transition = 'opacity .3s';
+                setTimeout(() => t.remove(), 300);
+            }, 2800);
+        }
+
+        /* ── KEYBOARD ── */
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-bd.open').forEach(m => m.classList.remove('open'));
+                closeSidebar();
+            }
+        });
+    </script>
+</body>
+
+</html>

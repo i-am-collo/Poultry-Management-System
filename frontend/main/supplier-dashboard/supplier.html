@@ -1,0 +1,2225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoultryHub — Supplier Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f4f7f4;
+            --surface: #ffffff;
+            --surface2: #edf3ed;
+            --border: #ccdece;
+            --accent: #1a6b3a;
+            --accent2: #e07b2a;
+            --accent3: #2a8a5e;
+            --muted: #7a9b82;
+            --text: #1a2e1f;
+            --text2: #4a7055;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Epilogue', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* ── Sidebar ── */
+        aside {
+            width: 260px;
+            min-height: 100vh;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 28px 24px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-mark {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+        }
+
+        .logo-sub {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        nav {
+            padding: 16px 12px;
+            flex: 1;
+        }
+
+        .nav-group-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            padding: 12px 12px 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            margin-bottom: 2px;
+            color: var(--text2);
+            font-size: 13.5px;
+            font-weight: 400;
+            position: relative;
+            user-select: none;
+        }
+
+        .nav-item:hover {
+            background: var(--surface2);
+            color: var(--text);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(26, 107, 58, 0.12) 0%, transparent 100%);
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            bottom: 6px;
+            width: 3px;
+            background: var(--accent);
+            border-radius: 0 3px 3px 0;
+        }
+
+        .nav-icon {
+            width: 18px;
+            height: 18px;
+            opacity: 0.8;
+            flex-shrink: 0;
+        }
+
+        .badge {
+            margin-left: auto;
+            background: var(--accent);
+            color: #fff;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 20px;
+        }
+
+        .sidebar-footer {
+            padding: 16px 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .supplier-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--surface2);
+            border-radius: 10px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #1a6b3a, #2a8a5e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'DM Serif Display', serif;
+            font-size: 15px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .supplier-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .supplier-role {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        /* ── Main ── */
+        main {
+            margin-left: 260px;
+            flex: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Top bar ── */
+        header {
+            padding: 20px 36px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--surface);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .page-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            color: var(--text);
+        }
+
+        .page-subtitle {
+            font-size: 12.5px;
+            color: var(--muted);
+            margin-top: 1px;
+        }
+
+        .header-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-family: 'Epilogue', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.18s ease;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text2);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--muted);
+            color: var(--text);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #145c2e;
+            transform: translateY(-1px);
+        }
+
+        /* ── Content ── */
+        .content {
+            padding: 32px 36px;
+            flex: 1;
+        }
+
+        /* ── Section visibility ── */
+        .section {
+            display: none;
+            animation: fadeUp 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── KPI Row ── */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .kpi-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .kpi-card:hover {
+            border-color: var(--muted);
+        }
+
+        .kpi-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .kpi-value {
+            font-family: 'DM Serif Display', serif;
+            font-size: 28px;
+            color: var(--text);
+        }
+
+        .kpi-change {
+            font-size: 11px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .up {
+            color: var(--accent);
+        }
+
+        .down {
+            color: #c03030;
+        }
+
+        .kpi-accent-bar {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 3px;
+            height: 100%;
+            border-radius: 0 12px 12px 0;
+        }
+
+        /* ── Grid layout ── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        /* ── Panel ── */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .panel-action {
+            font-size: 12px;
+            color: var(--accent);
+            cursor: pointer;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .panel-body {
+            padding: 0;
+        }
+
+        /* ── Table ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 11px 20px;
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--muted);
+            border-bottom: 1px solid var(--border);
+            font-weight: 400;
+        }
+
+        td {
+            padding: 13px 20px;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(204, 222, 206, 0.5);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(26, 107, 58, 0.03);
+        }
+
+        /* ── Status chips ── */
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-family: 'DM Mono', monospace;
+            font-weight: 500;
+        }
+
+        .chip-green {
+            background: rgba(26, 107, 58, 0.12);
+            color: #1a6b3a;
+        }
+
+        .chip-amber {
+            background: rgba(224, 123, 42, 0.13);
+            color: #b85d12;
+        }
+
+        .chip-blue {
+            background: rgba(42, 138, 94, 0.13);
+            color: #1a6b3a;
+        }
+
+        .chip-red {
+            background: rgba(200, 50, 50, 0.10);
+            color: #c03030;
+        }
+
+        .chip-gray {
+            background: rgba(0, 0, 0, 0.06);
+            color: var(--muted);
+        }
+
+        /* ── Catalog ── */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .catalog-item {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .catalog-item:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .catalog-img {
+            width: 100%;
+            height: 80px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            background: rgba(26, 107, 58, 0.06);
+        }
+
+        .catalog-name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .catalog-sku {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .catalog-price {
+            font-family: 'DM Serif Display', serif;
+            font-size: 18px;
+            color: var(--accent);
+        }
+
+        .catalog-stock {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .catalog-edit {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 28px;
+            height: 28px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .catalog-item:hover .catalog-edit {
+            opacity: 1;
+        }
+
+        /* ── Bar chart ── */
+        .bar-chart {
+            padding: 20px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 180px;
+        }
+
+        .bar-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            height: 100%;
+            justify-content: flex-end;
+        }
+
+        .bar {
+            width: 100%;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.4s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .bar:hover {
+            filter: brightness(1.15);
+            cursor: pointer;
+        }
+
+        .bar-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            color: var(--muted);
+        }
+
+        .bar-val {
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            color: var(--text2);
+            margin-bottom: 2px;
+        }
+
+        /* ── Progress ── */
+        .progress-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(204, 222, 206, 0.5);
+        }
+
+        .progress-row:last-child {
+            border-bottom: none;
+        }
+
+        .progress-label {
+            font-size: 13px;
+            flex: 1;
+        }
+
+        .progress-bar-wrap {
+            width: 120px;
+            height: 6px;
+            background: var(--surface2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .progress-pct {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--text2);
+            width: 36px;
+            text-align: right;
+        }
+
+        /* ── Timeline ── */
+        .timeline {
+            padding: 4px 20px 16px;
+        }
+
+        .tl-item {
+            display: flex;
+            gap: 14px;
+            padding: 12px 0;
+            position: relative;
+        }
+
+        .tl-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-top: 4px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tl-line {
+            position: absolute;
+            left: 4px;
+            top: 22px;
+            width: 2px;
+            background: var(--border);
+            bottom: 0;
+        }
+
+        .tl-item:last-child .tl-line {
+            display: none;
+        }
+
+        .tl-meta {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+            margin-bottom: 2px;
+        }
+
+        .tl-text {
+            font-size: 13px;
+        }
+
+        /* ── Client card ── */
+        .client-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            transition: all 0.2s;
+        }
+
+        .client-card:hover {
+            border-color: var(--accent3);
+            transform: translateY(-2px);
+        }
+
+        .client-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .client-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .client-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .client-location {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .client-stats {
+            display: flex;
+            gap: 16px;
+        }
+
+        .client-stat-val {
+            font-family: 'DM Serif Display', serif;
+            font-size: 16px;
+        }
+
+        .client-stat-label {
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        /* ── Inventory ── */
+        .inv-gauge {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding: 20px;
+        }
+
+        .inv-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .inv-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .inv-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .inv-count {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--text2);
+        }
+
+        .inv-bar-bg {
+            height: 8px;
+            background: var(--surface2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .inv-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* ── Settings form ── */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 11px;
+            font-family: 'DM Mono', monospace;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-input {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text);
+            font-family: 'Epilogue', sans-serif;
+            font-size: 13px;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent);
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .zone-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(42, 138, 94, 0.1);
+            color: var(--accent3);
+            border: 1px solid rgba(42, 138, 94, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 4px;
+        }
+
+        .zone-tag span {
+            cursor: pointer;
+            opacity: 0.6;
+        }
+
+        .zone-tag span:hover {
+            opacity: 1;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .payment-method.selected {
+            border-color: var(--accent);
+            background: rgba(26, 107, 58, 0.05);
+        }
+
+        .payment-method:hover {
+            border-color: var(--muted);
+        }
+
+        .pm-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--surface2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .pm-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .pm-detail {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .pm-check {
+            margin-left: auto;
+            color: var(--accent);
+            font-size: 16px;
+        }
+
+        .map-placeholder {
+            background: var(--surface2);
+            border-radius: 10px;
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            border: 1px dashed var(--border);
+            flex-direction: column;
+            gap: 8px;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+        }
+
+        /* ── Donut chart ── */
+        .donut-wrap {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 20px;
+        }
+
+        .donut {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
+        }
+
+        .donut svg {
+            transform: rotate(-90deg);
+        }
+
+        .donut-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .donut-pct {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+        }
+
+        .donut-label {
+            font-size: 9px;
+            color: var(--muted);
+            font-family: 'DM Mono', monospace;
+        }
+
+        .donut-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--surface2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--muted);
+            border-radius: 2px;
+        }
+
+        select option {
+            background: var(--surface);
+            color: var(--text);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── SIDEBAR ── -->
+    <aside>
+        <div class="logo">
+            <div class="logo-mark">🐔 PoultryPro</div>
+            <div class="logo-sub">Supplier Portal</div>
+        </div>
+
+        <nav>
+            <div class="nav-group-label">Catalog</div>
+            <div class="nav-item active" onclick="show('catalog', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg>
+                Manage Catalog
+            </div>
+
+            <div class="nav-group-label">Operations</div>
+            <div class="nav-item" onclick="show('orders', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                    <path d="M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    <polyline points="9 12 11 14 15 10" />
+                </svg>
+                Manage Orders
+                <span class="badge">9</span>
+            </div>
+            <div class="nav-item" onclick="show('inventory', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                Inventory Tracking
+            </div>
+
+            <div class="nav-group-label">Relationships</div>
+            <div class="nav-item" onclick="show('clients', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                    <path d="M16 3.13a4 4 0 010 7.75" />
+                </svg>
+                Client Network
+            </div>
+
+            <div class="nav-group-label">Analytics</div>
+            <div class="nav-item" onclick="show('reports', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg>
+                Sales Reports
+            </div>
+
+            <div class="nav-group-label">Account</div>
+            <div class="nav-item" onclick="show('settings', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M19.07 4.93a10 10 0 010 14.14M4.93 19.07a10 10 0 010-14.14" />
+                </svg>
+                Business Settings
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="supplier-card">
+                <div class="avatar">P</div>
+                <div>
+                    <div class="supplier-name">PrimeFlock Supplies</div>
+                    <div class="supplier-role">Verified Poultry Supplier</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <main>
+        <header>
+            <div>
+                <div class="page-title" id="page-title">Manage Catalog</div>
+                <div class="page-subtitle" id="page-subtitle">Manage your poultry feed, supplements, and equipment
+                    offerings. Update pricing and availability.</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-ghost">Export</button>
+                <button class="btn btn-primary" id="primary-btn">+ Add Product</button>
+            </div>
+        </header>
+
+        <div class="content">
+
+            <!-- ══ CATALOG ══ -->
+            <section class="section active" id="sec-catalog">
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent)"></div>
+                        <div class="kpi-label">Total Products</div>
+                        <div class="kpi-value">86</div>
+                        <div class="kpi-change up">↑ 4 added this month</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent2)"></div>
+                        <div class="kpi-label">Active Listings</div>
+                        <div class="kpi-value">74</div>
+                        <div class="kpi-change"><span style="color:var(--muted)">12 pending review</span></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent3)"></div>
+                        <div class="kpi-label">Avg. Price</div>
+                        <div class="kpi-value">$38</div>
+                        <div class="kpi-change up">↑ 2.8% vs last month</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--muted)"></div>
+                        <div class="kpi-label">Top Category</div>
+                        <div class="kpi-value" style="font-size:18px;margin-top:4px;">Layer Feed</div>
+                        <div class="kpi-change"><span style="color:var(--muted)">41% of catalog</span></div>
+                    </div>
+                </div>
+
+                <div class="panel" style="margin-bottom:20px">
+                    <div class="panel-header">
+                        <span class="panel-title">Live Product Manager (API)</span>
+                        <button class="btn btn-ghost" onclick="loadSupplierProducts()">Refresh</button>
+                    </div>
+                    <div style="padding:16px 20px">
+                        <div style="display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:8px;margin-bottom:12px">
+                            <input id="liveProductName" class="form-input" placeholder="Product name">
+                            <select id="liveProductCategory" class="form-input">
+                                <option value="feed">Feed</option>
+                                <option value="vaccine">Vaccine</option>
+                                <option value="equipment">Equipment</option>
+                                <option value="chicks">Chicks</option>
+                                <option value="eggs">Eggs</option>
+                                <option value="broilers">Broilers</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <input id="liveProductPrice" class="form-input" type="number" step="0.01" placeholder="Price">
+                            <input id="liveProductUnit" class="form-input" placeholder="Unit (bag, unit...)">
+                            <input id="liveProductStock" class="form-input" type="number" placeholder="Stock">
+                        </div>
+                        <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
+                            <input id="liveProductDescription" class="form-input" placeholder="Description (optional)"
+                                style="flex:1">
+                            <button class="btn btn-primary" onclick="createSupplierProduct()">Add Product</button>
+                        </div>
+                        <div id="liveSupplierMessage" style="font-size:12px;color:var(--muted);margin-bottom:10px;"></div>
+                        <div style="overflow-x:auto">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Unit</th>
+                                        <th>Stock</th>
+                                        <th>Active</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="live-products-body">
+                                    <tr>
+                                        <td colspan="8">Loading products...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title">Poultry Product Catalog</span>
+                        <div style="display:flex;gap:12px;align-items:center">
+                            <select
+                                style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;font-size:12px;outline:none;">
+                                <option>All Categories</option>
+                                <option>Layer Feed</option>
+                                <option>Broiler Feed</option>
+                                <option>Chick Starter</option>
+                                <option>Supplements</option>
+                                <option>Equipment</option>
+                                <option>Vaccines</option>
+                            </select>
+                            <span class="panel-action">View All →</span>
+                        </div>
+                    </div>
+                    <div class="catalog-grid">
+                        <div class="catalog-item">
+                            <div class="catalog-edit">✏️</div>
+                            <div class="catalog-img">🥚</div>
+                            <div class="catalog-name">Layer Mash Premium</div>
+                            <div class="catalog-sku">SKU: LFD-001</div>
+                            <div class="catalog-price">$28.00 <span
+                                    style="font-size:11px;color:var(--muted);font-family:'Epilogue'">/50kg bag</span>
+                            </div>
+                            <div class="catalog-stock"><span class="chip chip-green">In Stock</span> &nbsp;540 bags
+                            </div>
+                        </div>
+                        <div class="catalog-item">
+                            <div class="catalog-edit">✏️</div>
+                            <div class="catalog-img">🐣</div>
+                            <div class="catalog-name">Chick Starter Crumble</div>
+                            <div class="catalog-sku">SKU: CST-008</div>
+                            <div class="catalog-price">$32.50 <span
+                                    style="font-size:11px;color:var(--muted);font-family:'Epilogue'">/50kg bag</span>
+                            </div>
+                            <div class="catalog-stock"><span class="chip chip-green">In Stock</span> &nbsp;310 bags
+                            </div>
+                        </div>
+                        <div class="catalog-item">
+                            <div class="catalog-edit">✏️</div>
+                            <div class="catalog-img">🍗</div>
+                            <div class="catalog-name">Broiler Finisher Feed</div>
+                            <div class="catalog-sku">SKU: BRF-022</div>
+                            <div class="catalog-price">$26.00 <span
+                                    style="font-size:11px;color:var(--muted);font-family:'Epilogue'">/50kg bag</span>
+                            </div>
+                            <div class="catalog-stock"><span class="chip chip-amber">Limited</span> &nbsp;45 bags</div>
+                        </div>
+                        <div class="catalog-item">
+                            <div class="catalog-edit">✏️</div>
+                            <div class="catalog-img">💊</div>
+                            <div class="catalog-name">Newcastle Vaccine (100D)</div>
+                            <div class="catalog-sku">SKU: VAC-014</div>
+                            <div class="catalog-price">$14.00 <span
+                                    style="font-size:11px;color:var(--muted);font-family:'Epilogue'">/vial</span></div>
+                            <div class="catalog-stock"><span class="chip chip-red">Low Stock</span> &nbsp;18 vials</div>
+                        </div>
+                        <div class="catalog-item">
+                            <div class="catalog-edit">✏️</div>
+                            <div class="catalog-img">🌡️</div>
+                            <div class="catalog-name">Poultry Heat Lamp</div>
+                            <div class="catalog-sku">SKU: EQP-033</div>
+                            <div class="catalog-price">$54.00 <span
+                                    style="font-size:11px;color:var(--muted);font-family:'Epilogue'">/unit</span></div>
+                            <div class="catalog-stock"><span class="chip chip-green">In Stock</span> &nbsp;120 units
+                            </div>
+                        </div>
+                        <div class="catalog-item">
+                            <div class="catalog-edit">✏️</div>
+                            <div class="catalog-img">🧴</div>
+                            <div class="catalog-name">Calcium &amp; Vitamin D3 Mix</div>
+                            <div class="catalog-sku">SKU: SUP-009</div>
+                            <div class="catalog-price">$19.50 <span
+                                    style="font-size:11px;color:var(--muted);font-family:'Epilogue'">/5kg pack</span>
+                            </div>
+                            <div class="catalog-stock"><span class="chip chip-green">In Stock</span> &nbsp;230 packs
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ ORDERS ══ -->
+            <section class="section" id="sec-orders">
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent2)"></div>
+                        <div class="kpi-label">Pending Orders</div>
+                        <div class="kpi-value">9</div>
+                        <div class="kpi-change"><span style="color:var(--accent2)">Needs action</span></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent3)"></div>
+                        <div class="kpi-label">In Transit</div>
+                        <div class="kpi-value">21</div>
+                        <div class="kpi-change up">On schedule</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent)"></div>
+                        <div class="kpi-label">Delivered This Week</div>
+                        <div class="kpi-value">53</div>
+                        <div class="kpi-change up">↑ 14% vs last week</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:#c03030"></div>
+                        <div class="kpi-label">Issues / Returns</div>
+                        <div class="kpi-value">2</div>
+                        <div class="kpi-change down">1 spoilage claim open</div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title">Incoming Farm Orders</span>
+                        <span class="panel-action">Filter ↓</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Farmer / Farm</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span style="font-family:'DM Mono',monospace;font-size:11px;">#ORD-7201</span></td>
+                                <td>Amara Osei — SunRise Farm</td>
+                                <td>Layer Mash × 20 bags</td>
+                                <td style="font-family:'DM Serif Display',serif;">$560</td>
+                                <td style="color:var(--muted);font-size:12px;">Feb 17</td>
+                                <td><span class="chip chip-amber">Pending</span></td>
+                                <td><button class="btn btn-primary"
+                                        style="padding:5px 12px;font-size:11px;">Process</button></td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-family:'DM Mono',monospace;font-size:11px;">#ORD-7200</span></td>
+                                <td>Fatima Diallo — GoldenEgg Co.</td>
+                                <td>Chick Starter × 10, Vaccine × 5</td>
+                                <td style="font-family:'DM Serif Display',serif;">$395</td>
+                                <td style="color:var(--muted);font-size:12px;">Feb 17</td>
+                                <td><span class="chip chip-blue">Processing</span></td>
+                                <td><button class="btn btn-ghost"
+                                        style="padding:5px 12px;font-size:11px;">Track</button></td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-family:'DM Mono',monospace;font-size:11px;">#ORD-7199</span></td>
+                                <td>Kwame Asante — BroilerKing</td>
+                                <td>Broiler Finisher × 30 bags</td>
+                                <td style="font-family:'DM Serif Display',serif;">$780</td>
+                                <td style="color:var(--muted);font-size:12px;">Feb 16</td>
+                                <td><span class="chip chip-green">Delivered</span></td>
+                                <td><button class="btn btn-ghost"
+                                        style="padding:5px 12px;font-size:11px;">Invoice</button></td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-family:'DM Mono',monospace;font-size:11px;">#ORD-7198</span></td>
+                                <td>Nia Mensah — HenHouse Ltd.</td>
+                                <td>Heat Lamps × 4, Vit D3 × 6 packs</td>
+                                <td style="font-family:'DM Serif Display',serif;">$333</td>
+                                <td style="color:var(--muted);font-size:12px;">Feb 15</td>
+                                <td><span class="chip chip-amber">Pending</span></td>
+                                <td><button class="btn btn-primary"
+                                        style="padding:5px 12px;font-size:11px;">Process</button></td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-family:'DM Mono',monospace;font-size:11px;">#ORD-7197</span></td>
+                                <td>Kofi Boateng — FreePeck Farm</td>
+                                <td>Newcastle Vaccine × 12 vials</td>
+                                <td style="font-family:'DM Serif Display',serif;">$168</td>
+                                <td style="color:var(--muted);font-size:12px;">Feb 14</td>
+                                <td><span class="chip chip-red">Spoilage Claim</span></td>
+                                <td><button class="btn btn-ghost"
+                                        style="padding:5px 12px;font-size:11px;">Resolve</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ══ CLIENTS ══ -->
+            <section class="section" id="sec-clients">
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent3)"></div>
+                        <div class="kpi-label">Registered Farms</div>
+                        <div class="kpi-value">183</div>
+                        <div class="kpi-change up">↑ 11 new this month</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent)"></div>
+                        <div class="kpi-label">Active Farmers</div>
+                        <div class="kpi-value">141</div>
+                        <div class="kpi-change"><span style="color:var(--muted)">Ordered in last 30 days</span></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent2)"></div>
+                        <div class="kpi-label">Avg. Order Value</div>
+                        <div class="kpi-value">$274</div>
+                        <div class="kpi-change up">↑ 4.6% vs Q3</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--muted)"></div>
+                        <div class="kpi-label">Retention Rate</div>
+                        <div class="kpi-value">88%</div>
+                        <div class="kpi-change up">↑ Industry avg. 73%</div>
+                    </div>
+                </div>
+
+                <div class="grid-3">
+                    <div class="client-card">
+                        <div class="client-head">
+                            <div class="client-avatar" style="background:rgba(26,107,58,0.12)">🐔</div>
+                            <div>
+                                <div class="client-name">Amara Osei</div>
+                                <div class="client-location">📍 SunRise Farm, Kumasi</div>
+                            </div>
+                            <span class="chip chip-green" style="margin-left:auto">Active</span>
+                        </div>
+                        <div class="client-stats">
+                            <div>
+                                <div class="client-stat-val">$6,240</div>
+                                <div class="client-stat-label">Lifetime value</div>
+                            </div>
+                            <div>
+                                <div class="client-stat-val">24</div>
+                                <div class="client-stat-label">Orders</div>
+                            </div>
+                            <div>
+                                <div class="client-stat-val">3yr</div>
+                                <div class="client-stat-label">Partner</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="client-card">
+                        <div class="client-head">
+                            <div class="client-avatar" style="background:rgba(224,123,42,0.12)">🥚</div>
+                            <div>
+                                <div class="client-name">Fatima Diallo</div>
+                                <div class="client-location">📍 GoldenEgg Co., Dakar</div>
+                            </div>
+                            <span class="chip chip-blue" style="margin-left:auto">New</span>
+                        </div>
+                        <div class="client-stats">
+                            <div>
+                                <div class="client-stat-val">$790</div>
+                                <div class="client-stat-label">Lifetime value</div>
+                            </div>
+                            <div>
+                                <div class="client-stat-val">3</div>
+                                <div class="client-stat-label">Orders</div>
+                            </div>
+                            <div>
+                                <div class="client-stat-val">2mo</div>
+                                <div class="client-stat-label">Partner</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="client-card">
+                        <div class="client-head">
+                            <div class="client-avatar" style="background:rgba(42,138,94,0.12)">🍗</div>
+                            <div>
+                                <div class="client-name">Kwame Asante</div>
+                                <div class="client-location">📍 BroilerKing, Accra</div>
+                            </div>
+                            <span class="chip chip-green" style="margin-left:auto">Active</span>
+                        </div>
+                        <div class="client-stats">
+                            <div>
+                                <div class="client-stat-val">$18,900</div>
+                                <div class="client-stat-label">Lifetime value</div>
+                            </div>
+                            <div>
+                                <div class="client-stat-val">68</div>
+                                <div class="client-stat-label">Orders</div>
+                            </div>
+                            <div>
+                                <div class="client-stat-val">5yr</div>
+                                <div class="client-stat-label">Partner</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="client-card">
+                        <div class="client-head">
+                            <div class="client-avatar" style="background:rgba(122,155,130,0.15)">🐓</div>
+                            <div>
+                                <div class="client-name">Nia Mensah</div>
+                                <div class="client-location">📍 HenHouse Ltd., Tamale</div>
+                            </div>
+                            <span class="chip chip-amber" style="margin-left:auto">At Risk</span>
+                        </div>
+                        <div class="client-stats">
+                            <div>
+                                <div class="client-stat-val">$3,120</div>
+                                <div class="client-stat-label">Lifetime value</div>
+                            </div>
+                            <div>
+                                <div class="client-stat-val">12</div>
+                                <div class="client-stat-label">Orders</div>
+                            </div>
+                            <div>
+                                <div class="client-stat-val">2yr</div>
+                                <div class="client-stat-label">Partner</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="client-card">
+                        <div class="client-head">
+                            <div class="client-avatar" style="background:rgba(26,107,58,0.12)">🐔</div>
+                            <div>
+                                <div class="client-name">Kofi Boateng</div>
+                                <div class="client-location">📍 FreePeck Farm, Cape Coast</div>
+                            </div>
+                            <span class="chip chip-green" style="margin-left:auto">Active</span>
+                        </div>
+                        <div class="client-stats">
+                            <div>
+                                <div class="client-stat-val">$9,450</div>
+                                <div class="client-stat-label">Lifetime value</div>
+                            </div>
+                            <div>
+                                <div class="client-stat-val">37</div>
+                                <div class="client-stat-label">Orders</div>
+                            </div>
+                            <div>
+                                <div class="client-stat-val">4yr</div>
+                                <div class="client-stat-label">Partner</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="client-card"
+                        style="border-style:dashed;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;cursor:pointer;min-height:140px;">
+                        <div style="font-size:28px;">+</div>
+                        <div style="font-size:13px;color:var(--muted)">Invite New Farm</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ INVENTORY ══ -->
+            <section class="section" id="sec-inventory">
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent)"></div>
+                        <div class="kpi-label">SKUs Tracked</div>
+                        <div class="kpi-value">86</div>
+                        <div class="kpi-change"><span style="color:var(--muted)">Across 3 stores</span></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:#c03030"></div>
+                        <div class="kpi-label">Low Stock Alerts</div>
+                        <div class="kpi-value">5</div>
+                        <div class="kpi-change down">Needs restocking</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent2)"></div>
+                        <div class="kpi-label">Reorder Points Hit</div>
+                        <div class="kpi-value">3</div>
+                        <div class="kpi-change"><span style="color:var(--accent2)">POs suggested</span></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent3)"></div>
+                        <div class="kpi-label">Inventory Value</div>
+                        <div class="kpi-value">$142K</div>
+                        <div class="kpi-change up">↑ 3.4% this week</div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <span class="panel-title">Feed &amp; Supplies Stock Levels</span>
+                            <span class="panel-action">Set Reorder Points →</span>
+                        </div>
+                        <div class="inv-gauge">
+                            <div class="inv-row">
+                                <div class="inv-meta"><span class="inv-name">Layer Mash Premium</span><span
+                                        class="inv-count">540 / 800 bags</span></div>
+                                <div class="inv-bar-bg">
+                                    <div class="inv-bar-fill" style="width:67%;background:var(--accent)"></div>
+                                </div>
+                            </div>
+                            <div class="inv-row">
+                                <div class="inv-meta"><span class="inv-name">Chick Starter Crumble</span><span
+                                        class="inv-count">310 / 600 bags</span></div>
+                                <div class="inv-bar-bg">
+                                    <div class="inv-bar-fill" style="width:52%;background:var(--accent3)"></div>
+                                </div>
+                            </div>
+                            <div class="inv-row">
+                                <div class="inv-meta"><span class="inv-name">Broiler Finisher Feed</span><span
+                                        class="inv-count" style="color:var(--accent2)">45 / 600 bags</span></div>
+                                <div class="inv-bar-bg">
+                                    <div class="inv-bar-fill" style="width:7%;background:var(--accent2)"></div>
+                                </div>
+                            </div>
+                            <div class="inv-row">
+                                <div class="inv-meta"><span class="inv-name">Newcastle Vaccine</span><span
+                                        class="inv-count" style="color:#c03030">18 / 200 vials</span></div>
+                                <div class="inv-bar-bg">
+                                    <div class="inv-bar-fill" style="width:9%;background:#c03030"></div>
+                                </div>
+                            </div>
+                            <div class="inv-row">
+                                <div class="inv-meta"><span class="inv-name">Poultry Heat Lamps</span><span
+                                        class="inv-count">120 / 200 units</span></div>
+                                <div class="inv-bar-bg">
+                                    <div class="inv-bar-fill" style="width:60%;background:var(--accent)"></div>
+                                </div>
+                            </div>
+                            <div class="inv-row">
+                                <div class="inv-meta"><span class="inv-name">Calcium &amp; Vitamin D3 Mix</span><span
+                                        class="inv-count">230 / 400 packs</span></div>
+                                <div class="inv-bar-bg">
+                                    <div class="inv-bar-fill" style="width:57%;background:var(--accent3)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;gap:20px;">
+                        <div class="panel">
+                            <div class="panel-header"><span class="panel-title">Recent Stock Activity</span></div>
+                            <div class="timeline">
+                                <div class="tl-item">
+                                    <div class="tl-dot" style="background:var(--accent)"></div>
+                                    <div class="tl-line"></div>
+                                    <div>
+                                        <div class="tl-meta">Today, 08:30 AM</div>
+                                        <div class="tl-text">Received 200 bags Layer Mash — Store A, Accra</div>
+                                    </div>
+                                </div>
+                                <div class="tl-item">
+                                    <div class="tl-dot" style="background:#c03030"></div>
+                                    <div class="tl-line"></div>
+                                    <div>
+                                        <div class="tl-meta">Yesterday, 02:15 PM</div>
+                                        <div class="tl-text">⚠️ Low stock: Newcastle Vaccine below reorder point</div>
+                                    </div>
+                                </div>
+                                <div class="tl-item">
+                                    <div class="tl-dot" style="background:var(--accent3)"></div>
+                                    <div class="tl-line"></div>
+                                    <div>
+                                        <div class="tl-meta">Feb 15, 10:00 AM</div>
+                                        <div class="tl-text">Dispatched 30 bags Broiler Finisher to Kumasi depot</div>
+                                    </div>
+                                </div>
+                                <div class="tl-item">
+                                    <div class="tl-dot" style="background:var(--muted)"></div>
+                                    <div>
+                                        <div class="tl-meta">Feb 14, 01:45 PM</div>
+                                        <div class="tl-text">PO #PO-044 raised — 500 vials Newcastle Vaccine</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <div class="panel-header"><span class="panel-title">Storage Location Capacity</span></div>
+                            <div>
+                                <div class="progress-row">
+                                    <span class="progress-label">Store A — Accra</span>
+                                    <div class="progress-bar-wrap">
+                                        <div class="progress-bar" style="width:81%;background:var(--accent)"></div>
+                                    </div>
+                                    <span class="progress-pct">81%</span>
+                                </div>
+                                <div class="progress-row">
+                                    <span class="progress-label">Store B — Kumasi</span>
+                                    <div class="progress-bar-wrap">
+                                        <div class="progress-bar" style="width:63%;background:var(--accent3)"></div>
+                                    </div>
+                                    <span class="progress-pct">63%</span>
+                                </div>
+                                <div class="progress-row">
+                                    <span class="progress-label">Store C — Tamale</span>
+                                    <div class="progress-bar-wrap">
+                                        <div class="progress-bar" style="width:29%;background:var(--accent2)"></div>
+                                    </div>
+                                    <span class="progress-pct">29%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ REPORTS ══ -->
+            <section class="section" id="sec-reports">
+                <div class="kpi-row">
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent)"></div>
+                        <div class="kpi-label">Revenue (Feb)</div>
+                        <div class="kpi-value">$31,480</div>
+                        <div class="kpi-change up">↑ 19% vs Jan</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent2)"></div>
+                        <div class="kpi-label">Orders Completed</div>
+                        <div class="kpi-value">218</div>
+                        <div class="kpi-change up">↑ 12% vs Jan</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--accent3)"></div>
+                        <div class="kpi-label">Gross Margin</div>
+                        <div class="kpi-value">28.6%</div>
+                        <div class="kpi-change up">↑ 1.4 pts</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-accent-bar" style="background:var(--muted)"></div>
+                        <div class="kpi-label">YTD Revenue</div>
+                        <div class="kpi-value">$57,900</div>
+                        <div class="kpi-change"><span style="color:var(--muted)">Goal: $320K</span></div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <span class="panel-title">Monthly Revenue</span>
+                            <select
+                                style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:6px;font-size:11px;outline:none;">
+                                <option>2026</option>
+                                <option>2025</option>
+                            </select>
+                        </div>
+                        <div class="bar-chart" id="bar-chart"></div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header"><span class="panel-title">Revenue by Category</span></div>
+                        <div class="donut-wrap">
+                            <div class="donut">
+                                <svg width="100" height="100" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="38" fill="none" stroke="#ccdece" stroke-width="14" />
+                                    <circle cx="50" cy="50" r="38" fill="none" stroke="#1a6b3a" stroke-width="14"
+                                        stroke-dasharray="100 139" stroke-dashoffset="0" />
+                                    <circle cx="50" cy="50" r="38" fill="none" stroke="#e07b2a" stroke-width="14"
+                                        stroke-dasharray="62 177" stroke-dashoffset="-100" />
+                                    <circle cx="50" cy="50" r="38" fill="none" stroke="#2a8a5e" stroke-width="14"
+                                        stroke-dasharray="28 211" stroke-dashoffset="-162" />
+                                    <circle cx="50" cy="50" r="38" fill="none" stroke="#7a9b82" stroke-width="14"
+                                        stroke-dasharray="49 190" stroke-dashoffset="-190" />
+                                </svg>
+                                <div class="donut-center">
+                                    <div class="donut-pct">$31K</div>
+                                    <div class="donut-label">Feb</div>
+                                </div>
+                            </div>
+                            <div class="donut-legend">
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background:#1a6b3a"></div>Layer Feed &nbsp;<span
+                                        style="color:var(--muted);font-size:11px;">41%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background:#e07b2a"></div>Broiler Feed &nbsp;<span
+                                        style="color:var(--muted);font-size:11px;">25%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background:#2a8a5e"></div>Vaccines &nbsp;<span
+                                        style="color:var(--muted);font-size:11px;">12%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background:#7a9b82"></div>Equip &amp; Suppl.
+                                    &nbsp;<span style="color:var(--muted);font-size:11px;">22%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel" style="margin-top:20px">
+                    <div class="panel-header"><span class="panel-title">Top Performing Products</span></div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Units Sold</th>
+                                <th>Revenue</th>
+                                <th>Growth</th>
+                                <th>Margin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Layer Mash Premium</td>
+                                <td>460 bags</td>
+                                <td style="font-family:'DM Serif Display',serif;">$12,880</td>
+                                <td class="up">↑ 28%</td>
+                                <td><span class="chip chip-green">31%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Broiler Finisher Feed</td>
+                                <td>298 bags</td>
+                                <td style="font-family:'DM Serif Display',serif;">$7,748</td>
+                                <td class="up">↑ 15%</td>
+                                <td><span class="chip chip-green">29%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Chick Starter Crumble</td>
+                                <td>184 bags</td>
+                                <td style="font-family:'DM Serif Display',serif;">$5,980</td>
+                                <td class="up">↑ 21%</td>
+                                <td><span class="chip chip-amber">27%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Poultry Heat Lamp</td>
+                                <td>62 units</td>
+                                <td style="font-family:'DM Serif Display',serif;">$3,348</td>
+                                <td class="down">↓ 3%</td>
+                                <td><span class="chip chip-amber">24%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Newcastle Vaccine (100D)</td>
+                                <td>110 vials</td>
+                                <td style="font-family:'DM Serif Display',serif;">$1,540</td>
+                                <td class="up">↑ 44%</td>
+                                <td><span class="chip chip-green">48%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ══ SETTINGS ══ -->
+            <section class="section" id="sec-settings">
+                <div class="grid-2" style="gap:20px; align-items:start">
+                    <div style="display:flex;flex-direction:column;gap:20px;">
+                        <div class="panel">
+                            <div class="panel-header"><span class="panel-title">Company Profile</span></div>
+                            <div class="settings-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Company Name</label>
+                                    <input class="form-input" value="PrimeFlock Supplies Ltd." type="text">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Registration No.</label>
+                                    <input class="form-input" value="GH-BUS-20211047" type="text">
+                                </div>
+                                <div class="form-group full">
+                                    <label class="form-label">Business Address</label>
+                                    <input class="form-input" value="22 Poultry Lane, Kumasi, Ashanti Region, Ghana"
+                                        type="text">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Phone</label>
+                                    <input class="form-input" value="+233 20 812 3344" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input class="form-input" value="orders@primeflock.gh" type="email">
+                                </div>
+                                <div class="form-group full" style="padding:0 0 8px 0">
+                                    <button class="btn btn-primary" style="margin-top:8px;width:fit-content">Save
+                                        Profile</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header"><span class="panel-title">Delivery Zones</span></div>
+                            <div style="padding:16px 20px">
+                                <div style="margin-bottom:12px;">
+                                    <div class="zone-tag">Greater Accra <span>✕</span></div>
+                                    <div class="zone-tag">Ashanti <span>✕</span></div>
+                                    <div class="zone-tag">Northern <span>✕</span></div>
+                                    <div class="zone-tag">Eastern <span>✕</span></div>
+                                    <div class="zone-tag">Brong-Ahafo <span>✕</span></div>
+                                </div>
+                                <div style="display:flex;gap:8px;margin-top:14px;">
+                                    <input class="form-input" placeholder="Add delivery region..." style="flex:1">
+                                    <button class="btn btn-primary">Add</button>
+                                </div>
+                                <div class="map-placeholder" style="margin-top:16px">
+                                    <span style="font-size:24px">🗺️</span>
+                                    <span>Interactive delivery zone map — coming soon</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;gap:20px;">
+                        <div class="panel">
+                            <div class="panel-header"><span class="panel-title">Payment Methods</span></div>
+                            <div style="padding:16px 20px">
+                                <div class="payment-method selected" onclick="selectPM(this)">
+                                    <div class="pm-icon">🏦</div>
+                                    <div>
+                                        <div class="pm-name">Bank Transfer</div>
+                                        <div class="pm-detail">Stanbic Bank — ••• 6614</div>
+                                    </div>
+                                    <div class="pm-check">✓</div>
+                                </div>
+                                <div class="payment-method" onclick="selectPM(this)">
+                                    <div class="pm-icon">📱</div>
+                                    <div>
+                                        <div class="pm-name">Mobile Money</div>
+                                        <div class="pm-detail">MTN MoMo — +233 20 812 3344</div>
+                                    </div>
+                                    <div class="pm-check" style="display:none">✓</div>
+                                </div>
+                                <div class="payment-method" onclick="selectPM(this)">
+                                    <div class="pm-icon">💳</div>
+                                    <div>
+                                        <div class="pm-name">Card on File</div>
+                                        <div class="pm-detail">Visa ••• 8820 — Exp 11/28</div>
+                                    </div>
+                                    <div class="pm-check" style="display:none">✓</div>
+                                </div>
+                                <button class="btn btn-ghost"
+                                    style="width:100%;margin-top:8px;justify-content:center;display:flex">+ Add Payment
+                                    Method</button>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header"><span class="panel-title">Preferences</span></div>
+                            <div style="padding:16px 20px;display:flex;flex-direction:column;gap:14px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <div>
+                                        <div style="font-size:13px;font-weight:500">Order Notifications</div>
+                                        <div style="font-size:11px;color:var(--muted);margin-top:2px">Email & SMS for
+                                            new farm orders</div>
+                                    </div>
+                                    <div class="toggle on" onclick="toggleSwitch(this)"
+                                        style="width:40px;height:22px;background:var(--accent);border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s">
+                                        <div
+                                            style="width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:2px;right:2px;transition:right 0.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <div>
+                                        <div style="font-size:13px;font-weight:500">Vaccine Expiry Alerts</div>
+                                        <div style="font-size:11px;color:var(--muted);margin-top:2px">Notify 30 days
+                                            before batch expiry</div>
+                                    </div>
+                                    <div class="toggle on" onclick="toggleSwitch(this)"
+                                        style="width:40px;height:22px;background:var(--accent);border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s">
+                                        <div
+                                            style="width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:2px;right:2px;transition:right 0.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <div>
+                                        <div style="font-size:13px;font-weight:500">Auto-accept Bulk Feed Orders</div>
+                                        <div style="font-size:11px;color:var(--muted);margin-top:2px">Orders ≥10 bags
+                                            auto-confirmed</div>
+                                    </div>
+                                    <div class="toggle" onclick="toggleSwitch(this)"
+                                        style="width:40px;height:22px;background:var(--surface2);border:1px solid var(--border);border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s">
+                                        <div
+                                            style="width:18px;height:18px;background:var(--muted);border-radius:50%;position:absolute;top:2px;left:2px;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <div>
+                                        <div style="font-size:13px;font-weight:500">Weekly Flock Health Report</div>
+                                        <div style="font-size:11px;color:var(--muted);margin-top:2px">Summary emailed
+                                            every Monday 7am</div>
+                                    </div>
+                                    <div class="toggle on" onclick="toggleSwitch(this)"
+                                        style="width:40px;height:22px;background:var(--accent);border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s">
+                                        <div
+                                            style="width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:2px;right:2px;transition:right 0.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="../../api-client.js"></script>
+    <script>
+        (function guardSupplierDashboard() {
+            const accessToken = localStorage.getItem('accessToken');
+            const role = localStorage.getItem('userRole');
+
+            if (!accessToken || !role || isTokenExpired(accessToken)) {
+                clearAuthAndRedirectToLogin();
+                return;
+            }
+
+            if (role !== 'supplier') {
+                redirectToRoleDashboard(role);
+            }
+        })();
+
+        function isTokenExpired(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+                const payload = JSON.parse(atob(padded));
+                if (!payload.exp) {
+                    return true;
+                }
+                return Date.now() >= payload.exp * 1000;
+            } catch {
+                return true;
+            }
+        }
+
+        function clearAuthAndRedirectToLogin() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userRole');
+            window.location.href = '../../auth/login/login.html';
+        }
+
+        function redirectToRoleDashboard(role) {
+            if (role === 'farmer') {
+                window.location.href = '../farmer_dashboard/farmer.html';
+                return;
+            }
+
+            if (role === 'buyer') {
+                window.location.href = '../buyer_dashboard/buyer.html';
+                return;
+            }
+
+            clearAuthAndRedirectToLogin();
+        }
+
+        function logout() {
+            clearAuthAndRedirectToLogin();
+        }
+
+        let currentSectionKey = 'catalog';
+
+        async function loadSupplierProducts() {
+            const body = document.getElementById('live-products-body');
+            const message = document.getElementById('liveSupplierMessage');
+
+            if (!body || typeof api === 'undefined') {
+                return;
+            }
+
+            body.innerHTML = '<tr><td colspan="8">Loading products...</td></tr>';
+            if (message) {
+                message.textContent = '';
+            }
+
+            try {
+                const products = await api.supplier.getProducts();
+
+                if (!products.length) {
+                    body.innerHTML = '<tr><td colspan="8">No products found. Add your first product above.</td></tr>';
+                    return;
+                }
+
+                body.innerHTML = products.map((product) => `
+                    <tr>
+                        <td><strong>#${product.id}</strong></td>
+                        <td>${product.name}</td>
+                        <td>${product.category}</td>
+                        <td>${Number(product.price_per_unit || 0).toFixed(2)}</td>
+                        <td>${product.unit}</td>
+                        <td>${product.stock_quantity}</td>
+                        <td>${product.is_active ? 'Yes' : 'No'}</td>
+                        <td>
+                            <div style="display:flex;gap:6px">
+                                <button class="btn btn-ghost btn-sm" onclick="quickEditProduct(${product.id}, '${product.name.replace(/'/g, "\\'")}', ${product.price_per_unit}, ${product.stock_quantity}, ${product.is_active})">Edit</button>
+                                <button class="btn btn-danger btn-sm" onclick="removeProduct(${product.id})">Del</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                body.innerHTML = `<tr><td colspan="8">Failed to load products: ${error.message}</td></tr>`;
+            }
+        }
+
+        async function createSupplierProduct() {
+            const name = document.getElementById('liveProductName')?.value?.trim() || '';
+            const category = document.getElementById('liveProductCategory')?.value || 'other';
+            const price = Number(document.getElementById('liveProductPrice')?.value || 0);
+            const unit = document.getElementById('liveProductUnit')?.value?.trim() || 'unit';
+            const stock = Number(document.getElementById('liveProductStock')?.value || 0);
+            const description = document.getElementById('liveProductDescription')?.value?.trim() || '';
+
+            if (!name || !Number.isFinite(price) || price <= 0 || !Number.isFinite(stock) || stock < 0) {
+                showSupplierMessage('Provide valid name, price, and stock values.', true);
+                return;
+            }
+
+            try {
+                await api.supplier.addProduct({
+                    name,
+                    category,
+                    description: description || null,
+                    price_per_unit: price,
+                    unit,
+                    stock_quantity: stock,
+                });
+
+                clearSupplierForm();
+                showSupplierMessage('Product added successfully.');
+                await loadSupplierProducts();
+            } catch (error) {
+                showSupplierMessage(`Failed to add product: ${error.message}`, true);
+            }
+        }
+
+        async function quickEditProduct(productId, currentName, currentPrice, currentStock, isActive) {
+            const name = prompt('Update product name', currentName);
+            if (name === null) {
+                return;
+            }
+
+            const priceInput = prompt('Update price', String(currentPrice));
+            if (priceInput === null) {
+                return;
+            }
+            const price = Number(priceInput);
+
+            const stockInput = prompt('Update stock quantity', String(currentStock));
+            if (stockInput === null) {
+                return;
+            }
+            const stock = Number(stockInput);
+
+            if (!name.trim() || !Number.isFinite(price) || price <= 0 || !Number.isFinite(stock) || stock < 0) {
+                showSupplierMessage('Invalid values provided for update.', true);
+                return;
+            }
+
+            try {
+                await api.supplier.updateProduct(productId, {
+                    name: name.trim(),
+                    price_per_unit: price,
+                    stock_quantity: stock,
+                    is_active: Boolean(isActive),
+                });
+                showSupplierMessage('Product updated.');
+                await loadSupplierProducts();
+            } catch (error) {
+                showSupplierMessage(`Failed to update product: ${error.message}`, true);
+            }
+        }
+
+        async function removeProduct(productId) {
+            if (!confirm('Delete this product?')) {
+                return;
+            }
+
+            try {
+                await api.supplier.deleteProduct(productId);
+                showSupplierMessage('Product deleted.');
+                await loadSupplierProducts();
+            } catch (error) {
+                showSupplierMessage(`Failed to delete product: ${error.message}`, true);
+            }
+        }
+
+        function clearSupplierForm() {
+            ['liveProductName', 'liveProductPrice', 'liveProductUnit', 'liveProductStock', 'liveProductDescription'].forEach((id) => {
+                const field = document.getElementById(id);
+                if (field) {
+                    field.value = '';
+                }
+            });
+            const category = document.getElementById('liveProductCategory');
+            if (category) {
+                category.value = 'feed';
+            }
+        }
+
+        function showSupplierMessage(text, isError = false) {
+            const message = document.getElementById('liveSupplierMessage');
+            if (!message) {
+                return;
+            }
+            message.textContent = text;
+            message.style.color = isError ? '#c03030' : 'var(--accent)';
+        }
+
+        function handlePrimaryAction() {
+            if (currentSectionKey === 'catalog') {
+                createSupplierProduct();
+                return;
+            }
+            showSupplierMessage(`No API action configured for "${currentSectionKey}" yet.`);
+        }
+
+        loadSupplierProducts();
+
+        const pages = {
+            catalog: { title: 'Manage Catalog', subtitle: 'Manage your poultry feed, supplements, and equipment offerings. Update pricing and availability.', btn: '+ Add Product' },
+            orders: { title: 'Manage Orders', subtitle: 'View incoming farm orders, process requests, and track deliveries to poultry farmers.', btn: 'Export Orders' },
+            clients: { title: 'Client Network', subtitle: 'Connect with poultry farmers, view your client base, and build lasting farm partnerships.', btn: '+ Invite Farm' },
+            inventory: { title: 'Inventory Tracking', subtitle: 'Monitor feed and vaccine stock levels, set reorder points, and manage your storage locations.', btn: '+ Add Stock' },
+            reports: { title: 'Sales Reports', subtitle: 'Analyze sales performance, revenue trends, and identify growth opportunities across product lines.', btn: 'Export Report' },
+            settings: { title: 'Business Settings', subtitle: 'Update company profile, delivery zones, payment methods, and poultry supplier preferences.', btn: 'Save All' },
+        };
+
+        function show(key, el) {
+            currentSectionKey = key;
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('sec-' + key).classList.add('active');
+            const p = pages[key];
+            document.getElementById('page-title').textContent = p.title;
+            document.getElementById('page-subtitle').textContent = p.subtitle;
+            document.getElementById('primary-btn').textContent = p.btn;
+
+            if (key === 'catalog') {
+                loadSupplierProducts();
+            }
+        }
+
+        document.getElementById('primary-btn')?.addEventListener('click', handlePrimaryAction);
+
+        // Bar Chart
+        const months = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'];
+        const vals = [18200, 21400, 19600, 24800, 27100, 24300, 26420, 31480];
+        const max = Math.max(...vals);
+        const colors = ['var(--border)', 'var(--border)', 'var(--border)', 'var(--border)', 'var(--border)', 'var(--border)', 'var(--accent3)', 'var(--accent)'];
+
+        const chart = document.getElementById('bar-chart');
+        months.forEach((m, i) => {
+            const h = Math.round((vals[i] / max) * 120);
+            chart.innerHTML += `
+      <div class="bar-wrap">
+        <div class="bar-val">$${(vals[i] / 1000).toFixed(0)}K</div>
+        <div class="bar" style="height:${h}px;background:${colors[i]};" title="${m}: $${vals[i].toLocaleString()}"></div>
+        <div class="bar-label">${m}</div>
+      </div>`;
+        });
+
+        function selectPM(el) {
+            document.querySelectorAll('.payment-method').forEach(m => {
+                m.classList.remove('selected');
+                m.querySelector('.pm-check').style.display = 'none';
+            });
+            el.classList.add('selected');
+            el.querySelector('.pm-check').style.display = 'block';
+        }
+
+        function toggleSwitch(el) {
+            const ball = el.querySelector('div');
+            if (el.classList.contains('on')) {
+                el.classList.remove('on');
+                el.style.background = 'var(--surface2)';
+                el.style.border = '1px solid var(--border)';
+                ball.style.background = 'var(--muted)';
+                ball.style.right = '';
+                ball.style.left = '2px';
+            } else {
+                el.classList.add('on');
+                el.style.background = 'var(--accent)';
+                el.style.border = 'none';
+                ball.style.background = '#fff';
+                ball.style.left = '';
+                ball.style.right = '2px';
+            }
+        }
+    </script>
+</body>
+
+</html>

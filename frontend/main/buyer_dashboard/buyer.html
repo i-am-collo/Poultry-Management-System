@@ -1,0 +1,3070 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoultryHub— Buyer Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --green-deep: #1a3a2a;
+            --green-mid: #2d6a4f;
+            --green-bright: #40916c;
+            --green-light: #74c69d;
+            --green-pale: #d8f3dc;
+            --green-ghost: #f0faf3;
+            --sage: #b7c9b0;
+            --cream: #faf7f2;
+            --warm-white: #ffffff;
+            --earth: #8b7355;
+            --amber: #e9a224;
+            --amber-pale: #fef3d0;
+            --red-soft: #e05c5c;
+            --red-pale: #fde8e8;
+            --text-dark: #1c2b22;
+            --text-mid: #3d5247;
+            --text-light: #6b8a77;
+            --text-muted: #a0b4a8;
+            --border: #ddeae3;
+            --shadow-md: 0 4px 16px rgba(26, 58, 42, 0.10);
+            --shadow-lg: 0 8px 32px rgba(26, 58, 42, 0.14);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --sidebar-width: 220px;
+            --card: 166px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--green-deep);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-logo .brand {
+            font-family: 'DM Serif Display', serif;
+            font-size: 19px;
+            color: var(--green-light);
+        }
+
+        .sidebar-logo .sub {
+            font-size: 10px;
+            color: var(--sage);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 12px 0;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            padding: 8px 16px 4px;
+            font-size: 10px;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .nav-item.active {
+            background: rgba(64, 145, 108, 0.2);
+            color: var(--green-light);
+            font-weight: 500;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 4px;
+            bottom: 4px;
+            width: 3px;
+            background: var(--green-light);
+            border-radius: 0 2px 2px 0;
+        }
+
+        .nav-icon {
+            width: 17px;
+            height: 17px;
+            flex-shrink: 0;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--amber);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .sidebar-footer {
+            padding: 14px 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .buyer-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .buyer-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--green-bright), var(--green-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .buyer-name {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 500;
+        }
+
+        .buyer-role {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* ── MAIN ── */
+        .main {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: margin-left 0.3s;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            background: var(--warm-white);
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 16px;
+            color: var(--text-dark);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .search-bar {
+            flex: 0 1 230px;
+            min-width: 0;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 7px 10px 7px 32px;
+            border: 1.5px solid var(--border);
+            border-radius: 24px;
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--text-dark);
+            background: var(--green-ghost);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar input:focus {
+            border-color: var(--green-bright);
+            background: #fff;
+        }
+
+        .search-bar svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            width: 34px;
+            height: 34px;
+            border: none;
+            background: transparent;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            position: relative;
+            transition: background 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--green-ghost);
+            color: var(--green-mid);
+        }
+
+        .notif-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 7px;
+            height: 7px;
+            background: var(--amber);
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+
+        .cart-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--green-mid);
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-left: 4px;
+            flex-shrink: 0;
+        }
+
+        .cart-btn:hover {
+            background: var(--green-deep);
+        }
+
+        .cart-count {
+            background: var(--amber);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 10px;
+        }
+
+        /* ── CONTENT ── */
+        .content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        /* ── ALERTS ── */
+        .alerts-strip {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .alert-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-weight: 500;
+        }
+
+        .alert-pill svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .alert-pill.green {
+            background: var(--green-pale);
+            color: var(--green-mid);
+        }
+
+        .alert-pill.amber {
+            background: var(--amber-pale);
+            color: #9a6e00;
+        }
+
+        .alert-pill.red {
+            background: var(--red-pale);
+            color: var(--red-soft);
+        }
+
+        /* ── SECTION HEADER ── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 17px;
+            color: var(--text-dark);
+        }
+
+        .section-link {
+            font-size: 12px;
+            color: var(--green-bright);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .section-link:hover {
+            color: var(--green-mid);
+        }
+
+        /* ══ UNIVERSAL CARD GRID ══ */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(var(--card), 1fr));
+            gap: 12px;
+        }
+
+        /* ══ BASE SQUARE CARD ══ */
+        .sq {
+            width: 100%;
+            height: var(--card);
+            background: var(--warm-white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.2s, transform 0.18s;
+        }
+
+        .sq:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .sq::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .sq.c-green::before {
+            background: var(--green-bright);
+        }
+
+        .sq.c-amber::before {
+            background: var(--amber);
+        }
+
+        .sq.c-earth::before {
+            background: var(--earth);
+        }
+
+        .sq.c-sage::before {
+            background: var(--sage);
+        }
+
+        .sq.c-blue::before {
+            background: #3060c0;
+        }
+
+        .sq.c-gray::before {
+            background: var(--sage);
+        }
+
+        .sq.c-purple::before {
+            background: #7040c0;
+        }
+
+        /* Shared text classes */
+        .sq-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .sq-value {
+            font-family: 'DM Serif Display', serif;
+            font-size: 30px;
+            color: var(--text-dark);
+            line-height: 1;
+        }
+
+        .sq-sub {
+            font-size: 11px;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        .sq-trend {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 3px 7px;
+            border-radius: 10px;
+            align-self: flex-start;
+        }
+
+        .sq-trend.up {
+            background: var(--green-pale);
+            color: var(--green-mid);
+        }
+
+        .sq-trend.neutral {
+            background: var(--amber-pale);
+            color: #9a6e00;
+        }
+
+        .sq-emoji {
+            font-size: 20px;
+        }
+
+        .sq-id {
+            font-size: 9px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-top: 3px;
+        }
+
+        .sq-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
+            line-height: 1.3;
+            margin-top: 2px;
+        }
+
+        .sq-meta {
+            font-size: 10px;
+            color: var(--text-light);
+            margin-top: 1px;
+            line-height: 1.4;
+        }
+
+        /* Progress mini */
+        .prog-mini {
+            display: flex;
+            gap: 3px;
+            margin-top: 5px;
+        }
+
+        .prog-mini span {
+            flex: 1;
+            height: 3px;
+            border-radius: 2px;
+            background: var(--border);
+        }
+
+        .prog-mini span.done {
+            background: var(--green-bright);
+        }
+
+        .prog-mini span.act {
+            background: var(--amber);
+        }
+
+        /* Badges */
+        .stage-badge {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 3px 7px;
+            border-radius: 9px;
+            white-space: nowrap;
+        }
+
+        .stage-badge.processing {
+            background: var(--amber-pale);
+            color: #9a6e00;
+        }
+
+        .stage-badge.transit {
+            background: #e8f0ff;
+            color: #3060c0;
+        }
+
+        .stage-badge.ready {
+            background: var(--green-pale);
+            color: var(--green-mid);
+        }
+
+        .stage-badge.delivered {
+            background: #eee;
+            color: #666;
+        }
+
+        .pay-pill {
+            font-size: 9px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 8px;
+        }
+
+        .pay-pill.paid {
+            background: var(--green-pale);
+            color: var(--green-mid);
+        }
+
+        .pay-pill.pending {
+            background: var(--amber-pale);
+            color: #9a6e00;
+        }
+
+        /* Farm avatar */
+        .farm-av {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--green-bright), var(--green-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'DM Serif Display', serif;
+            font-size: 14px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        /* Farm action buttons */
+        .farm-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .farm-btn {
+            flex: 1;
+            height: 26px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            color: var(--text-light);
+            font-size: 10px;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .farm-btn:hover {
+            border-color: var(--green-bright);
+            color: var(--green-bright);
+            background: var(--green-ghost);
+        }
+
+        .farm-btn svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        /* Product badge */
+        .prod-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 7px;
+            border-radius: 9px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .pb-eggs {
+            background: #fff4e0;
+            color: #c47c00;
+        }
+
+        .pb-chicks {
+            background: var(--green-pale);
+            color: var(--green-mid);
+        }
+
+        .pb-broilers {
+            background: #ffe8e8;
+            color: #c44040;
+        }
+
+        .pb-feed {
+            background: #e8f0ff;
+            color: #3060c0;
+        }
+
+        .pb-vaccines {
+            background: #f0e8ff;
+            color: #7040c0;
+        }
+
+        .health-tag {
+            font-size: 9px;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 8px;
+        }
+
+        .health-tag.good {
+            background: var(--green-pale);
+            color: var(--green-mid);
+        }
+
+        .health-tag.pend {
+            background: var(--amber-pale);
+            color: #9a6e00;
+        }
+
+        /* Product price row */
+        .prod-price {
+            font-family: 'DM Serif Display', serif;
+            font-size: 15px;
+            color: var(--green-deep);
+            line-height: 1;
+        }
+
+        .prod-unit {
+            font-size: 9px;
+            color: var(--text-muted);
+        }
+
+        .prod-avail {
+            font-size: 9px;
+            color: var(--text-light);
+            background: var(--green-ghost);
+            padding: 2px 5px;
+            border-radius: 7px;
+        }
+
+        /* Qty selector */
+        .qty-sel {
+            display: flex;
+            align-items: center;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .qty-b {
+            width: 20px;
+            height: 22px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-mid);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-b:hover {
+            background: var(--green-ghost);
+        }
+
+        .qty-n {
+            width: 24px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+            color: var(--text-dark);
+        }
+
+        /* Product CTA buttons */
+        .btn-buy {
+            flex: 1;
+            padding: 5px 4px;
+            background: var(--green-mid);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.18s;
+            white-space: nowrap;
+        }
+
+        .btn-buy:hover {
+            background: var(--green-deep);
+        }
+
+        .btn-res {
+            flex: 1;
+            padding: 5px 4px;
+            background: transparent;
+            color: var(--green-mid);
+            border: 1.5px solid var(--green-mid);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.18s;
+        }
+
+        .btn-res:hover {
+            background: var(--green-ghost);
+        }
+
+        .btn-msg-sq {
+            width: 24px;
+            height: 24px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            flex-shrink: 0;
+            transition: all 0.15s;
+        }
+
+        .btn-msg-sq:hover {
+            border-color: var(--green-bright);
+            color: var(--green-bright);
+        }
+
+        /* Message card unread */
+        .msg-dot {
+            position: absolute;
+            top: 11px;
+            right: 11px;
+            width: 7px;
+            height: 7px;
+            background: var(--green-mid);
+            border-radius: 50%;
+        }
+
+        .msg-preview {
+            font-size: 10px;
+            color: var(--text-light);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-top: 3px;
+        }
+
+        /* Reorder / reply / submit buttons */
+        .btn-sm {
+            width: 100%;
+            padding: 5px 0;
+            background: var(--green-ghost);
+            border: 1.5px solid var(--green-pale);
+            border-radius: 7px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--green-mid);
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .btn-sm:hover {
+            background: var(--green-pale);
+        }
+
+        .btn-sm.primary {
+            background: var(--green-mid);
+            color: #fff;
+            border-color: var(--green-mid);
+        }
+
+        .btn-sm.primary:hover {
+            background: var(--green-deep);
+        }
+
+        /* Stars */
+        .stars {
+            color: var(--amber);
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .star-row span {
+            font-size: 18px;
+            color: var(--amber);
+            cursor: pointer;
+        }
+
+        .star-row span.empty {
+            color: var(--border);
+        }
+
+        /* New review dashed card */
+        .sq-dashed {
+            width: 100%;
+            height: var(--card);
+            background: var(--green-ghost);
+            border: 2px dashed var(--green-light);
+            border-radius: var(--radius);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.18s;
+        }
+
+        .sq-dashed:hover {
+            background: var(--green-pale);
+            border-color: var(--green-bright);
+        }
+
+        /* Settings toggle */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .toggle {
+            width: 34px;
+            height: 18px;
+            border-radius: 9px;
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .toggle.on {
+            background: var(--green-mid);
+        }
+
+        .toggle.off {
+            background: var(--border);
+        }
+
+        .toggle-knob {
+            width: 14px;
+            height: 14px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            transition: left 0.2s;
+        }
+
+        .toggle.on .toggle-knob {
+            left: 17px;
+        }
+
+        .toggle.off .toggle-knob {
+            left: 2px;
+        }
+
+        /* Filters */
+        .filters-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .filter-chip {
+            padding: 5px 12px;
+            border-radius: 18px;
+            border: 1.5px solid var(--border);
+            background: var(--warm-white);
+            font-size: 12px;
+            color: var(--text-mid);
+            cursor: pointer;
+            transition: all 0.18s;
+            font-family: inherit;
+        }
+
+        .filter-chip:hover {
+            border-color: var(--green-light);
+            color: var(--green-mid);
+            background: var(--green-ghost);
+        }
+
+        .filter-chip.active {
+            border-color: var(--green-bright);
+            background: var(--green-pale);
+            color: var(--green-mid);
+            font-weight: 600;
+        }
+
+        .filter-select {
+            padding: 5px 22px 5px 10px;
+            border-radius: 18px;
+            border: 1.5px solid var(--border);
+            background: var(--warm-white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b8a77' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 7px center;
+            font-size: 12px;
+            color: var(--text-mid);
+            cursor: pointer;
+            font-family: inherit;
+            outline: none;
+            appearance: none;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(26, 58, 42, 0.4);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--warm-white);
+            border-radius: 16px;
+            width: 450px;
+            max-width: 95vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.25s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-head {
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 18px;
+        }
+
+        .modal-close {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: var(--green-ghost);
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 15px;
+            color: var(--text-mid);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            padding: 16px 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--green-ghost);
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .ci-icon {
+            font-size: 20px;
+        }
+
+        .ci-info {
+            flex: 1;
+        }
+
+        .ci-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .ci-meta {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        .ci-price {
+            font-family: 'DM Serif Display', serif;
+            font-size: 14px;
+            color: var(--green-deep);
+        }
+
+        .delivery-opts {
+            display: flex;
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .dopt {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s;
+        }
+
+        .dopt:hover {
+            border-color: var(--green-light);
+        }
+
+        .dopt.sel {
+            border-color: var(--green-bright);
+            background: var(--green-ghost);
+        }
+
+        .dopt-icon {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .dopt-label {
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .dopt-sub {
+            font-size: 10px;
+            color: var(--text-light);
+        }
+
+        .cost-box {
+            background: var(--green-ghost);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 12px 0;
+        }
+
+        .cost-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-mid);
+            margin-bottom: 5px;
+        }
+
+        .cost-row:last-child {
+            margin: 0;
+            padding-top: 8px;
+            border-top: 1px solid var(--border);
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .btn-checkout {
+            width: 100%;
+            padding: 11px;
+            background: var(--green-mid);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.18s;
+        }
+
+        .btn-checkout:hover {
+            background: var(--green-deep);
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            background: var(--green-deep);
+            color: #fff;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            animation: toastIn 0.25s ease;
+            max-width: 280px;
+        }
+
+        @keyframes toastIn {
+            from {
+                transform: translateX(40px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* ── PAGE SECTIONS ── */
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* ══════════════════════════════════════════
+   RESPONSIVE SYSTEM
+   Breakpoints:
+   1400px+ — large desktop (default)
+   1024–1399 — small desktop / landscape tablet
+   768–1023  — tablet portrait
+   480–767   — large mobile / phablet
+   <480      — small mobile
+══════════════════════════════════════════ */
+
+        /* ── 1400px+ (default already set above) ── */
+
+        /* ── SMALL DESKTOP / LANDSCAPE TABLET ── */
+        @media (max-width: 1280px) {
+            :root {
+                --card: 156px;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            :root {
+                --sidebar-width: 64px;
+                --card: 148px;
+            }
+
+            .sidebar-logo {
+                padding: 16px 10px 12px;
+                text-align: center;
+            }
+
+            .sidebar-logo .sub {
+                display: none;
+            }
+
+            .sidebar-logo .brand {
+                font-size: 20px;
+            }
+
+            .nav-item {
+                justify-content: center;
+                padding: 12px 8px;
+            }
+
+            .nav-item span {
+                display: none;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            .sidebar-footer {
+                padding: 10px;
+            }
+
+            .buyer-mini {
+                justify-content: center;
+            }
+
+            .buyer-name,
+            .buyer-role {
+                display: none;
+            }
+
+            .buyer-avatar {
+                margin: 0 auto;
+            }
+
+            .content {
+                padding: 16px;
+                gap: 18px;
+            }
+        }
+
+        /* ── TABLET PORTRAIT ── */
+        @media (max-width: 900px) {
+            :root {
+                --sidebar-width: 0px;
+                --card: 142px;
+            }
+
+            /* Sidebar becomes bottom navigation bar */
+            .sidebar {
+                width: 100% !important;
+                height: 58px;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                flex-direction: row;
+                align-items: center;
+                z-index: 150;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .sidebar-logo {
+                display: none;
+            }
+
+            .sidebar-nav {
+                flex: 1;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-around;
+                padding: 0;
+                overflow: visible;
+            }
+
+            .nav-section {
+                display: none;
+            }
+
+            .nav-item {
+                flex-direction: column;
+                gap: 3px;
+                padding: 6px 4px;
+                flex: 1;
+                justify-content: center;
+                font-size: 9px;
+                color: rgba(255, 255, 255, 0.55);
+            }
+
+            .nav-item span {
+                display: block !important;
+                font-size: 9px;
+                white-space: nowrap;
+            }
+
+            .nav-item.active::before {
+                top: 0;
+                bottom: auto;
+                left: 20%;
+                right: 20%;
+                width: auto;
+                height: 2px;
+                border-radius: 0 0 2px 2px;
+            }
+
+            .nav-badge {
+                display: flex !important;
+                position: absolute;
+                top: 4px;
+                right: 4px;
+                min-width: 14px;
+                height: 14px;
+                padding: 0 3px;
+                font-size: 8px;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .nav-icon {
+                width: 20px;
+                height: 20px;
+            }
+
+            .sidebar-footer {
+                display: none;
+            }
+
+            /* Main adjusts for bottom nav */
+            .main {
+                margin-left: 0 !important;
+                padding-bottom: 58px;
+            }
+
+            /* Topbar adjustments */
+            .topbar {
+                padding: 0 14px;
+                height: 52px;
+            }
+
+            .topbar-title {
+                font-size: 15px;
+            }
+
+            /* Content */
+            .content {
+                padding: 14px;
+                gap: 16px;
+            }
+        }
+
+        /* ── LARGE MOBILE / PHABLET ── */
+        @media (max-width: 700px) {
+            :root {
+                --card: 130px;
+            }
+
+            .topbar {
+                gap: 8px;
+                padding: 0 12px;
+            }
+
+            .topbar-title {
+                display: none;
+            }
+
+            .search-bar {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .search-bar input {
+                font-size: 12px;
+                padding: 7px 8px 7px 28px;
+            }
+
+            .cart-btn {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+
+            .content {
+                padding: 12px;
+                gap: 14px;
+            }
+
+            .section-title {
+                font-size: 15px;
+            }
+
+            .card-grid {
+                gap: 10px;
+            }
+
+            /* Alerts wrap onto 2 lines naturally */
+            .alerts-strip {
+                flex-wrap: wrap;
+                gap: 6px;
+                overflow-x: visible;
+            }
+
+            .alert-pill {
+                font-size: 10px;
+                padding: 5px 10px;
+            }
+        }
+
+        /* ── SMALL MOBILE ── */
+        @media (max-width: 480px) {
+            :root {
+                --card: calc(50vw - 18px);
+            }
+
+            .topbar {
+                height: 48px;
+                padding: 0 10px;
+                gap: 6px;
+            }
+
+            .search-bar input {
+                font-size: 11px;
+                padding: 6px 8px 6px 26px;
+            }
+
+            .icon-btn {
+                width: 30px;
+                height: 30px;
+            }
+
+            .cart-btn {
+                padding: 5px 8px;
+                font-size: 11px;
+                gap: 4px;
+            }
+
+            .cart-btn svg {
+                display: none;
+            }
+
+            .content {
+                padding: 10px;
+                gap: 12px;
+            }
+
+            .card-grid {
+                gap: 8px;
+            }
+
+            .section-title {
+                font-size: 14px;
+            }
+
+            .section-link {
+                font-size: 11px;
+            }
+
+            /* Alerts: horizontal scroll on tiny screens */
+            .alerts-strip {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+
+            /* Filters wrap and allow scroll */
+            .filters-bar {
+                gap: 6px;
+            }
+
+            .filter-chip {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+
+            .filter-select {
+                font-size: 11px;
+            }
+
+            /* Product cards: 2 per row */
+            .sq {
+                padding: 10px;
+            }
+
+            .sq-name {
+                font-size: 11px;
+            }
+
+            .sq-meta {
+                font-size: 9px;
+            }
+
+            .sq-value {
+                font-size: 24px;
+            }
+
+            .sq-label {
+                font-size: 9px;
+            }
+
+            .sq-sub {
+                font-size: 10px;
+            }
+
+            /* Hide less critical product info on tiny screens */
+            .prod-badge {
+                font-size: 8px;
+                padding: 2px 5px;
+            }
+
+            .health-tag {
+                font-size: 8px;
+                padding: 2px 4px;
+            }
+
+            .prod-price {
+                font-size: 13px;
+            }
+
+            .prod-unit,
+            .prod-avail {
+                font-size: 8px;
+            }
+
+            .qty-sel .qty-b {
+                width: 18px;
+                height: 20px;
+                font-size: 12px;
+            }
+
+            .qty-sel .qty-n {
+                width: 20px;
+                font-size: 10px;
+            }
+
+            .btn-buy,
+            .btn-res {
+                font-size: 9px;
+                padding: 4px 2px;
+            }
+
+            .btn-msg-sq {
+                width: 20px;
+                height: 20px;
+            }
+
+            .btn-msg-sq svg {
+                width: 8px;
+                height: 8px;
+            }
+
+            /* Farm buttons */
+            .farm-btn {
+                font-size: 9px;
+                height: 24px;
+            }
+
+            .farm-btn svg {
+                display: none;
+            }
+
+            .farm-av {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+            }
+
+            /* Stage badges */
+            .stage-badge {
+                font-size: 8px;
+                padding: 2px 5px;
+            }
+
+            .pay-pill {
+                font-size: 8px;
+                padding: 1px 5px;
+            }
+
+            /* Toast goes full width on small mobile */
+            .toast-container {
+                left: 10px;
+                right: 10px;
+                bottom: 68px;
+            }
+
+            .toast {
+                max-width: 100%;
+            }
+
+            /* Modal full screen on mobile */
+            .modal {
+                width: 100%;
+                max-width: 100%;
+                border-radius: 16px 16px 0 0;
+                position: fixed;
+                bottom: 58px;
+                left: 0;
+                right: 0;
+                max-height: 80vh;
+            }
+
+            .modal-overlay {
+                align-items: flex-end;
+            }
+        }
+
+        /* ── ULTRA SMALL (< 360px) ── */
+        @media (max-width: 360px) {
+            :root {
+                --card: calc(50vw - 15px);
+            }
+
+            .content {
+                padding: 8px;
+                gap: 10px;
+            }
+
+            .card-grid {
+                gap: 6px;
+            }
+
+            .sq {
+                padding: 8px;
+            }
+
+            .nav-item span {
+                display: none !important;
+            }
+
+            .nav-item {
+                padding: 8px 2px;
+            }
+
+            .nav-icon {
+                width: 22px;
+                height: 22px;
+            }
+        }
+
+        /* ── LANDSCAPE MOBILE (short viewport) ── */
+        @media (max-height: 500px) and (max-width: 900px) {
+            .sidebar {
+                height: 50px;
+            }
+
+            .nav-item span {
+                display: none !important;
+            }
+
+            .nav-item {
+                padding: 8px;
+            }
+
+            .main {
+                padding-bottom: 50px;
+            }
+
+            .topbar {
+                height: 44px;
+            }
+
+            .content {
+                padding: 8px;
+                gap: 10px;
+            }
+
+            .toast-container {
+                bottom: 55px;
+            }
+        }
+
+        /* ── LARGE SCREENS (1600px+) ── */
+        @media (min-width: 1600px) {
+            :root {
+                --card: 180px;
+            }
+
+            .content {
+                padding: 28px 32px;
+                gap: 28px;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+        }
+
+        @media (min-width: 1920px) {
+            :root {
+                --card: 200px;
+                --sidebar-width: 240px;
+            }
+
+            .content {
+                padding: 32px 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="brand">🐓 PoultryHub</div>
+            <div class="sub">Buyer Dashboard</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">Main</div>
+            <div class="nav-item active" onclick="showPage('dashboard',this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="showPage('products',this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+                    <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+                </svg>
+                <span>Poultry Products</span>
+            </div>
+            <div class="nav-item" onclick="showPage('orders',this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+                    <rect x="9" y="3" width="6" height="4" rx="1" />
+                    <path d="M9 12h6M9 16h4" />
+                </svg>
+                <span>My Orders</span><span class="nav-badge">3</span>
+            </div>
+            <div class="nav-item" onclick="showPage('farms',this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                <span>Farms</span>
+            </div>
+            <div class="nav-section">Communication</div>
+            <div class="nav-item" onclick="showPage('messages',this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                <span>Messages</span><span class="nav-badge">5</span>
+            </div>
+            <div class="nav-item" onclick="showPage('reviews',this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon
+                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+                <span>Reviews</span>
+            </div>
+            <div class="nav-section">Account</div>
+            <div class="nav-item" onclick="showPage('settings',this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" />
+                </svg>
+                <span>Settings</span>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="buyer-mini">
+                <div class="buyer-avatar">AK</div>
+                <div>
+                    <div class="buyer-name">Amara Kioni</div>
+                    <div class="buyer-role">Verified Buyer</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+        <header class="topbar">
+            <div class="topbar-title">Overview</div>
+            <div class="search-bar">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                </svg>
+                <input type="text" placeholder="Search eggs, chicks, feed…">
+            </div>
+            <div class="topbar-actions">
+                <button class="icon-btn" onclick="showToast('🔔 3 new stock alerts')">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                    </svg>
+                    <span class="notif-dot"></span>
+                </button>
+                <button class="icon-btn">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    <span class="notif-dot"></span>
+                </button>
+                <button class="cart-btn" onclick="openCart()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1" />
+                        <circle cx="20" cy="21" r="1" />
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                    </svg>
+                    Cart <span class="cart-count">4</span>
+                </button>
+                <div class="buyer-avatar" style="width:30px;height:30px;font-size:11px;cursor:pointer;margin-left:4px;">
+                    AK</div>
+            </div>
+        </header>
+
+        <div class="content">
+
+            <!-- ALERTS -->
+            <div class="alerts-strip">
+                <div class="alert-pill green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                        <polyline points="22 4 12 14.01 9 11.01" />
+                    </svg>Kiambu Fresh Farms: 500 crates ready</div>
+                <div class="alert-pill amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>KENBRO chicks — 200 left</div>
+                <div class="alert-pill green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>Order #PMS-2041 out for delivery</div>
+                <div class="alert-pill amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>Marek's vaccine in stock</div>
+                <div class="alert-pill red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="15" y1="9" x2="9" y2="15" />
+                        <line x1="9" y1="9" x2="15" y2="15" />
+                    </svg>Feed Package B — out of stock</div>
+            </div>
+
+            <!-- ═══ DASHBOARD ═══ -->
+            <div id="page-dashboard" class="page-section active">
+
+                <div class="section-header">
+                    <div class="section-title">Overview</div>
+                </div>
+                <div class="card-grid" style="margin-bottom:20px;">
+                    <div class="sq c-green">
+                        <div class="sq-label">Active Orders</div>
+                        <div class="sq-value">7</div>
+                        <div class="sq-sub">3 transit · 4 processing</div>
+                        <div class="sq-trend up">↑ 2 new</div>
+                    </div>
+                    <div class="sq c-amber">
+                        <div class="sq-label">Spent (Feb)</div>
+                        <div class="sq-value">84K</div>
+                        <div class="sq-sub">vs 67K last month</div>
+                        <div class="sq-trend up">↑ 25%</div>
+                    </div>
+                    <div class="sq c-earth">
+                        <div class="sq-label">Saved Farms</div>
+                        <div class="sq-value">12</div>
+                        <div class="sq-sub">4 with active batches</div>
+                        <div class="sq-trend neutral">2 new</div>
+                    </div>
+                    <div class="sq c-sage">
+                        <div class="sq-label">Deliveries</div>
+                        <div class="sq-value">15</div>
+                        <div class="sq-sub">Next: Tomorrow 8am</div>
+                        <div class="sq-trend up">On track</div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <div class="section-title">Active Orders</div><span class="section-link"
+                        onclick="showPage('orders',null)">View all →</span>
+                </div>
+                <div class="card-grid" style="margin-bottom:20px;">
+                    <div class="sq c-blue">
+                        <div>
+                            <div class="sq-emoji">🚚</div>
+                            <div class="sq-id">#PMS-2041</div>
+                            <div class="sq-name">Broiler Chicks × 300</div>
+                            <div class="sq-meta">Kiambu Fresh Farms</div>
+                            <div class="prog-mini"><span class="done"></span><span class="done"></span><span
+                                    class="act"></span><span></span></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                class="stage-badge transit">In Transit</span><span class="pay-pill paid">Paid</span>
+                        </div>
+                    </div>
+                    <div class="sq c-green">
+                        <div>
+                            <div class="sq-emoji">🥚</div>
+                            <div class="sq-id">#PMS-2038</div>
+                            <div class="sq-name">Grade A Eggs × 120</div>
+                            <div class="sq-meta">Valley Poultry Farm</div>
+                            <div class="prog-mini"><span class="done"></span><span class="done"></span><span
+                                    class="done"></span><span></span></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                class="stage-badge ready">Ready</span><span class="pay-pill paid">Paid</span></div>
+                    </div>
+                    <div class="sq c-amber">
+                        <div>
+                            <div class="sq-emoji">🌾</div>
+                            <div class="sq-id">#PMS-2035</div>
+                            <div class="sq-name">Starter Feed × 20 bags</div>
+                            <div class="sq-meta">Agro-Feeds Ltd</div>
+                            <div class="prog-mini"><span class="done"></span><span
+                                    class="act"></span><span></span><span></span></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                class="stage-badge processing">Processing</span><span
+                                class="pay-pill pending">Pending</span></div>
+                    </div>
+                    <div class="sq c-gray">
+                        <div>
+                            <div class="sq-emoji">💉</div>
+                            <div class="sq-id">#PMS-2029</div>
+                            <div class="sq-name">Newcastle Vaccine × 1k</div>
+                            <div class="sq-meta">Valley Poultry Farm</div>
+                            <div class="prog-mini"><span class="done"></span><span class="done"></span><span
+                                    class="done"></span><span class="done"></span></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                class="stage-badge delivered">Delivered</span><span class="pay-pill paid">Paid</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <div class="section-title">My Farms</div><span class="section-link"
+                        onclick="showPage('farms',null)">View all →</span>
+                </div>
+                <div class="card-grid" style="margin-bottom:20px;">
+                    <div class="sq" style="border-top:3px solid var(--green-bright);">
+                        <div>
+                            <div class="farm-av">KF</div>
+                            <div class="sq-name" style="margin-top:6px;">Kiambu Fresh Farms</div>
+                            <div class="sq-meta">Broilers · Eggs · Chicks<br>Kiambu County</div>
+                            <div style="font-size:10px;color:var(--amber);font-weight:600;margin-top:3px;">★ 4.8 <span
+                                    style="color:var(--text-muted);font-weight:400">(142)</span></div>
+                        </div>
+                        <div class="farm-btns"><button class="farm-btn" onclick="showToast('💬 Chat with Kiambu')"><svg
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>Chat</button><button class="farm-btn"
+                                onclick="showToast('📞 +254 712 345 678')"><svg viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 19 19 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.27a16 16 0 0 0 6.29 6.29l1.42-1.35a2 2 0 0 1 2.11-.45 19 19 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>Call</button></div>
+                    </div>
+                    <div class="sq" style="border-top:3px solid var(--amber);">
+                        <div>
+                            <div class="farm-av" style="background:linear-gradient(135deg,#c47c00,#e9a224)">VP</div>
+                            <div class="sq-name" style="margin-top:6px;">Valley Poultry Farm</div>
+                            <div class="sq-meta">Eggs · Layers · Vaccines<br>Nakuru County</div>
+                            <div style="font-size:10px;color:var(--amber);font-weight:600;margin-top:3px;">★ 4.6 <span
+                                    style="color:var(--text-muted);font-weight:400">(98)</span></div>
+                        </div>
+                        <div class="farm-btns"><button class="farm-btn" onclick="showToast('💬 Chat with Valley')"><svg
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>Chat</button><button class="farm-btn"
+                                onclick="showToast('📞 +254 733 456 789')"><svg viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 19 19 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.27a16 16 0 0 0 6.29 6.29l1.42-1.35a2 2 0 0 1 2.11-.45 19 19 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>Call</button></div>
+                    </div>
+                    <div class="sq" style="border-top:3px solid #3060c0;">
+                        <div>
+                            <div class="farm-av" style="background:linear-gradient(135deg,#3060c0,#70a0e0)">AL</div>
+                            <div class="sq-name" style="margin-top:6px;">Agro-Feeds Ltd</div>
+                            <div class="sq-meta">Feeds · Supplements<br>Nairobi County</div>
+                            <div style="font-size:10px;color:var(--amber);font-weight:600;margin-top:3px;">★ 4.9 <span
+                                    style="color:var(--text-muted);font-weight:400">(215)</span></div>
+                        </div>
+                        <div class="farm-btns"><button class="farm-btn"
+                                onclick="showToast('💬 Chat with Agro-Feeds')"><svg viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>Chat</button><button class="farm-btn"
+                                onclick="showToast('📞 +254 722 567 890')"><svg viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 19 19 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.27a16 16 0 0 0 6.29 6.29l1.42-1.35a2 2 0 0 1 2.11-.45 19 19 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>Call</button></div>
+                    </div>
+                    <div class="sq" style="border-top:3px solid #7040c0;">
+                        <div>
+                            <div class="farm-av" style="background:linear-gradient(135deg,#7040c0,#a070e0)">SH</div>
+                            <div class="sq-name" style="margin-top:6px;">Sunrise Hatchery</div>
+                            <div class="sq-meta">Broilers · Kienyeji<br>Thika, Kiambu</div>
+                            <div style="font-size:10px;color:var(--amber);font-weight:600;margin-top:3px;">★ 4.5 <span
+                                    style="color:var(--text-muted);font-weight:400">(67)</span></div>
+                        </div>
+                        <div class="farm-btns"><button class="farm-btn" onclick="showToast('💬 Chat with Sunrise')"><svg
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>Chat</button><button class="farm-btn"
+                                onclick="showToast('📞 +254 700 678 901')"><svg viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 19 19 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.27a16 16 0 0 0 6.29 6.29l1.42-1.35a2 2 0 0 1 2.11-.45 19 19 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>Call</button></div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <div class="section-title">Purchase History</div><span class="section-link">Export CSV →</span>
+                </div>
+                <div class="card-grid">
+                    <div class="sq">
+                        <div>
+                            <div class="sq-emoji">🥚</div>
+                            <div class="sq-name" style="margin-top:4px;">Grade A Eggs</div>
+                            <div class="sq-meta">60 crates · Valley · 5 Feb</div>
+                            <div
+                                style="font-family:'DM Serif Display',serif;font-size:15px;color:var(--green-deep);margin-top:6px;">
+                                KES 18,000</div>
+                        </div><button class="btn-sm" onclick="showToast('✅ Eggs added to cart')">↻ Reorder</button>
+                    </div>
+                    <div class="sq">
+                        <div>
+                            <div class="sq-emoji">🐥</div>
+                            <div class="sq-name" style="margin-top:4px;">KENBRO Chicks</div>
+                            <div class="sq-meta">500 chicks · Kiambu · 28 Jan</div>
+                            <div
+                                style="font-family:'DM Serif Display',serif;font-size:15px;color:var(--green-deep);margin-top:6px;">
+                                KES 37,500</div>
+                        </div><button class="btn-sm" onclick="showToast('✅ Chicks added to cart')">↻ Reorder</button>
+                    </div>
+                    <div class="sq">
+                        <div>
+                            <div class="sq-emoji">🌾</div>
+                            <div class="sq-name" style="margin-top:4px;">Starter Feed 50kg</div>
+                            <div class="sq-meta">10 bags · Agro-Feeds · 20 Jan</div>
+                            <div
+                                style="font-family:'DM Serif Display',serif;font-size:15px;color:var(--green-deep);margin-top:6px;">
+                                KES 12,500</div>
+                        </div><button class="btn-sm" onclick="showToast('✅ Feed added to cart')">↻ Reorder</button>
+                    </div>
+                    <div class="sq">
+                        <div>
+                            <div class="sq-emoji">💉</div>
+                            <div class="sq-name" style="margin-top:4px;">Newcastle Vaccine</div>
+                            <div class="sq-meta">1000 doses · Valley · 15 Jan</div>
+                            <div
+                                style="font-family:'DM Serif Display',serif;font-size:15px;color:var(--green-deep);margin-top:6px;">
+                                KES 8,200</div>
+                        </div><button class="btn-sm" onclick="showToast('✅ Vaccine added to cart')">↻ Reorder</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ PRODUCTS ═══ -->
+            <div id="page-products" class="page-section">
+                <div class="section-header">
+                    <div class="section-title">Poultry Products</div><span
+                        style="font-size:12px;color:var(--text-light);">48 available</span>
+                </div>
+                <div class="filters-bar">
+                    <button class="filter-chip active" onclick="toggleFilter(this)">All</button>
+                    <button class="filter-chip" onclick="toggleFilter(this)">🥚 Eggs</button>
+                    <button class="filter-chip" onclick="toggleFilter(this)">🐥 Chicks</button>
+                    <button class="filter-chip" onclick="toggleFilter(this)">🍗 Broilers</button>
+                    <button class="filter-chip" onclick="toggleFilter(this)">🌾 Feed</button>
+                    <button class="filter-chip" onclick="toggleFilter(this)">💉 Vaccines</button>
+                    <select class="filter-select">
+                        <option>All Farms</option>
+                        <option>Kiambu Fresh Farms</option>
+                        <option>Valley Poultry Farm</option>
+                        <option>Agro-Feeds Ltd</option>
+                        <option>Sunrise Hatchery</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>Price Range</option>
+                        <option>Under KES 5K</option>
+                        <option>KES 5–20K</option>
+                        <option>KES 20K+</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>Availability</option>
+                        <option>Now</option>
+                        <option>This Week</option>
+                        <option>Pre-order</option>
+                    </select>
+                </div>
+
+                <div class="sq" style="height:auto;margin-bottom:12px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;">
+                        <div class="sq-name">Live Marketplace Search (API)</div>
+                        <button class="btn-sm" onclick="loadBuyerProducts()">Refresh</button>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+                        <input id="buyerSearchInput" class="form-input" placeholder="Search feed, chicks, eggs..."
+                            style="flex:1;">
+                        <button class="btn-sm primary" onclick="loadBuyerProducts()">Search</button>
+                    </div>
+                    <div id="buyerLiveMessage" style="font-size:11px;color:var(--text-light);margin-bottom:8px;"></div>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%;border-collapse:collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left;padding:8px 6px;">ID</th>
+                                    <th style="text-align:left;padding:8px 6px;">Product</th>
+                                    <th style="text-align:left;padding:8px 6px;">Supplier</th>
+                                    <th style="text-align:left;padding:8px 6px;">Category</th>
+                                    <th style="text-align:left;padding:8px 6px;">Price</th>
+                                    <th style="text-align:left;padding:8px 6px;">Stock</th>
+                                    <th style="text-align:left;padding:8px 6px;">Qty</th>
+                                    <th style="text-align:left;padding:8px 6px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="buyerLiveProductsBody">
+                                <tr>
+                                    <td colspan="8" style="padding:8px 6px;">Loading products...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-grid">
+                    <!-- Each product card -->
+                    <div class="sq">
+                        <div
+                            style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                            <span class="prod-badge pb-eggs">🥚 Eggs</span><span class="health-tag good">✓ Vacc.</span>
+                        </div>
+                        <div class="sq-name">Grade A Brown Eggs</div>
+                        <div class="sq-meta">Batch FEB-001 · Fresh 48h<br>Valley Poultry, Nakuru</div>
+                        <div style="display:flex;align-items:baseline;gap:3px;margin:6px 0 4px;">
+                            <div class="prod-price">KES 300</div>
+                            <div class="prod-unit">/crate</div>
+                            <div class="prod-avail" style="margin-left:auto;">200 crates</div>
+                        </div>
+                        <div style="display:flex;gap:4px;align-items:center;">
+                            <div class="qty-sel"><button class="qty-b" onclick="changeQty(this,-1)">−</button><input
+                                    class="qty-n" value="10" readonly><button class="qty-b"
+                                    onclick="changeQty(this,1)">+</button></div><button class="btn-buy"
+                                onclick="showToast('🛒 Eggs added to cart!')">Buy</button><button class="btn-msg-sq"
+                                onclick="showToast('💬 Valley Poultry')"><svg width="10" height="10" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg></button>
+                        </div>
+                    </div>
+                    <div class="sq">
+                        <div
+                            style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                            <span class="prod-badge pb-chicks">🐥 Chicks</span><span class="health-tag good">✓
+                                Marek's</span>
+                        </div>
+                        <div class="sq-name">KENBRO Day-Old Chicks</div>
+                        <div class="sq-meta">Batch DOC-KF-044 · Day-old<br>Kiambu Fresh Farms</div>
+                        <div style="display:flex;align-items:baseline;gap:3px;margin:6px 0 4px;">
+                            <div class="prod-price">KES 75</div>
+                            <div class="prod-unit">/chick</div>
+                            <div class="prod-avail" style="margin-left:auto;">200 left</div>
+                        </div>
+                        <div style="display:flex;gap:4px;align-items:center;">
+                            <div class="qty-sel"><button class="qty-b" onclick="changeQty(this,-1)">−</button><input
+                                    class="qty-n" value="50" readonly><button class="qty-b"
+                                    onclick="changeQty(this,1)">+</button></div><button class="btn-res"
+                                onclick="showToast('📌 KENBRO reserved!')">Reserve</button><button class="btn-msg-sq"
+                                onclick="showToast('💬 Kiambu Farms')"><svg width="10" height="10" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg></button>
+                        </div>
+                    </div>
+                    <div class="sq">
+                        <div
+                            style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                            <span class="prod-badge pb-broilers">🍗 Broilers</span><span class="health-tag good">✓
+                                Cert.</span>
+                        </div>
+                        <div class="sq-name">Live Broilers 1.8–2.2kg</div>
+                        <div class="sq-meta">Batch BRO-SR-012 · 6 wks<br>Sunrise Hatchery, Thika</div>
+                        <div style="display:flex;align-items:baseline;gap:3px;margin:6px 0 4px;">
+                            <div class="prod-price">KES 480</div>
+                            <div class="prod-unit">/kg</div>
+                            <div class="prod-avail" style="margin-left:auto;">1,200 birds</div>
+                        </div>
+                        <div style="display:flex;gap:4px;align-items:center;">
+                            <div class="qty-sel"><button class="qty-b" onclick="changeQty(this,-1)">−</button><input
+                                    class="qty-n" value="20" readonly><button class="qty-b"
+                                    onclick="changeQty(this,1)">+</button></div><button class="btn-buy"
+                                onclick="showToast('🛒 Broilers added!')">Buy</button><button class="btn-msg-sq"
+                                onclick="showToast('💬 Sunrise Hatchery')"><svg width="10" height="10"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg></button>
+                        </div>
+                    </div>
+                    <div class="sq">
+                        <div
+                            style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                            <span class="prod-badge pb-feed">🌾 Feed</span><span class="health-tag good">✓ KEBS</span>
+                        </div>
+                        <div class="sq-name">Broiler Starter Mash</div>
+                        <div class="sq-meta">Batch FEED-AG-08 · Jan 2026<br>Agro-Feeds Ltd, Nairobi</div>
+                        <div style="display:flex;align-items:baseline;gap:3px;margin:6px 0 4px;">
+                            <div class="prod-price">KES 1,250</div>
+                            <div class="prod-unit">/bag</div>
+                            <div class="prod-avail" style="margin-left:auto;">500 bags</div>
+                        </div>
+                        <div style="display:flex;gap:4px;align-items:center;">
+                            <div class="qty-sel"><button class="qty-b" onclick="changeQty(this,-1)">−</button><input
+                                    class="qty-n" value="5" readonly><button class="qty-b"
+                                    onclick="changeQty(this,1)">+</button></div><button class="btn-buy"
+                                onclick="showToast('🛒 Feed added!')">Buy</button><button class="btn-msg-sq"
+                                onclick="showToast('💬 Agro-Feeds')"><svg width="10" height="10" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg></button>
+                        </div>
+                    </div>
+                    <div class="sq">
+                        <div
+                            style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                            <span class="prod-badge pb-vaccines">💉 Vaccine</span><span class="health-tag good">✓ Cold
+                                chain</span>
+                        </div>
+                        <div class="sq-name">Newcastle Disease Vacc.</div>
+                        <div class="sq-meta">Batch VAC-ND-0226 · Aug 2026<br>Valley Poultry Farm</div>
+                        <div style="display:flex;align-items:baseline;gap:3px;margin:6px 0 4px;">
+                            <div class="prod-price">KES 8.20</div>
+                            <div class="prod-unit">/dose</div>
+                            <div class="prod-avail" style="margin-left:auto;">5,000</div>
+                        </div>
+                        <div style="display:flex;gap:4px;align-items:center;">
+                            <div class="qty-sel"><button class="qty-b" onclick="changeQty(this,-1)">−</button><input
+                                    class="qty-n" value="500" readonly><button class="qty-b"
+                                    onclick="changeQty(this,1)">+</button></div><button class="btn-buy"
+                                onclick="showToast('🛒 Vaccine added!')">Buy</button><button class="btn-msg-sq"
+                                onclick="showToast('💬 Valley Poultry')"><svg width="10" height="10" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg></button>
+                        </div>
+                    </div>
+                    <div class="sq">
+                        <div
+                            style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                            <span class="prod-badge pb-chicks">🐥 Chicks</span><span class="health-tag pend">⏳ Vacc.
+                                due</span>
+                        </div>
+                        <div class="sq-name">Improved Kienyeji Chicks</div>
+                        <div class="sq-meta">Batch IKJ-TH-029 · 3 wks<br>Sunrise Hatchery, Thika</div>
+                        <div style="display:flex;align-items:baseline;gap:3px;margin:6px 0 4px;">
+                            <div class="prod-price">KES 120</div>
+                            <div class="prod-unit">/chick</div>
+                            <div class="prod-avail" style="margin-left:auto;">800 left</div>
+                        </div>
+                        <div style="display:flex;gap:4px;align-items:center;">
+                            <div class="qty-sel"><button class="qty-b" onclick="changeQty(this,-1)">−</button><input
+                                    class="qty-n" value="100" readonly><button class="qty-b"
+                                    onclick="changeQty(this,1)">+</button></div><button class="btn-res"
+                                onclick="showToast('📌 Kienyeji reserved!')">Reserve</button><button class="btn-msg-sq"
+                                onclick="showToast('💬 Sunrise Hatchery')"><svg width="10" height="10"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ ORDERS ═══ -->
+            <div id="page-orders" class="page-section">
+                <div class="section-header">
+                    <div class="section-title">Order Tracking</div>
+                </div>
+
+                <div class="sq" style="height:auto;margin-bottom:12px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;">
+                        <div class="sq-name">Live Orders (API)</div>
+                        <button class="btn-sm" onclick="loadBuyerOrders()">Refresh</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%;border-collapse:collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left;padding:8px 6px;">Order ID</th>
+                                    <th style="text-align:left;padding:8px 6px;">Product</th>
+                                    <th style="text-align:left;padding:8px 6px;">Qty</th>
+                                    <th style="text-align:left;padding:8px 6px;">Unit</th>
+                                    <th style="text-align:left;padding:8px 6px;">Total</th>
+                                    <th style="text-align:left;padding:8px 6px;">Status</th>
+                                    <th style="text-align:left;padding:8px 6px;">Created</th>
+                                </tr>
+                            </thead>
+                            <tbody id="buyerLiveOrdersBody">
+                                <tr>
+                                    <td colspan="7" style="padding:8px 6px;">Loading orders...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-grid">
+                    <div class="sq c-blue">
+                        <div>
+                            <div class="sq-emoji">🚚</div>
+                            <div class="sq-id">#PMS-2041 · Delivery · Today</div>
+                            <div class="sq-name">Broiler Chicks × 300 units</div>
+                            <div class="sq-meta">Kiambu Fresh Farms</div>
+                            <div class="prog-mini"><span class="done"></span><span class="done"></span><span
+                                    class="act"></span><span></span></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                class="stage-badge transit">In Transit</span><span class="pay-pill paid">KES
+                                22,500</span></div>
+                    </div>
+                    <div class="sq c-green">
+                        <div>
+                            <div class="sq-emoji">🥚</div>
+                            <div class="sq-id">#PMS-2038 · Pickup · 22 Feb</div>
+                            <div class="sq-name">Grade A Eggs × 120 crates</div>
+                            <div class="sq-meta">Valley Poultry Farm</div>
+                            <div class="prog-mini"><span class="done"></span><span class="done"></span><span
+                                    class="done"></span><span></span></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                class="stage-badge ready">Ready</span><span class="pay-pill paid">KES 36,000</span>
+                        </div>
+                    </div>
+                    <div class="sq c-amber">
+                        <div>
+                            <div class="sq-emoji">🌾</div>
+                            <div class="sq-id">#PMS-2035 · Delivery · 25 Feb</div>
+                            <div class="sq-name">Starter Feed × 20 bags</div>
+                            <div class="sq-meta">Agro-Feeds Ltd</div>
+                            <div class="prog-mini"><span class="done"></span><span
+                                    class="act"></span><span></span><span></span></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                class="stage-badge processing">Processing</span><span class="pay-pill pending">KES
+                                25,000</span></div>
+                    </div>
+                    <div class="sq c-gray">
+                        <div>
+                            <div class="sq-emoji">💉</div>
+                            <div class="sq-id">#PMS-2029 · Delivered · 10 Feb</div>
+                            <div class="sq-name">Newcastle Vaccine × 1000</div>
+                            <div class="sq-meta">Valley Poultry Farm</div>
+                            <div class="prog-mini"><span class="done"></span><span class="done"></span><span
+                                    class="done"></span><span class="done"></span></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                class="stage-badge delivered">Delivered</span><span class="pay-pill paid">KES
+                                8,200</span></div>
+                    </div>
+                    <div class="sq c-blue">
+                        <div>
+                            <div class="sq-emoji">🐥</div>
+                            <div class="sq-id">#PMS-2044 · Delivery · 24 Feb</div>
+                            <div class="sq-name">Kienyeji Chicks × 200</div>
+                            <div class="sq-meta">Sunrise Hatchery</div>
+                            <div class="prog-mini"><span class="done"></span><span class="done"></span><span
+                                    class="act"></span><span></span></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                class="stage-badge transit">In Transit</span><span class="pay-pill paid">KES
+                                24,000</span></div>
+                    </div>
+                    <div class="sq c-amber">
+                        <div>
+                            <div class="sq-emoji">🍗</div>
+                            <div class="sq-id">#PMS-2046 · Pickup · 28 Feb</div>
+                            <div class="sq-name">Live Broilers × 50 birds</div>
+                            <div class="sq-meta">Kiambu Fresh Farms</div>
+                            <div class="prog-mini"><span class="done"></span><span
+                                    class="act"></span><span></span><span></span></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                class="stage-badge processing">Processing</span><span class="pay-pill pending">KES
+                                48,000</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ FARMS ═══ -->
+            <div id="page-farms" class="page-section">
+                <div class="section-header">
+                    <div class="section-title">Saved Farms</div><span style="font-size:12px;color:var(--text-light);">12
+                        saved</span>
+                </div>
+                <div class="card-grid">
+                    <div class="sq" style="border-top:3px solid var(--green-bright);">
+                        <div>
+                            <div class="farm-av">KF</div>
+                            <div class="sq-name" style="margin-top:6px;">Kiambu Fresh Farms</div>
+                            <div class="sq-meta">Broilers · Eggs · Chicks<br>Kiambu County · Est. 2012</div>
+                            <div style="font-size:10px;color:var(--amber);font-weight:600;margin-top:3px;">★ 4.8 <span
+                                    style="color:var(--text-muted);font-weight:400">(142 reviews)</span></div>
+                        </div>
+                        <div class="farm-btns"><button class="farm-btn" onclick="showToast('💬 Chat with Kiambu')"><svg
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>Chat</button><button class="farm-btn"
+                                onclick="showToast('📞 +254 712 345 678')"><svg viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 19 19 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.27a16 16 0 0 0 6.29 6.29l1.42-1.35a2 2 0 0 1 2.11-.45 19 19 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>Call</button></div>
+                    </div>
+                    <div class="sq" style="border-top:3px solid var(--amber);">
+                        <div>
+                            <div class="farm-av" style="background:linear-gradient(135deg,#c47c00,#e9a224)">VP</div>
+                            <div class="sq-name" style="margin-top:6px;">Valley Poultry Farm</div>
+                            <div class="sq-meta">Eggs · Layers · Vaccines<br>Nakuru County · Est. 2008</div>
+                            <div style="font-size:10px;color:var(--amber);font-weight:600;margin-top:3px;">★ 4.6 <span
+                                    style="color:var(--text-muted);font-weight:400">(98 reviews)</span></div>
+                        </div>
+                        <div class="farm-btns"><button class="farm-btn" onclick="showToast('💬 Chat with Valley')"><svg
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>Chat</button><button class="farm-btn"
+                                onclick="showToast('📞 +254 733 456 789')"><svg viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 19 19 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.27a16 16 0 0 0 6.29 6.29l1.42-1.35a2 2 0 0 1 2.11-.45 19 19 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>Call</button></div>
+                    </div>
+                    <div class="sq" style="border-top:3px solid #3060c0;">
+                        <div>
+                            <div class="farm-av" style="background:linear-gradient(135deg,#3060c0,#70a0e0)">AL</div>
+                            <div class="sq-name" style="margin-top:6px;">Agro-Feeds Ltd</div>
+                            <div class="sq-meta">Feeds · Supplements<br>Nairobi County · Est. 2015</div>
+                            <div style="font-size:10px;color:var(--amber);font-weight:600;margin-top:3px;">★ 4.9 <span
+                                    style="color:var(--text-muted);font-weight:400">(215 reviews)</span></div>
+                        </div>
+                        <div class="farm-btns"><button class="farm-btn"
+                                onclick="showToast('💬 Chat with Agro-Feeds')"><svg viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>Chat</button><button class="farm-btn"
+                                onclick="showToast('📞 +254 722 567 890')"><svg viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 19 19 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.27a16 16 0 0 0 6.29 6.29l1.42-1.35a2 2 0 0 1 2.11-.45 19 19 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>Call</button></div>
+                    </div>
+                    <div class="sq" style="border-top:3px solid #7040c0;">
+                        <div>
+                            <div class="farm-av" style="background:linear-gradient(135deg,#7040c0,#a070e0)">SH</div>
+                            <div class="sq-name" style="margin-top:6px;">Sunrise Hatchery</div>
+                            <div class="sq-meta">Broilers · Kienyeji<br>Thika, Kiambu · Est. 2018</div>
+                            <div style="font-size:10px;color:var(--amber);font-weight:600;margin-top:3px;">★ 4.5 <span
+                                    style="color:var(--text-muted);font-weight:400">(67 reviews)</span></div>
+                        </div>
+                        <div class="farm-btns"><button class="farm-btn" onclick="showToast('💬 Chat with Sunrise')"><svg
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>Chat</button><button class="farm-btn"
+                                onclick="showToast('📞 +254 700 678 901')"><svg viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 19 19 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.27a16 16 0 0 0 6.29 6.29l1.42-1.35a2 2 0 0 1 2.11-.45 19 19 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>Call</button></div>
+                    </div>
+                    <div class="sq" style="border-top:3px solid #c44040;">
+                        <div>
+                            <div class="farm-av" style="background:linear-gradient(135deg,#c44040,#e07060)">RF</div>
+                            <div class="sq-name" style="margin-top:6px;">Rift Valley Poultry</div>
+                            <div class="sq-meta">Eggs · Layers · Day-old<br>Eldoret, Uasin Gishu</div>
+                            <div style="font-size:10px;color:var(--amber);font-weight:600;margin-top:3px;">★ 4.4 <span
+                                    style="color:var(--text-muted);font-weight:400">(51 reviews)</span></div>
+                        </div>
+                        <div class="farm-btns"><button class="farm-btn"
+                                onclick="showToast('💬 Chat with Rift Valley')"><svg viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>Chat</button><button class="farm-btn"
+                                onclick="showToast('📞 +254 711 234 567')"><svg viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.5">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 19 19 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.27a16 16 0 0 0 6.29 6.29l1.42-1.35a2 2 0 0 1 2.11-.45 19 19 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>Call</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ MESSAGES ═══ -->
+            <div id="page-messages" class="page-section">
+                <div class="section-header">
+                    <div class="section-title">Messages</div><span style="font-size:12px;color:var(--text-light);">5
+                        unread</span>
+                </div>
+                <div class="card-grid">
+                    <div class="sq" style="cursor:pointer;" onclick="showToast('Opening Kiambu chat…')">
+                        <div class="msg-dot"></div>
+                        <div>
+                            <div class="farm-av"
+                                style="background:linear-gradient(135deg,var(--green-bright),var(--green-light));">KF
+                            </div>
+                            <div class="sq-name" style="margin-top:6px;">Kiambu Fresh Farms</div>
+                            <div class="msg-preview">Your chick order is being loaded. Driver leaves at 1pm, arrives by
+                                3pm.</div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                style="font-size:9px;color:var(--text-muted);">10:24 AM</span><button class="btn-sm"
+                                style="width:auto;padding:4px 10px;"
+                                onclick="showToast('💬 Replying to Kiambu…')">Reply</button></div>
+                    </div>
+                    <div class="sq" style="cursor:pointer;" onclick="showToast('Opening Valley chat…')">
+                        <div class="msg-dot"></div>
+                        <div>
+                            <div class="farm-av" style="background:linear-gradient(135deg,#c47c00,#e9a224);">VP</div>
+                            <div class="sq-name" style="margin-top:6px;">Valley Poultry Farm</div>
+                            <div class="msg-preview">Eggs are packed. Please confirm your pickup slot for 22 February
+                                morning.</div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                style="font-size:9px;color:var(--text-muted);">Yesterday</span><button class="btn-sm"
+                                style="width:auto;padding:4px 10px;"
+                                onclick="showToast('💬 Replying to Valley…')">Reply</button></div>
+                    </div>
+                    <div class="sq" style="cursor:pointer;" onclick="showToast('Opening Agro-Feeds chat…')">
+                        <div>
+                            <div class="farm-av" style="background:linear-gradient(135deg,#3060c0,#70a0e0);">AL</div>
+                            <div class="sq-name" style="margin-top:6px;">Agro-Feeds Ltd</div>
+                            <div class="msg-preview">Feed order confirmed and queued for production starting tomorrow
+                                morning.</div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                style="font-size:9px;color:var(--text-muted);">2 days ago</span><button class="btn-sm"
+                                style="width:auto;padding:4px 10px;"
+                                onclick="showToast('💬 Replying to Agro-Feeds…')">Reply</button></div>
+                    </div>
+                    <div class="sq" style="cursor:pointer;" onclick="showToast('Opening Sunrise chat…')">
+                        <div class="msg-dot"></div>
+                        <div>
+                            <div class="farm-av" style="background:linear-gradient(135deg,#7040c0,#a070e0);">SH</div>
+                            <div class="sq-name" style="margin-top:6px;">Sunrise Hatchery</div>
+                            <div class="msg-preview">New batch of Kienyeji chicks from Friday. Only 800 units. Reserve
+                                quickly!</div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                style="font-size:9px;color:var(--text-muted);">3 days ago</span><button class="btn-sm"
+                                style="width:auto;padding:4px 10px;"
+                                onclick="showToast('💬 Replying to Sunrise…')">Reply</button></div>
+                    </div>
+                    <div class="sq" style="cursor:pointer;" onclick="showToast('Opening Rift Valley chat…')">
+                        <div>
+                            <div class="farm-av" style="background:linear-gradient(135deg,#c44040,#e07060);">RF</div>
+                            <div class="sq-name" style="margin-top:6px;">Rift Valley Poultry</div>
+                            <div class="msg-preview">Thank you for last order. Seasonal discount on layer eggs this week
+                                only.</div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><span
+                                style="font-size:9px;color:var(--text-muted);">5 days ago</span><button class="btn-sm"
+                                style="width:auto;padding:4px 10px;"
+                                onclick="showToast('💬 Replying to Rift Valley…')">Reply</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ REVIEWS ═══ -->
+            <div id="page-reviews" class="page-section">
+                <div class="section-header">
+                    <div class="section-title">Reviews & Ratings</div>
+                </div>
+                <div class="card-grid">
+                    <div class="sq">
+                        <div>
+                            <div class="sq-name">Grade A Brown Eggs × 60</div>
+                            <div class="sq-meta">Valley Poultry Farm</div>
+                            <div class="stars" style="margin-top:4px;">★★★★★</div>
+                        </div>
+                        <div class="sq-meta"
+                            style="font-size:10px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+                            Excellent quality — fresh and properly sized. Delivery on time. Will reorder.</div>
+                        <div style="font-size:9px;color:var(--text-muted);">8 Feb 2026 · #PMS-2021</div>
+                    </div>
+                    <div class="sq">
+                        <div>
+                            <div class="sq-name">KENBRO Chicks × 500</div>
+                            <div class="sq-meta">Kiambu Fresh Farms</div>
+                            <div class="stars" style="margin-top:4px;">★★★★☆</div>
+                        </div>
+                        <div class="sq-meta"
+                            style="font-size:10px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+                            Healthy and lively. Lost 3 in first week — within range. Farm was responsive.</div>
+                        <div style="font-size:9px;color:var(--text-muted);">2 Feb 2026 · #PMS-2007</div>
+                    </div>
+                    <div class="sq">
+                        <div>
+                            <div class="sq-name">Starter Feed × 10 bags</div>
+                            <div class="sq-meta">Agro-Feeds Ltd</div>
+                            <div class="stars" style="margin-top:4px;">★★★★★</div>
+                        </div>
+                        <div class="sq-meta"
+                            style="font-size:10px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+                            Great quality mash. Chicks grew noticeably faster. Packaging was secure.</div>
+                        <div style="font-size:9px;color:var(--text-muted);">22 Jan 2026 · #PMS-1998</div>
+                    </div>
+                    <div class="sq">
+                        <div>
+                            <div class="sq-name">Newcastle Vaccine × 1000</div>
+                            <div class="sq-meta">Valley Poultry Farm</div>
+                            <div class="stars" style="margin-top:4px;">★★★★☆</div>
+                        </div>
+                        <div class="sq-meta"
+                            style="font-size:10px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+                            Cold chain maintained. All doses viable. One day late but farm communicated well.</div>
+                        <div style="font-size:9px;color:var(--text-muted);">15 Jan 2026 · #PMS-1985</div>
+                    </div>
+                    <!-- Leave review -->
+                    <div class="sq"
+                        style="background:var(--green-ghost);border:2px dashed var(--green-light);cursor:pointer;">
+                        <div>
+                            <div style="font-size:11px;font-weight:700;color:var(--green-mid);">✍️ Leave a Review</div>
+                            <div class="sq-meta" style="margin-top:3px;">Broiler Chicks × 300<br>Kiambu Fresh Farms ·
+                                Today</div>
+                            <div class="star-row" style="margin-top:8px;display:flex;gap:2px;"><span
+                                    onclick="showToast('★★★★★ saved!')">★</span><span>★</span><span>★</span><span>★</span><span
+                                    class="empty">★</span></div>
+                        </div>
+                        <button class="btn-sm primary" onclick="showToast('✅ Review submitted!')">Submit Review</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ SETTINGS ═══ -->
+            <div id="page-settings" class="page-section">
+                <div class="section-header">
+                    <div class="section-title">Settings</div>
+                </div>
+                <div class="card-grid">
+                    <div class="sq">
+                        <div>
+                            <div style="font-size:20px;">👤</div>
+                            <div class="sq-name" style="margin-top:4px;">Buyer Profile</div>
+                            <div class="sq-meta">Amara Kioni<br>+254 712 000 001<br>Nairobi, Kenya</div>
+                        </div><button class="btn-sm" onclick="showToast('✏️ Opening profile editor…')">Edit
+                            Profile</button>
+                    </div>
+                    <div class="sq">
+                        <div>
+                            <div style="font-size:20px;">🚚</div>
+                            <div class="sq-name" style="margin-top:4px;">Delivery Address</div>
+                            <div class="sq-meta">Westlands, Nairobi<br>Near Shell Petrol Station<br>Default: Delivery
+                            </div>
+                        </div><button class="btn-sm" onclick="showToast('📍 Address editor…')">Edit Address</button>
+                    </div>
+                    <div class="sq">
+                        <div>
+                            <div style="font-size:20px;">🔔</div>
+                            <div class="sq-name" style="margin-top:4px;">Stock Alerts</div>
+                            <div class="sq-meta">New batches from<br>saved farms</div>
+                        </div>
+                        <div class="toggle-row" style="margin-top:auto;"><span
+                                style="font-size:10px;color:var(--text-light);" id="t1-lbl">Enabled</span>
+                            <div class="toggle on" onclick="toggleSetting(this,'t1-lbl')">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sq">
+                        <div>
+                            <div style="font-size:20px;">📦</div>
+                            <div class="sq-name" style="margin-top:4px;">Order Updates</div>
+                            <div class="sq-meta">Processing, transit<br>&amp; delivery alerts</div>
+                        </div>
+                        <div class="toggle-row" style="margin-top:auto;"><span
+                                style="font-size:10px;color:var(--text-light);" id="t2-lbl">Enabled</span>
+                            <div class="toggle on" onclick="toggleSetting(this,'t2-lbl')">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sq">
+                        <div>
+                            <div style="font-size:20px;">💰</div>
+                            <div class="sq-name" style="margin-top:4px;">Price Alerts</div>
+                            <div class="sq-meta">Notify on price drops<br>for saved products</div>
+                        </div>
+                        <div class="toggle-row" style="margin-top:auto;"><span
+                                style="font-size:10px;color:var(--text-light);" id="t3-lbl">Disabled</span>
+                            <div class="toggle off" onclick="toggleSetting(this,'t3-lbl')">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sq">
+                        <div>
+                            <div style="font-size:20px;">📱</div>
+                            <div class="sq-name" style="margin-top:4px;">SMS Notifications</div>
+                            <div class="sq-meta">Critical alerts<br>sent via SMS</div>
+                        </div>
+                        <div class="toggle-row" style="margin-top:auto;"><span
+                                style="font-size:10px;color:var(--text-light);" id="t4-lbl">Enabled</span>
+                            <div class="toggle on" onclick="toggleSetting(this,'t4-lbl')">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sq">
+                        <div>
+                            <div style="font-size:20px;">🔑</div>
+                            <div class="sq-name" style="margin-top:4px;">Change Password</div>
+                            <div class="sq-meta">Last changed<br>45 days ago</div>
+                        </div><button class="btn-sm" onclick="showToast('📧 Reset link sent to email')">Reset
+                            Password</button>
+                    </div>
+                    <div class="sq">
+                        <div>
+                            <div style="font-size:20px;">🔒</div>
+                            <div class="sq-name" style="margin-top:4px;">Two-Factor Auth</div>
+                            <div class="sq-meta">Currently disabled<br>Recommended</div>
+                        </div><button class="btn-sm primary" onclick="showToast('✅ 2FA setup — check phone')">Enable
+                            2FA</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- CART MODAL -->
+    <div class="modal-overlay" id="cartModal" onclick="closeCartOnOverlay(event)">
+        <div class="modal">
+            <div class="modal-head">
+                <div class="modal-title">🛒 Cart (4 items)</div><button class="modal-close"
+                    onclick="closeCart()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="cart-item">
+                    <div class="ci-icon">🥚</div>
+                    <div class="ci-info">
+                        <div class="ci-name">Grade A Brown Eggs</div>
+                        <div class="ci-meta">10 crates × KES 300 · Valley Poultry</div>
+                    </div>
+                    <div class="ci-price">KES 3,000</div>
+                </div>
+                <div class="cart-item">
+                    <div class="ci-icon">🐥</div>
+                    <div class="ci-info">
+                        <div class="ci-name">KENBRO Day-Old Chicks</div>
+                        <div class="ci-meta">50 chicks × KES 75 · Kiambu Farms</div>
+                    </div>
+                    <div class="ci-price">KES 3,750</div>
+                </div>
+                <div class="cart-item">
+                    <div class="ci-icon">🌾</div>
+                    <div class="ci-info">
+                        <div class="ci-name">Broiler Starter Mash 50kg</div>
+                        <div class="ci-meta">5 bags × KES 1,250 · Agro-Feeds</div>
+                    </div>
+                    <div class="ci-price">KES 6,250</div>
+                </div>
+                <div class="cart-item">
+                    <div class="ci-icon">💉</div>
+                    <div class="ci-info">
+                        <div class="ci-name">Newcastle Vaccine</div>
+                        <div class="ci-meta">500 doses × KES 8.20 · Valley</div>
+                    </div>
+                    <div class="ci-price">KES 4,100</div>
+                </div>
+                <div style="margin-top:12px;">
+                    <div
+                        style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px;">
+                        Delivery Method</div>
+                    <div class="delivery-opts">
+                        <div class="dopt sel" onclick="selectDelivery(this)">
+                            <div class="dopt-icon">🚚</div>
+                            <div class="dopt-label">Delivery</div>
+                            <div class="dopt-sub">+KES 850</div>
+                        </div>
+                        <div class="dopt" onclick="selectDelivery(this)">
+                            <div class="dopt-icon">🏡</div>
+                            <div class="dopt-label">Pickup</div>
+                            <div class="dopt-sub">Free</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cost-box">
+                    <div class="cost-row"><span>Subtotal (4 items)</span><span>KES 17,100</span></div>
+                    <div class="cost-row"><span>Transport (est. 250kg)</span><span>KES 850</span></div>
+                    <div class="cost-row"><span>VAT (16%)</span><span>KES 2,736</span></div>
+                    <div class="cost-row"><span>Total</span><span>KES 20,686</span></div>
+                </div>
+                <button class="btn-checkout" onclick="showToast('✅ Order placed! #PMS-2050');closeCart()">Proceed to
+                    Checkout →</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../../api-client.js"></script>
+    <script>
+        (function guardBuyerDashboard() {
+            const accessToken = localStorage.getItem('accessToken');
+            const role = localStorage.getItem('userRole');
+
+            if (!accessToken || !role || isTokenExpired(accessToken)) {
+                clearAuthAndRedirectToLogin();
+                return;
+            }
+
+            if (role !== 'buyer') {
+                redirectToRoleDashboard(role);
+            }
+        })();
+
+        function isTokenExpired(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+                const payload = JSON.parse(atob(padded));
+                if (!payload.exp) {
+                    return true;
+                }
+                return Date.now() >= payload.exp * 1000;
+            } catch {
+                return true;
+            }
+        }
+
+        function clearAuthAndRedirectToLogin() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userRole');
+            window.location.href = '../../auth/login/login.html';
+        }
+
+        function redirectToRoleDashboard(role) {
+            if (role === 'farmer') {
+                window.location.href = '../farmer_dashboard/farmer.html';
+                return;
+            }
+
+            if (role === 'supplier') {
+                window.location.href = '../supplier-dashboard/supplier.html';
+                return;
+            }
+
+            clearAuthAndRedirectToLogin();
+        }
+
+        function logout() {
+            clearAuthAndRedirectToLogin();
+        }
+
+        async function loadBuyerProducts() {
+            const body = document.getElementById('buyerLiveProductsBody');
+            const message = document.getElementById('buyerLiveMessage');
+            const search = document.getElementById('buyerSearchInput')?.value?.trim() || '';
+
+            if (!body || typeof api === 'undefined') {
+                return;
+            }
+
+            body.innerHTML = '<tr><td colspan="8" style="padding:8px 6px;">Loading products...</td></tr>';
+            if (message) {
+                message.textContent = '';
+            }
+
+            try {
+                const query = search || 'a';
+                const products = await api.buyer.searchProducts(encodeURIComponent(query));
+
+                if (!products.length) {
+                    body.innerHTML = '<tr><td colspan="8" style="padding:8px 6px;">No products found for this query.</td></tr>';
+                    return;
+                }
+
+                body.innerHTML = products.map((product) => `
+                    <tr>
+                        <td style="padding:8px 6px;"><strong>#${product.id}</strong></td>
+                        <td style="padding:8px 6px;">${product.name}</td>
+                        <td style="padding:8px 6px;">${product.supplier_name}</td>
+                        <td style="padding:8px 6px;">${product.category}</td>
+                        <td style="padding:8px 6px;">${Number(product.price_per_unit || 0).toFixed(2)} / ${product.unit}</td>
+                        <td style="padding:8px 6px;">${product.stock_quantity}</td>
+                        <td style="padding:8px 6px;">
+                            <input id="buyerQty-${product.id}" type="number" min="1" value="1" style="width:70px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;">
+                        </td>
+                        <td style="padding:8px 6px;">
+                            <button class="btn-sm primary" onclick="createBuyerOrder(${product.id})">Order</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                body.innerHTML = `<tr><td colspan="8" style="padding:8px 6px;">Failed to load products: ${error.message}</td></tr>`;
+            }
+        }
+
+        async function createBuyerOrder(productId) {
+            const qtyInput = document.getElementById(`buyerQty-${productId}`);
+            const quantity = Number(qtyInput?.value || 0);
+
+            if (!Number.isFinite(quantity) || quantity <= 0) {
+                showToast('Quantity must be greater than zero.');
+                return;
+            }
+
+            try {
+                await api.buyer.createOrder({
+                    product_id: productId,
+                    quantity,
+                    note: null,
+                });
+                showToast('Order created successfully.');
+                await loadBuyerOrders();
+                await loadBuyerProducts();
+            } catch (error) {
+                showToast(`Failed to create order: ${error.message}`);
+            }
+        }
+
+        async function loadBuyerOrders() {
+            const body = document.getElementById('buyerLiveOrdersBody');
+            if (!body || typeof api === 'undefined') {
+                return;
+            }
+
+            body.innerHTML = '<tr><td colspan="7" style="padding:8px 6px;">Loading orders...</td></tr>';
+
+            try {
+                const orders = await api.buyer.getOrders();
+                if (!orders.length) {
+                    body.innerHTML = '<tr><td colspan="7" style="padding:8px 6px;">No orders found yet.</td></tr>';
+                    return;
+                }
+
+                body.innerHTML = orders.map((order) => `
+                    <tr>
+                        <td style="padding:8px 6px;"><strong>#${order.id}</strong></td>
+                        <td style="padding:8px 6px;">${order.product_name}</td>
+                        <td style="padding:8px 6px;">${order.quantity}</td>
+                        <td style="padding:8px 6px;">${Number(order.unit_price || 0).toFixed(2)}</td>
+                        <td style="padding:8px 6px;">${Number(order.total_price || 0).toFixed(2)}</td>
+                        <td style="padding:8px 6px;">${order.status}</td>
+                        <td style="padding:8px 6px;">${new Date(order.created_at).toLocaleDateString()}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                body.innerHTML = `<tr><td colspan="7" style="padding:8px 6px;">Failed to load orders: ${error.message}</td></tr>`;
+            }
+        }
+
+        loadBuyerProducts();
+        loadBuyerOrders();
+
+        function showPage(id, navEl) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if (navEl) navEl.classList.add('active');
+            const titles = { dashboard: 'Overview', products: 'Poultry Products', orders: 'My Orders', farms: 'My Farms', messages: 'Messages', reviews: 'Reviews', settings: 'Settings' };
+            document.querySelector('.topbar-title').textContent = titles[id] || id;
+
+            if (id === 'products') {
+                loadBuyerProducts();
+            }
+
+            if (id === 'orders') {
+                loadBuyerOrders();
+            }
+        }
+        function changeQty(btn, delta) {
+            const inp = btn.closest('.qty-sel').querySelector('.qty-n');
+            let v = parseInt(inp.value) + delta;
+            if (v < 1) v = 1;
+            inp.value = v;
+        }
+        function toggleFilter(el) {
+            el.closest('.filters-bar').querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+        }
+        function openCart() { document.getElementById('cartModal').classList.add('open'); }
+        function closeCart() { document.getElementById('cartModal').classList.remove('open'); }
+        function closeCartOnOverlay(e) { if (e.target === e.currentTarget) closeCart(); }
+        function selectDelivery(el) {
+            el.closest('.delivery-opts').querySelectorAll('.dopt').forEach(o => o.classList.remove('sel'));
+            el.classList.add('sel');
+        }
+        function toggleSetting(el, lblId) {
+            const on = el.classList.contains('on');
+            el.classList.toggle('on', !on);
+            el.classList.toggle('off', on);
+            const lbl = document.getElementById(lblId);
+            if (lbl) lbl.textContent = on ? 'Disabled' : 'Enabled';
+            showToast(on ? '🔕 Setting disabled' : '✅ Setting enabled');
+        }
+        function showToast(msg) {
+            const cont = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            cont.appendChild(t);
+            setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 3000);
+        }
+    </script>
+</body>
+
+</html>

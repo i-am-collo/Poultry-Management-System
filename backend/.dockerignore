@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+poultry/
+tests/
+*.db
+*.sqlite
+*.sqlite3
+
+.env
+.env.*
