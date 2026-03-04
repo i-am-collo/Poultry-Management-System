@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product — PoultryHub Supplier</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="supplier.css">
+</head>
+
+<body>
+
+    <!-- ── SIDEBAR ── -->
+    <aside>
+        <div class="logo">
+            <div class="logo-mark">🐔 PoultryPro</div>
+            <div class="logo-sub">Supplier Portal</div>
+        </div>
+
+        <nav>
+            <div class="nav-group-label">Catalog</div>
+            <div class="nav-item active" onclick="goToCatalog()">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg>
+                Manage Catalog
+            </div>
+
+            <div class="nav-group-label">Operations</div>
+            <div class="nav-item" onclick="redirectDashboard()">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                    <path d="M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    <polyline points="9 12 11 14 15 10" />
+                </svg>
+                Manage Orders
+                <span class="badge">9</span>
+            </div>
+            <div class="nav-item" onclick="redirectDashboard()">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                Inventory Tracking
+            </div>
+
+            <div class="nav-group-label">Relationships</div>
+            <div class="nav-item" onclick="redirectDashboard()">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                    <path d="M16 3.13a4 4 0 010 7.75" />
+                </svg>
+                Client Network
+            </div>
+
+            <div class="nav-group-label">Analytics</div>
+            <div class="nav-item" onclick="redirectDashboard()">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg>
+                Sales Reports
+            </div>
+
+            <div class="nav-group-label">Account</div>
+            <div class="nav-item" onclick="redirectDashboard()">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M19.07 4.93a10 10 0 010 14.14M4.93 19.07a10 10 0 010-14.14" />
+                </svg>
+                Business Settings
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="supplier-card">
+                <div class="avatar">P</div>
+                <div>
+                    <div class="supplier-name">PrimeFlock Supplies</div>
+                    <div class="supplier-role">Verified Poultry Supplier</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <main>
+        <header>
+            <div>
+                <div class="page-title">Add New Product</div>
+                <div class="page-subtitle">Create a new product listing that will be available to farmers in their
+                    catalog.</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-ghost" onclick="goToCatalog()">Cancel</button>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="add-product-container">
+                <a class="back-link" onclick="goToCatalog()">← Back to Catalog</a>
+
+                <div id="successMessage" class="success-message"></div>
+                <div id="errorMessage" class="error-message"></div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title">Product Information</span>
+                    </div>
+                    <div class="padding-16-20">
+                        <form id="addProductForm" class="form-section">
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label for="productName">Product Name <span class="highlight">*</span></label>
+                                    <input id="productName" type="text" placeholder="e.g., Layer Mash Premium" required>
+                                    <span class="help-text">The name farmers will see in the catalog</span>
+                                </div>
+                                <div class="form-field">
+                                    <label for="productCategory">Category <span class="highlight">*</span></label>
+                                    <select id="productCategory" required aria-label="Product Category">
+                                        <option value="">Select a category</option>
+                                        <option value="feed">Feed</option>
+                                        <option value="vaccine">Vaccine</option>
+                                        <option value="equipment">Equipment</option>
+                                        <option value="chicks">Chicks</option>
+                                        <option value="eggs">Eggs</option>
+                                        <option value="broilers">Broilers</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <span class="help-text">Choose the product category</span>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label for="productPrice">Price per Unit <span class="highlight">*</span></label>
+                                    <input id="productPrice" type="number" step="0.01" min="0" placeholder="e.g., 28.50"
+                                        required>
+                                    <span class="help-text">Price in local currency (GHS)</span>
+                                </div>
+                                <div class="form-field">
+                                    <label for="productUnitOfMeasure">Unit of Measure <span
+                                            class="highlight">*</span></label>
+                                    <input id="productUnitOfMeasure" type="text"
+                                        placeholder="e.g., 50kg bag, vial, unit" required>
+                                    <span class="help-text">How is this product sold?</span>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label for="productStock">Initial Stock Quantity <span
+                                            class="highlight">*</span></label>
+                                    <input id="productStock" type="number" min="0" placeholder="e.g., 100" required>
+                                    <span class="help-text">How many units do you have available?</span>
+                                </div>
+                                <div class="form-field">
+                                    <label for="productImage">Product Image <span class="highlight">*</span></label>
+                                    <input id="productImage" type="file" accept="image/*" required>
+                                    <span class="help-text">Upload a product photo (JPEG, PNG, etc.)</span>
+                                </div>
+                            </div>
+
+                            <div class="form-row full">
+                                <div class="form-field">
+                                    <label for="productDescription">Description (Optional)</label>
+                                    <textarea id="productDescription"
+                                        placeholder="Provide details about your product. Include key features, benefits, and any important information farmers should know."></textarea>
+                                    <span class="help-text">This will help farmers understand your product better</span>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-ghost" onclick="goToCatalog()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Product</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../api-client.js"></script>
+    <script>
+        (function guardSupplierAddProduct() {
+            const accessToken = localStorage.getItem('accessToken');
+            const role = localStorage.getItem('userRole');
+
+            if (!accessToken || !role || isTokenExpired(accessToken)) {
+                clearAuthAndRedirectToLogin();
+                return;
+            }
+
+            if (role !== 'supplier') {
+                redirectToRoleDashboard(role);
+            }
+        })();
+
+        function isTokenExpired(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+                const payload = JSON.parse(atob(padded));
+                if (!payload.exp) {
+                    return true;
+                }
+                return Date.now() >= payload.exp * 1000;
+            } catch {
+                return true;
+            }
+        }
+
+        function clearAuthAndRedirectToLogin() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userRole');
+            window.location.href = '../../auth/login/login.html';
+        }
+
+        function redirectToRoleDashboard(role) {
+            if (role === 'farmer') {
+                window.location.href = '../farmer_dashboard/farmer.html';
+                return;
+            }
+
+            if (role === 'buyer') {
+                window.location.href = '../buyer_dashboard/buyer.html';
+                return;
+            }
+
+            clearAuthAndRedirectToLogin();
+        }
+
+        function goToCatalog() {
+            window.location.href = 'supplier.html';
+        }
+
+        function redirectDashboard() {
+            goToCatalog();
+        }
+
+        function showMessage(type, message) {
+            const successMsg = document.getElementById('successMessage');
+            const errorMsg = document.getElementById('errorMessage');
+
+            if (type === 'success') {
+                successMsg.textContent = message;
+                successMsg.classList.add('show');
+                errorMsg.classList.remove('show');
+            } else {
+                errorMsg.textContent = message;
+                errorMsg.classList.add('show');
+                successMsg.classList.remove('show');
+            }
+        }
+
+        function clearMessages() {
+            document.getElementById('successMessage').classList.remove('show');
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        // Helper function to convert File to base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function handleAddProduct(e) {
+            e.preventDefault();
+            clearMessages();
+
+            const productName = document.getElementById('productName').value.trim();
+            const category = document.getElementById('productCategory').value;
+            const price = parseFloat(document.getElementById('productPrice').value);
+            const unitOfMeasure = document.getElementById('productUnitOfMeasure').value.trim();
+            const stock = parseInt(document.getElementById('productStock').value);
+            const imageFile = document.getElementById('productImage').files[0];
+            const description = document.getElementById('productDescription').value.trim() || null;
+
+            // Validation
+            if (!productName || !category || !unitOfMeasure) {
+                showMessage('error', 'Please fill in all required fields (name, category, unit of measure).');
+                return;
+            }
+
+            if (!imageFile) {
+                showMessage('error', 'Please upload a product image.');
+                return;
+            }
+
+            if (!Number.isFinite(price) || price <= 0) {
+                showMessage('error', 'Please enter a valid price greater than 0.');
+                return;
+            }
+
+            if (!Number.isFinite(stock) || stock < 0) {
+                showMessage('error', 'Please enter a valid stock quantity.');
+                return;
+            }
+
+            // Disable submit button
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating...';
+
+            try {
+                // Convert image file to base64
+                const base64Image = await fileToBase64(imageFile);
+
+                const response = await api.supplier.addProduct({
+                    name: productName,
+                    category,
+                    description,
+                    unit_price: price,
+                    unit_of_measure: unitOfMeasure,
+                    stock_quantity: stock,
+                    product_image: base64Image,
+                });
+
+                showMessage('success', `✓ Product "${productName}" created successfully! Redirecting to catalog...`);
+
+                // Reset form
+                document.getElementById('addProductForm').reset();
+
+                // Redirect after 2 seconds
+                setTimeout(() => {
+                    goToCatalog();
+                }, 2000);
+            } catch (error) {
+                showMessage('error', `Failed to create product: ${error.message || 'Unknown error'}`);
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        }
+
+        // Attach form submission handler
+        document.getElementById('addProductForm')?.addEventListener('submit', handleAddProduct);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invite Farm — PoultryHub Supplier</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="supplier.css">
+</head>
+
+<body>
+    <div class="invite-page-container">
+        <div class="invite-card-container">
+            <a href="supplier.html" class="back-link">← Back to Supplier Dashboard</a>
+
+            <div class="invite-header">
+                <div class="invite-header-icon">📩</div>
+                <h1>Invite Farm</h1>
+                <p>Invite poultry farmers to your supplier network and grow your business</p>
+            </div>
+
+            <form id="inviteForm">
+                <div class="form-group">
+                    <label class="form-label" for="farmName">Farm Name *</label>
+                    <input type="text" id="farmName" class="form-input" placeholder="e.g., SunRise Farm" required>
+                    <div class="help-text">Legal name of the farm or business</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="farmerName">Farmer Name *</label>
+                    <input type="text" id="farmerName" class="form-input" placeholder="e.g., Amara Osei" required>
+                    <div class="help-text">Primary contact person</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="farmerEmail">Email Address *</label>
+                    <input type="email" id="farmerEmail" class="form-input" placeholder="farmer@example.com" required>
+                    <div class="help-text">Where the invitation will be sent</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="farmerPhone">Phone Number</label>
+                    <input type="tel" id="farmerPhone" class="form-input" placeholder="+1 (555) 123-4567">
+                    <div class="help-text">Optional contact number</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="farmLocation">Farm Location</label>
+                    <input type="text" id="farmLocation" class="form-input" placeholder="e.g., Kumasi, Ghana">
+                    <div class="help-text">City or region where the farm operates</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="farmType">Farm Type</label>
+                    <select id="farmType" class="form-select">
+                        <option value="layer">Layer Farm</option>
+                        <option value="broiler">Broiler Farm</option>
+                        <option value="mixed">Mixed Poultry</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="message">Message</label>
+                    <textarea id="message" class="form-textarea"
+                        placeholder="Write a personal message to include in the invitation (optional)"></textarea>
+                    <div class="help-text">This will be included in the invitation email</div>
+                </div>
+
+                <div id="messageContainer" class="message-container">
+                    <div id="messageBox" class="message-box"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-invite">Send Invitation</button>
+                    <button type="button" class="btn-cancel" onclick="window.history.back()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../../api-client.js"></script>
+    <script>
+        (function guardInvitePage() {
+            const accessToken = localStorage.getItem('accessToken');
+            const role = localStorage.getItem('userRole');
+
+            if (!accessToken || !role || isTokenExpired(accessToken)) {
+                clearAuthAndRedirectToLogin();
+                return;
+            }
+
+            if (role !== 'supplier') {
+                redirectToRoleDashboard(role);
+            }
+        })();
+
+        function isTokenExpired(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+                const payload = JSON.parse(atob(padded));
+                if (!payload.exp) {
+                    return true;
+                }
+                return Date.now() >= payload.exp * 1000;
+            } catch {
+                return true;
+            }
+        }
+
+        function clearAuthAndRedirectToLogin() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userRole');
+            window.location.href = '../../auth/login/login.html';
+        }
+
+        function redirectToRoleDashboard(role) {
+            if (role === 'farmer') {
+                window.location.href = '../farmer_dashboard/farmer.html';
+                return;
+            }
+
+            if (role === 'buyer') {
+                window.location.href = '../buyer_dashboard/buyer.html';
+                return;
+            }
+
+            clearAuthAndRedirectToLogin();
+        }
+
+        const form = document.getElementById('inviteForm');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const farmName = document.getElementById('farmName').value.trim();
+            const farmerName = document.getElementById('farmerName').value.trim();
+            const farmerEmail = document.getElementById('farmerEmail').value.trim();
+            const farmerPhone = document.getElementById('farmerPhone').value.trim();
+            const farmLocation = document.getElementById('farmLocation').value.trim();
+            const farmType = document.getElementById('farmType').value;
+            const message = document.getElementById('message').value.trim();
+
+            if (!farmName || !farmerName || !farmerEmail) {
+                showMessage('Please fill in required fields (Farm Name, Farmer Name, Email)', 'error');
+                return;
+            }
+
+            // Simple email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(farmerEmail)) {
+                showMessage('Please enter a valid email address', 'error');
+                return;
+            }
+
+            try {
+                // Disable submit button
+                const submitBtn = form.querySelector('.btn-invite');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
+
+                const inviteData = {
+                    farmName: farmName,
+                    farmerName: farmerName,
+                    farmerEmail: farmerEmail,
+                    farmerPhone: farmerPhone || null,
+                    farmLocation: farmLocation || null,
+                    farmType: farmType,
+                    message: message || null,
+                };
+
+                await api.supplier.inviteFarm(inviteData);
+
+                showMessage('Invitation sent successfully! The farmer will receive an email to join your network.', 'success');
+
+                // Reset form
+                form.reset();
+
+                // Redirect back after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'supplier.html?tab=clients';
+                }, 2000);
+
+            } catch (error) {
+                showMessage(`Failed to send invitation: ${error.message}`, 'error');
+                const submitBtn = form.querySelector('.btn-invite');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Invitation';
+            }
+        });
+
+        function showMessage(text, type) {
+            const messageBox = document.getElementById('messageBox');
+            const messageContainer = document.getElementById('messageContainer');
+
+            messageBox.textContent = text;
+            messageBox.className = `message-box show ${type}`;
+            messageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+
+</html>

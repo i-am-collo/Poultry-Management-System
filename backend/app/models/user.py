@@ -18,3 +18,6 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     role = Column(String(30), nullable=False)
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    
+    orders = relationship("Order", back_populates="user", cascade="all, delete-orphan")
+    

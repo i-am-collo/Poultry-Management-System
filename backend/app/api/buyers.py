@@ -4,26 +4,36 @@ from sqlalchemy.orm import Session
 from app.core.deps import require_role
 from app.crud.product import get_product_by_id, search_active_products
 from app.db.database import get_db
-from app.models.order import Order
+from app.models.order import Order, OrderItem
 from app.models.product import Product
 from app.models.user import User
-from app.schemas.order import OrderCreate, OrderResponse
+from app.schemas.order import OrderCreate, OrderResponse, OrderItemResponse
 from app.schemas.product import BuyerProductSearchResponse
 
 router = APIRouter(prefix="/buyers", tags=["Buyers"])
 
 
-def serialize_order(order: Order, product_name: str) -> OrderResponse:
+def serialize_order_item(item: OrderItem) -> OrderItemResponse:
+    return OrderItemResponse(
+        id=item.id,
+        order_id=item.order_id,
+        product_id=item.product_id,
+        quantity=item.quantity,
+        unit_price=item.unit_price,
+        total_price=item.total_price,
+        created_at=item.created_at,
+        updated_at=item.updated_at,
+    )
+
+
+def serialize_order(order: Order) -> OrderResponse:
     return OrderResponse(
         id=order.id,
-        buyer_id=order.buyer_id,
-        supplier_id=order.supplier_id,
-        product_id=order.product_id,
-        product_name=product_name,
-        quantity=order.quantity,
-        unit_price=order.unit_price,
-        total_price=order.total_price,
-        status=order.status,
+        user_id=order.user_id,
+        total_amount=order.total_amount,
+        order_status=order.order_status.value if hasattr(order.order_status, 'value') else str(order.order_status),
+        payment_status=order.payment_status.value if hasattr(order.payment_status, 'value') else str(order.payment_status),
+        items=[serialize_order_item(item) for item in order.items],
         note=order.note,
         created_at=order.created_at,
         updated_at=order.updated_at,
@@ -34,7 +44,7 @@ def serialize_order(order: Order, product_name: str) -> OrderResponse:
 def search_products(
     q: str | None = Query(default=None, min_length=1),
     db: Session = Depends(get_db),
-    _: User = Depends(require_role("buyer")),
+    _: User = Depends(require_role("buyer", "farmer")),
 ):
     products = search_active_products(db, q)
     if not products:
@@ -52,8 +62,9 @@ def search_products(
             name=product.name,
             category=product.category,
             description=product.description,
-            price_per_unit=product.price_per_unit,
-            unit=product.unit,
+            product_image=product.product_image,
+            unit_price=product.unit_price,
+            unit_of_measure=product.unit_of_measure,
             stock_quantity=product.stock_quantity,
         )
         for product in products
@@ -64,75 +75,85 @@ def search_products(
 def create_order(
     payload: OrderCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_role("buyer")),
+    current_user: User = Depends(require_role("buyer", "farmer")),
 ):
-    product = get_product_by_id(db, payload.product_id)
-    if not product or not product.is_active:
-        raise HTTPException(status_code=404, detail="Product not found")
+    # Validate all products exist and have sufficient stock
+    total_amount = 0.0
+    items_data = []
+    
+    for item_payload in payload.items:
+        product = get_product_by_id(db, item_payload.product_id)
+        if not product or not product.is_active:
+            raise HTTPException(status_code=404, detail=f"Product {item_payload.product_id} not found")
 
-    if product.stock_quantity < payload.quantity:
-        raise HTTPException(status_code=400, detail="Insufficient stock for this order")
-
-    total_price = payload.quantity * product.price_per_unit
+        if product.stock_quantity < item_payload.quantity:
+            raise HTTPException(status_code=400, detail=f"Insufficient stock for product {product.name}")
+        
+        item_total = item_payload.quantity * product.unit_price
+        total_amount += item_total
+        items_data.append({
+            "product": product,
+            "quantity": item_payload.quantity,
+            "unit_price": product.unit_price,
+            "total_price": item_total,
+        })
+    
+    # Create order
     order = Order(
-        buyer_id=current_user.id,
-        supplier_id=product.supplier_id,
-        product_id=product.id,
-        quantity=payload.quantity,
-        unit_price=product.price_per_unit,
-        total_price=total_price,
-        status="pending",
+        user_id=current_user.id,
+        total_amount=total_amount,
         note=payload.note,
     )
-
-    product.stock_quantity -= payload.quantity
-    db.add(product)
     db.add(order)
+    db.flush()  # Flush to get the order ID without committing
+    
+    # Create order items and reduce stock
+    for item_data in items_data:
+        product = item_data["product"]
+        order_item = OrderItem(
+            order_id=order.id,
+            product_id=product.id,
+            quantity=item_data["quantity"],
+            unit_price=item_data["unit_price"],
+            total_price=item_data["total_price"],
+        )
+        product.stock_quantity -= item_data["quantity"]
+        db.add(order_item)
+        db.add(product)
+    
     db.commit()
     db.refresh(order)
-
-    return serialize_order(order, product.name)
+    
+    return serialize_order(order)
 
 
 @router.get("/orders", response_model=list[OrderResponse])
 def list_orders(
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_role("buyer")),
+    current_user: User = Depends(require_role("buyer", "farmer")),
 ):
     orders = (
         db.query(Order)
-        .filter(Order.buyer_id == current_user.id)
+        .filter(Order.user_id == current_user.id)
         .order_by(Order.created_at.desc())
         .all()
     )
 
-    if not orders:
-        return []
-
-    product_ids = {order.product_id for order in orders}
-    products = db.query(Product).filter(Product.id.in_(product_ids)).all() if product_ids else []
-    product_name_by_id = {product.id: product.name for product in products}
-
-    return [
-        serialize_order(order, product_name_by_id.get(order.product_id, "Unknown product"))
-        for order in orders
-    ]
+    return [serialize_order(order) for order in orders]
 
 
 @router.get("/orders/{order_id}", response_model=OrderResponse)
 def get_order(
     order_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_role("buyer")),
+    current_user: User = Depends(require_role("buyer", "farmer")),
 ):
     order = (
         db.query(Order)
-        .filter(Order.id == order_id, Order.buyer_id == current_user.id)
+        .filter(Order.id == order_id, Order.user_id == current_user.id)
         .first()
     )
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
 
-    product = get_product_by_id(db, order.product_id)
-    product_name = product.name if product else "Unknown product"
-    return serialize_order(order, product_name)
+    return serialize_order(order)

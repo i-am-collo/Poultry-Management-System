@@ -16,8 +16,9 @@ class ProductCreate(BaseModel):
     name: str
     category: str
     description: str | None = None
-    price_per_unit: float = Field(gt=0)
-    unit: str = "unit"
+    unit_price: float = Field(gt=0)
+    product_image: str
+    unit_of_measure: str = "unit"
     stock_quantity: int = Field(default=0, ge=0)
 
     @field_validator("name")
@@ -33,10 +34,10 @@ class ProductCreate(BaseModel):
             raise ValueError("Invalid category")
         return cleaned
 
-    @field_validator("unit")
+    @field_validator("unit_of_measure")
     @classmethod
-    def validate_unit(cls, value: str) -> str:
-        return _required_text(value, "Unit")
+    def validate_unit_of_measure(cls, value: str) -> str:
+        return _required_text(value, "Unit of measure")
 
     @field_validator("description")
     @classmethod
@@ -51,8 +52,9 @@ class ProductUpdate(BaseModel):
     name: str | None = None
     category: str | None = None
     description: str | None = None
-    price_per_unit: float | None = Field(default=None, gt=0)
-    unit: str | None = None
+    unit_price: float | None = Field(default=None, gt=0)
+    product_image: str | None = None
+    unit_of_measure: str | None = None
     stock_quantity: int | None = Field(default=None, ge=0)
     is_active: bool | None = None
 
@@ -73,12 +75,12 @@ class ProductUpdate(BaseModel):
             raise ValueError("Invalid category")
         return cleaned
 
-    @field_validator("unit")
+    @field_validator("unit_of_measure")
     @classmethod
-    def validate_unit(cls, value: str | None) -> str | None:
+    def validate_unit_of_measure(cls, value: str | None) -> str | None:
         if value is None:
             return value
-        return _required_text(value, "Unit")
+        return _required_text(value, "Unit of measure")
 
     @field_validator("description")
     @classmethod
@@ -95,8 +97,9 @@ class ProductResponse(BaseModel):
     name: str
     category: str
     description: str | None
-    price_per_unit: float
-    unit: str
+    unit_price: float
+    product_image: str
+    unit_of_measure: str
     stock_quantity: int
     is_active: bool
     created_at: datetime
@@ -110,6 +113,7 @@ class BuyerProductSearchResponse(BaseModel):
     name: str
     category: str
     description: str | None
-    price_per_unit: float
-    unit: str
+    product_image: str
+    unit_price: float
+    unit_of_measure: str
     stock_quantity: int

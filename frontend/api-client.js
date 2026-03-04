@@ -205,12 +205,19 @@ class APIClient {
         getProducts: () => this.get('/suppliers/products'),
         updateProduct: (id, data) => this.put(`/suppliers/products/${id}`, data),
         deleteProduct: (id) => this.delete(`/suppliers/products/${id}`),
+        getOrders: () => this.get('/suppliers/orders'),
+        getOrder: (id) => this.get(`/suppliers/orders/${id}`),
+        updateOrderStatus: (id, status) => this.patch(`/suppliers/orders/${id}`, { status }),
+        getCustomers: () => this.get('/suppliers/customers'),
+        getCustomerStats: () => this.get('/suppliers/customers/stats'),
+        inviteFarm: (data) => this.post('/suppliers/invite-farm', data),
     };
 
     /**
      * Buyer API endpoints (optional - add as needed)
      */
     buyer = {
+        getAllProducts: () => this.get('/buyers/search'),
         searchProducts: (query) => this.get(`/buyers/search?q=${query}`),
         createOrder: (data) => this.post('/buyers/orders', data),
         getOrders: () => this.get('/buyers/orders'),

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details — PoultryHub Supplier</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="supplier.css">
+</head>
+
+<body>
+
+    <!-- ── SIDEBAR ── -->
+    <aside>
+        <div class="logo">
+            <div class="logo-mark">🐔 PoultryPro</div>
+            <div class="logo-sub">Supplier Portal</div>
+        </div>
+
+        <nav>
+            <div class="nav-group-label">Catalog</div>
+            <div class="nav-item" onclick="goToCatalog()">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg>
+                Manage Catalog
+            </div>
+
+            <div class="nav-group-label">Operations</div>
+            <div class="nav-item" onclick="goToCatalog()">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                    <path d="M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    <polyline points="9 12 11 14 15 10" />
+                </svg>
+                Manage Orders
+                <span class="badge">9</span>
+            </div>
+            <div class="nav-item" onclick="goToCatalog()">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                Inventory Tracking
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="supplier-card">
+                <div class="avatar">P</div>
+                <div>
+                    <div class="supplier-name">PrimeFlock Supplies</div>
+                    <div class="supplier-role">Verified Poultry Supplier</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <main>
+        <header>
+            <div>
+                <div class="page-title" id="pageTitle">Product Details</div>
+                <div class="page-subtitle">View and manage your product information</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-ghost" onclick="goToCatalog()">← Back to Catalog</button>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="product-view-container">
+                <a class="back-link" onclick="goToCatalog()">← Back to Catalog</a>
+
+                <div id="successMessage" class="message success"></div>
+                <div id="errorMessage" class="message error"></div>
+
+                <!-- View Mode -->
+                <div class="view-mode" id="viewMode">
+                    <div class="product-header">
+                        <div class="product-image-section">
+                            <div class="product-image" id="productImageDisplay">📦</div>
+                            <button class="change-image-btn"
+                                onclick="document.getElementById('imageUploadInput').click()">Change Image</button>
+                            <input type="file" id="imageUploadInput" accept="image/*" style="display: none;"
+                                onchange="handleImageUpload(event)">
+                        </div>
+
+                        <div class="product-details-section">
+                            <div class="product-header-info">
+                                <div class="product-title" id="productName">Loading...</div>
+                                <div class="product-meta">
+                                    <div class="product-meta-item">
+                                        <span class="product-meta-label">Category:</span> <span
+                                            id="productCategory">-</span>
+                                    </div>
+                                    <div class="product-meta-item">
+                                        <span class="product-meta-label">Unit:</span> <span id="productUnit">-</span>
+                                    </div>
+                                </div>
+                                <div class="product-meta" style="margin-top: 15px;">
+                                    <div class="product-meta-item">
+                                        <span class="product-meta-label">Price:</span> <span
+                                            id="productPrice">$0.00</span>
+                                    </div>
+                                    <div class="product-meta-item">
+                                        <span class="product-meta-label">Stock:</span> <span id="productStock">0</span>
+                                        units
+                                    </div>
+                                    <div class="product-meta-item">
+                                        <span class="stock-badge" id="stockBadge">In Stock</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="product-actions">
+                                <button class="btn btn-primary" onclick="toggleEditMode()">✏️ Edit Product</button>
+                                <button class="btn btn-danger" onclick="deleteProduct()" style="flex: 1;">🗑️ Delete
+                                    Product</button>
+                            </div>
+
+                            <div class="form-field">
+                                <label>Description</label>
+                                <p id="productDescription"
+                                    style="padding: 10px 12px; background: var(--bg); border-radius: 6px; border: 1px solid var(--border); color: var(--text);">
+                                    No description provided</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Mode -->
+                <div class="edit-mode" id="editMode">
+                    <div class="product-header-info">
+                        <h2 style="margin-bottom: 20px;">Edit Product</h2>
+                    </div>
+
+                    <form id="editProductForm" class="form-section">
+                        <div class="two-column">
+                            <div class="form-field">
+                                <label for="editName">Product Name *</label>
+                                <input type="text" id="editName" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="editCategory">Category *</label>
+                                <select id="editCategory" required>
+                                    <option value="feed">Feed</option>
+                                    <option value="vaccine">Vaccine</option>
+                                    <option value="equipment">Equipment</option>
+                                    <option value="chicks">Chicks</option>
+                                    <option value="eggs">Eggs</option>
+                                    <option value="broilers">Broilers</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="two-column">
+                            <div class="form-field">
+                                <label for="editPrice">Price per Unit *</label>
+                                <input type="number" id="editPrice" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="editUnit">Unit of Measure *</label>
+                                <input type="text" id="editUnit" required>
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="editStock">Stock Quantity *</label>
+                            <input type="number" id="editStock" min="0" required>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="editDescription">Description (Optional)</label>
+                            <textarea id="editDescription"></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-ghost" onclick="toggleEditMode()">Cancel</button>
+                            <button type="submit" class="btn btn-primary" style="flex: 1;">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../api-client.js"></script>
+    <script>
+        let currentProductId = null;
+        let currentProduct = null;
+
+        // Auth guard
+        (function guardProductView() {
+            const accessToken = localStorage.getItem('accessToken');
+            const role = localStorage.getItem('userRole');
+
+            if (!accessToken || !role || isTokenExpired(accessToken)) {
+                clearAuthAndRedirectToLogin();
+                return;
+            }
+
+            if (role !== 'supplier') {
+                redirectToRoleDashboard(role);
+            }
+        })();
+
+        function isTokenExpired(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+                const payload = JSON.parse(atob(padded));
+                if (!payload.exp) {
+                    return true;
+                }
+                return Date.now() >= payload.exp * 1000;
+            } catch {
+                return true;
+            }
+        }
+
+        function clearAuthAndRedirectToLogin() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userRole');
+            window.location.href = '../../auth/login/login.html';
+        }
+
+        function redirectToRoleDashboard(role) {
+            if (role === 'farmer') {
+                window.location.href = '../farmer_dashboard/farmer.html';
+                return;
+            }
+
+            if (role === 'buyer') {
+                window.location.href = '../buyer_dashboard/buyer.html';
+                return;
+            }
+
+            clearAuthAndRedirectToLogin();
+        }
+
+        function goToCatalog() {
+            window.location.href = 'supplier.html';
+        }
+
+        function showMessage(type, message) {
+            const successMsg = document.getElementById('successMessage');
+            const errorMsg = document.getElementById('errorMessage');
+
+            if (type === 'success') {
+                successMsg.textContent = message;
+                successMsg.classList.add('show');
+                errorMsg.classList.remove('show');
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 4000);
+            } else {
+                errorMsg.textContent = message;
+                errorMsg.classList.add('show');
+                successMsg.classList.remove('show');
+            }
+        }
+
+        async function loadProduct() {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentProductId = urlParams.get('id');
+
+            if (!currentProductId) {
+                showMessage('error', 'Product ID not found');
+                return;
+            }
+
+            try {
+                const products = await api.supplier.getProducts();
+                currentProduct = products.find(p => p.id == currentProductId);
+
+                if (!currentProduct) {
+                    showMessage('error', 'Product not found');
+                    return;
+                }
+
+                displayProduct();
+            } catch (error) {
+                showMessage('error', `Failed to load product: ${error.message}`);
+            }
+        }
+
+        function displayProduct() {
+            document.getElementById('productName').textContent = currentProduct.name;
+            document.getElementById('productCategory').textContent = currentProduct.category;
+            document.getElementById('productUnit').textContent = currentProduct.unit_of_measure;
+            document.getElementById('productPrice').textContent = `$${Number(currentProduct.unit_price).toFixed(2)}`;
+            document.getElementById('productStock').textContent = currentProduct.stock_quantity;
+            document.getElementById('productDescription').textContent = currentProduct.description || 'No description provided';
+
+            // Set image
+            if (currentProduct.product_image) {
+                document.getElementById('productImageDisplay').style.backgroundImage = `url('${currentProduct.product_image}')`;
+                document.getElementById('productImageDisplay').style.backgroundSize = 'cover';
+                document.getElementById('productImageDisplay').style.backgroundPosition = 'center';
+                document.getElementById('productImageDisplay').textContent = '';
+            }
+
+            // Set stock badge
+            const badge = document.getElementById('stockBadge');
+            if (currentProduct.stock_quantity > 50) {
+                badge.textContent = 'In Stock';
+                badge.className = 'stock-badge in-stock';
+            } else if (currentProduct.stock_quantity > 10) {
+                badge.textContent = 'Limited';
+                badge.className = 'stock-badge limited';
+            } else {
+                badge.textContent = 'Low Stock';
+                badge.className = 'stock-badge low-stock';
+            }
+
+            // Populate edit form
+            document.getElementById('editName').value = currentProduct.name;
+            document.getElementById('editCategory').value = currentProduct.category;
+            document.getElementById('editPrice').value = currentProduct.unit_price;
+            document.getElementById('editUnit').value = currentProduct.unit_of_measure;
+            document.getElementById('editStock').value = currentProduct.stock_quantity;
+            document.getElementById('editDescription').value = currentProduct.description || '';
+        }
+
+        function toggleEditMode() {
+            const viewMode = document.getElementById('viewMode');
+            const editMode = document.getElementById('editMode');
+
+            viewMode.classList.toggle('hidden');
+            editMode.classList.toggle('active');
+        }
+
+        async function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const base64Image = e.target.result;
+
+                try {
+                    await api.supplier.updateProduct(currentProductId, {
+                        product_image: base64Image,
+                    });
+
+                    currentProduct.product_image = base64Image;
+                    document.getElementById('productImageDisplay').style.backgroundImage = `url('${base64Image}')`;
+                    document.getElementById('productImageDisplay').style.backgroundSize = 'cover';
+                    document.getElementById('productImageDisplay').style.backgroundPosition = 'center';
+                    document.getElementById('productImageDisplay').textContent = '';
+
+                    showMessage('success', '✓ Image updated successfully');
+                } catch (error) {
+                    showMessage('error', `Failed to update image: ${error.message}`);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        document.getElementById('editProductForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('editName').value.trim();
+            const category = document.getElementById('editCategory').value;
+            const price = parseFloat(document.getElementById('editPrice').value);
+            const unit = document.getElementById('editUnit').value.trim();
+            const stock = parseInt(document.getElementById('editStock').value);
+            const description = document.getElementById('editDescription').value.trim() || null;
+
+            if (!name || !category || !unit || !Number.isFinite(price) || price <= 0 || !Number.isFinite(stock) || stock < 0) {
+                showMessage('error', 'Please fill in all required fields with valid values');
+                return;
+            }
+
+            try {
+                const submitBtn = document.querySelector('#editProductForm button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving...';
+
+                await api.supplier.updateProduct(currentProductId, {
+                    name,
+                    category,
+                    description,
+                    unit_price: price,
+                    unit_of_measure: unit,
+                    stock_quantity: stock,
+                });
+
+                currentProduct = {
+                    ...currentProduct,
+                    name,
+                    category,
+                    description,
+                    unit_price: price,
+                    unit_of_measure: unit,
+                    stock_quantity: stock,
+                };
+
+                displayProduct();
+                toggleEditMode();
+                showMessage('success', '✓ Product updated successfully');
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save Changes';
+            } catch (error) {
+                showMessage('error', `Failed to update product: ${error.message}`);
+                const submitBtn = document.querySelector('#editProductForm button[type="submit"]');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save Changes';
+            }
+        });
+
+        async function deleteProduct() {
+            if (!confirm(`Are you sure you want to delete "${currentProduct.name}"? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                await api.supplier.deleteProduct(currentProductId);
+                showMessage('success', '✓ Product deleted successfully. Redirecting...');
+                setTimeout(() => {
+                    goToCatalog();
+                }, 2000);
+            } catch (error) {
+                showMessage('error', `Failed to delete product: ${error.message}`);
+            }
+        }
+
+        // Load product on page load
+        loadProduct();
+    </script>
+</body>
+
+</html>

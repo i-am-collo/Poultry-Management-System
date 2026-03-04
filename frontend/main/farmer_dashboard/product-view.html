@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmDirect PMS — Product View</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Serif+Display&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="farmer.css">
+</head>
+
+<body>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <!-- ════════ SIDEBAR ════════ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sb-head">
+            <div class="sb-logo">🐓</div>
+            <div class="sb-brand">
+                <div class="sb-brand-name">FarmDirect</div>
+                <div class="sb-brand-tag">PMS v2.0</div>
+            </div>
+        </div>
+        <nav class="sb-nav">
+            <div class="nav-grp">Main</div>
+            <div class="nav-item" onclick="goToMarketplace()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" />
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                    <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" />
+                    <path d="M2 7h20" />
+                </svg>
+                <span>Back to Marketplace</span>
+            </div>
+        </nav>
+        <div class="sb-foot">
+            <div class="f-avatar">JM</div>
+            <div class="f-info">
+                <div class="f-name">John Mwangi</div>
+                <div class="f-role">Farm Manager · Kiambu</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ════════ MAIN ════════ -->
+    <div class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()" title="Toggle navigation menu"
+                aria-label="Toggle navigation menu">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+            </button>
+            <div class="breadcrumb">
+                <span>FarmDirect</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m9 18 6-6-6-6" />
+                </svg>
+                <span class="cur">Product Details</span>
+            </div>
+            <div class="tb-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                </svg>
+                <input type="text" placeholder="Search birds, orders, supplies…">
+            </div>
+            <div class="tb-actions">
+                <button class="tb-btn" onclick="showToast('💬 No new messages')" title="Messages"
+                    aria-label="View messages">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                </button>
+            </div>
+            <button class="tb-profile" onclick="goToMarketplace()" title="Back to marketplace"
+                aria-label="Back to marketplace">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+        </header>
+
+        <div class="content">
+
+            <!-- PRODUCT VIEW -->
+            <div id="productViewContainer">
+                <div style="display: grid; place-items: center; min-height: 60vh; color: var(--text2);">
+                    <div>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            style="width: 48px; height: 48px; margin: 0 auto 20px; opacity: 0.5;">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.35-4.35" />
+                        </svg>
+                        <p style="text-align: center;">Loading product details...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /content -->
+    </div><!-- /main -->
+
+    <!-- Order Product Modal -->
+    <div class="modal-bd" id="modal-order" onclick="closeModalOnBack(event,'modal-order')">
+        <div class="modal-box">
+            <div class="modal-head">
+                <div class="modal-title">Place Order</div>
+                <button class="modal-close" onclick="closeModal('modal-order')" title="Close dialog"
+                    aria-label="Close dialog">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grp">
+                    <label class="form-label">Product</label>
+                    <div id="orderProductName"
+                        style="padding: 10px; background: var(--surface2); border-radius: 6px; color: var(--text-muted);">
+                        Loading...</div>
+                </div>
+                <div class="form-grp">
+                    <label class="form-label">Price per Unit</label>
+                    <div id="orderProductPrice"
+                        style="padding: 10px; background: var(--surface2); border-radius: 6px; color: var(--text-muted);">
+                        KES 0</div>
+                </div>
+                <div class="form-grp">
+                    <label class="form-label">Available Stock</label>
+                    <div id="orderProductStock"
+                        style="padding: 10px; background: var(--surface2); border-radius: 6px; color: var(--text-muted);">
+                        0 units</div>
+                </div>
+                <div class="form-grp">
+                    <label class="form-label">Quantity to Order</label>
+                    <input type="number" id="orderQuantity" class="form-input" placeholder="Enter quantity" min="1"
+                        value="1">
+                </div>
+                <div class="form-grp">
+                    <label class="form-label">Notes (Optional)</label>
+                    <textarea id="orderNotes" class="form-input" placeholder="Any special instructions..."
+                        style="resize: vertical; min-height: 80px;"></textarea>
+                </div>
+                <div class="form-grp"
+                    style="display: flex; justify-content: space-between; align-items: center; background: var(--surface2); padding: 15px; border-radius: 6px; margin-top: 15px;">
+                    <span style="font-size: 14px; color: var(--text-muted);">Total Price:</span>
+                    <span id="orderTotalPrice" style="font-size: 18px; font-weight: 600; color: var(--accent);">KES
+                        0</span>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button class="btn btn-secondary" onclick="closeModal('modal-order')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitProductOrder()">Place Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-wrap" id="toastWrap"></div>
+
+    <script src="../../api-client.js"></script>
+    <script>
+        (function guardProductView() {
+            const accessToken = localStorage.getItem('accessToken');
+            const role = localStorage.getItem('userRole');
+
+            if (!accessToken || !role || isTokenExpired(accessToken)) {
+                clearAuthAndRedirectToLogin();
+                return;
+            }
+
+            if (role !== 'farmer') {
+                redirectToRoleDashboard(role);
+            }
+        })();
+
+        function isTokenExpired(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+                const payload = JSON.parse(atob(padded));
+                if (!payload.exp) {
+                    return true;
+                }
+                return Date.now() >= payload.exp * 1000;
+            } catch {
+                return true;
+            }
+        }
+
+        function clearAuthAndRedirectToLogin() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userRole');
+            window.location.href = '../../auth/login/login.html';
+        }
+
+        function redirectToRoleDashboard(role) {
+            if (role === 'supplier') {
+                window.location.href = '../supplier-dashboard/supplier.html';
+                return;
+            }
+
+            if (role === 'buyer') {
+                window.location.href = '../buyer_dashboard/buyer.html';
+                return;
+            }
+
+            clearAuthAndRedirectToLogin();
+        }
+
+        function goToMarketplace() {
+            window.location.href = 'farmer.html?page=market';
+        }
+
+        let currentProduct = null;
+        let currentOrderProductId = null;
+        let currentOrderProductPrice = 0;
+        let currentOrderProductStock = 0;
+
+        async function loadProductDetails() {
+            const container = document.getElementById('productViewContainer');
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+
+            if (!productId) {
+                container.innerHTML = '<div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--color-error);">Product ID not found in URL</div>';
+                return;
+            }
+
+            try {
+                // Fetch all products and find the one with matching ID
+                const products = await api.buyer.getAllProducts();
+                currentProduct = products.find(p => p.id == productId);
+
+                if (!currentProduct) {
+                    container.innerHTML = '<div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--color-error);">Product not found</div>';
+                    return;
+                }
+
+                renderProductDetails();
+            } catch (error) {
+                container.innerHTML = `<div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--color-error);">Failed to load product: ${error.message}</div>`;
+            }
+        }
+
+        function renderProductDetails() {
+            const container = document.getElementById('productViewContainer');
+
+            const categoryMap = {
+                'feed': '🌾',
+                'medicines': '💊',
+                'equipment': '🔧',
+                'vaccines': '💉',
+                'chicks': '🐣',
+                'eggs': '🥚',
+                'broilers': '🐔',
+                'other': '📦'
+            };
+
+            const icon = categoryMap[currentProduct.category?.toLowerCase()] || '📦';
+            const isAvailable = currentProduct.stock_quantity > 0;
+            const categoryDisplay = currentProduct.category.charAt(0).toUpperCase() + currentProduct.category.slice(1);
+
+            container.innerHTML = `
+                <div class="product-view">
+                    <button class="btn-back" onclick="goToMarketplace()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Back to Marketplace
+                    </button>
+
+                    <div class="product-hero">
+                        <div class="product-image-section">
+                            <div class="product-image" style="background: var(--g50); display: flex; align-items: center; justify-content: center; font-size: 120px; overflow: hidden;">
+                                ${currentProduct.product_image && currentProduct.product_image.trim() &&
+                    (currentProduct.product_image.startsWith('http') || currentProduct.product_image.startsWith('/') || currentProduct.product_image.startsWith('data:'))
+                    ? `<img src="${currentProduct.product_image}" alt="${currentProduct.name}" style="width: 100%; height: 100%; object-fit: cover;">`
+                    : `<svg viewBox="0 0 200 200" style="width: 80%; height: 80%; color: var(--text2);" fill="currentColor">
+                                            <rect x="10" y="10" width="180" height="180" fill="var(--g100)" stroke="var(--g300)" stroke-width="2"/>
+                                            <circle cx="60" cy="60" r="20" fill="var(--g300)"/>
+                                            <path d="M 10 190 L 80 120 L 140 170 L 190 90 L 190 190 Z" fill="var(--g300)"></path>
+                                        </svg>`
+                }
+                            </div>
+                        </div>
+
+                        <div class="product-info-section">
+                            <div class="product-category">${categoryDisplay}</div>
+                            <h1 class="product-title">${currentProduct.name}</h1>
+                            <div class="product-supplier">
+                                <span class="supplier-badge">📦 ${currentProduct.supplier_name}</span>
+                            </div>
+
+                            <div class="product-pricing">
+                                <div class="price-main">KES ${Number(currentProduct.unit_price).toLocaleString()}</div>
+                                <div class="price-unit">per ${currentProduct.unit_of_measure}</div>
+                            </div>
+
+                            <div class="product-stock">
+                                <div class="stock-label">Available Stock</div>
+                                <div class="stock-value ${isAvailable ? 'in-stock' : 'out-of-stock'}">
+                                    ${currentProduct.stock_quantity} ${currentProduct.unit_of_measure}${currentProduct.stock_quantity !== 1 ? 's' : ''}
+                                </div>
+                                <div class="stock-status">
+                                    ${isAvailable ? '✓ In Stock' : '✗ Out of Stock'}
+                                </div>
+                            </div>
+
+                            <div class="product-actions">
+                                <button class="btn btn-primary btn-large" 
+                                    ${!isAvailable ? 'disabled' : ''} 
+                                    onclick="openOrderModal(${currentProduct.id}, '${currentProduct.name.replace(/'/g, "\\'")}', ${currentProduct.unit_price}, ${currentProduct.stock_quantity})">
+                                    ${isAvailable ? 'Place Order Now' : 'Out of Stock'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    ${currentProduct.description ? `
+                        <div class="product-section">
+                            <h2 class="section-title">Product Description</h2>
+                            <div class="product-description">
+                                ${currentProduct.description}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="product-section">
+                        <h2 class="section-title">Product Details</h2>
+                        <div class="product-details-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">Category</div>
+                                <div class="detail-value">${categoryDisplay}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Unit of Measure</div>
+                                <div class="detail-value">${currentProduct.unit_of_measure}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Price per Unit</div>
+                                <div class="detail-value">KES ${Number(currentProduct.unit_price).toLocaleString()}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Available Quantity</div>
+                                <div class="detail-value">${currentProduct.stock_quantity} units</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-section">
+                        <h2 class="section-title">Supplier Information</h2>
+                        <div class="supplier-info">
+                            <div class="supplier-name">${currentProduct.supplier_name}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openOrderModal(productId, productName, pricePerUnit, stockQuantity) {
+            currentOrderProductId = productId;
+            currentOrderProductPrice = pricePerUnit;
+            currentOrderProductStock = stockQuantity;
+
+            document.getElementById('orderProductName').textContent = productName;
+            document.getElementById('orderProductPrice').textContent = `KES ${Number(pricePerUnit).toLocaleString()}`;
+            document.getElementById('orderProductStock').textContent = `${stockQuantity} ${currentProduct.unit_of_measure}`;
+            document.getElementById('orderQuantity').value = '1';
+            document.getElementById('orderQuantity').max = stockQuantity;
+            document.getElementById('orderNotes').value = '';
+
+            updateOrderTotalPrice();
+            openModal('modal-order');
+        }
+
+        function updateOrderTotalPrice() {
+            const quantity = Number(document.getElementById('orderQuantity')?.value || 1);
+            const total = quantity * currentOrderProductPrice;
+            document.getElementById('orderTotalPrice').textContent = `KES ${Number(total).toLocaleString()}`;
+        }
+
+        document.getElementById('orderQuantity')?.addEventListener('input', updateOrderTotalPrice);
+
+        async function submitProductOrder() {
+            const quantity = Number(document.getElementById('orderQuantity')?.value || 1);
+            const notes = document.getElementById('orderNotes')?.value?.trim() || '';
+
+            if (!quantity || quantity <= 0 || quantity > currentOrderProductStock) {
+                showToast('Please enter a valid quantity.');
+                return;
+            }
+
+            try {
+                await api.buyer.createOrder({
+                    items: [
+                        {
+                            product_id: currentOrderProductId,
+                            quantity: quantity,
+                        }
+                    ],
+                    note: notes || null,
+                });
+
+                showToast('Order placed successfully! 🎉');
+                closeModal('modal-order');
+                setTimeout(() => {
+                    goToMarketplace();
+                }, 1500);
+            } catch (error) {
+                showToast(`Failed to place order: ${error.message}`);
+            }
+        }
+
+        /* ── MODAL ── */
+        function openModal(id) { document.getElementById(id).classList.add('open'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+        function closeModalOnBack(e, id) { if (e.target === e.currentTarget) closeModal(id); }
+
+        /* ── SIDEBAR ── */
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('overlay');
+            sb.classList.toggle('open');
+            ov.classList.toggle('show');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        /* ── TOAST ── */
+        function showToast(msg) {
+            const wrap = document.getElementById('toastWrap');
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            wrap.appendChild(t);
+            setTimeout(() => {
+                t.style.opacity = '0';
+                t.style.transition = 'opacity .3s';
+                setTimeout(() => t.remove(), 300);
+            }, 2800);
+        }
+
+        /* ── KEYBOARD ── */
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-bd.open').forEach(m => m.classList.remove('open'));
+                closeSidebar();
+            }
+        });
+
+        // Load product on page load
+        loadProductDetails();
+    </script>
+</body>
+
+</html>

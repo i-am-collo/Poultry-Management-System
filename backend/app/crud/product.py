@@ -11,8 +11,9 @@ def create_product(db: Session, supplier_id: int, payload: ProductCreate) -> Pro
         name=payload.name,
         category=payload.category,
         description=payload.description,
-        price_per_unit=payload.price_per_unit,
-        unit=payload.unit,
+        product_image=payload.product_image,
+        unit_price=payload.unit_price,
+        unit_of_measure=payload.unit_of_measure,
         stock_quantity=payload.stock_quantity,
     )
     db.add(product)

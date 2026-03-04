@@ -8,969 +8,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;600&display=swap"
         rel="stylesheet">
-    <style>
-        :root {
-            --bg: #f4f7f4;
-            --surface: #ffffff;
-            --surface2: #edf3ed;
-            --border: #ccdece;
-            --accent: #1a6b3a;
-            --accent2: #e07b2a;
-            --accent3: #2a8a5e;
-            --muted: #7a9b82;
-            --text: #1a2e1f;
-            --text2: #4a7055;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Epilogue', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            overflow-x: hidden;
-        }
-
-        /* ── Sidebar ── */
-        aside {
-            width: 260px;
-            min-height: 100vh;
-            background: var(--surface);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            padding: 28px 24px 20px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .logo-mark {
-            font-family: 'DM Serif Display', serif;
-            font-size: 22px;
-            color: var(--accent);
-            letter-spacing: -0.5px;
-        }
-
-        .logo-sub {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            color: var(--muted);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-top: 2px;
-        }
-
-        nav {
-            padding: 16px 12px;
-            flex: 1;
-        }
-
-        .nav-group-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--muted);
-            padding: 12px 12px 6px;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.18s ease;
-            margin-bottom: 2px;
-            color: var(--text2);
-            font-size: 13.5px;
-            font-weight: 400;
-            position: relative;
-            user-select: none;
-        }
-
-        .nav-item:hover {
-            background: var(--surface2);
-            color: var(--text);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(90deg, rgba(26, 107, 58, 0.12) 0%, transparent 100%);
-            color: var(--accent);
-            font-weight: 500;
-        }
-
-        .nav-item.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 6px;
-            bottom: 6px;
-            width: 3px;
-            background: var(--accent);
-            border-radius: 0 3px 3px 0;
-        }
-
-        .nav-icon {
-            width: 18px;
-            height: 18px;
-            opacity: 0.8;
-            flex-shrink: 0;
-        }
-
-        .badge {
-            margin-left: auto;
-            background: var(--accent);
-            color: #fff;
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            font-weight: 500;
-            padding: 2px 6px;
-            border-radius: 20px;
-        }
-
-        .sidebar-footer {
-            padding: 16px 12px;
-            border-top: 1px solid var(--border);
-        }
-
-        .supplier-card {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            background: var(--surface2);
-            border-radius: 10px;
-        }
-
-        .avatar {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, #1a6b3a, #2a8a5e);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'DM Serif Display', serif;
-            font-size: 15px;
-            color: #fff;
-            flex-shrink: 0;
-        }
-
-        .supplier-name {
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .supplier-role {
-            font-size: 11px;
-            color: var(--muted);
-        }
-
-        /* ── Main ── */
-        main {
-            margin-left: 260px;
-            flex: 1;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ── Top bar ── */
-        header {
-            padding: 20px 36px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            background: var(--surface);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-        }
-
-        .page-title {
-            font-family: 'DM Serif Display', serif;
-            font-size: 22px;
-            color: var(--text);
-        }
-
-        .page-subtitle {
-            font-size: 12.5px;
-            color: var(--muted);
-            margin-top: 1px;
-        }
-
-        .header-actions {
-            margin-left: auto;
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 8px 18px;
-            border-radius: 8px;
-            font-family: 'Epilogue', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            border: none;
-            transition: all 0.18s ease;
-        }
-
-        .btn-ghost {
-            background: transparent;
-            color: var(--text2);
-            border: 1px solid var(--border);
-        }
-
-        .btn-ghost:hover {
-            border-color: var(--muted);
-            color: var(--text);
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        .btn-primary:hover {
-            background: #145c2e;
-            transform: translateY(-1px);
-        }
-
-        /* ── Content ── */
-        .content {
-            padding: 32px 36px;
-            flex: 1;
-        }
-
-        /* ── Section visibility ── */
-        .section {
-            display: none;
-            animation: fadeUp 0.3s ease;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ── KPI Row ── */
-        .kpi-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 28px;
-        }
-
-        .kpi-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.2s;
-        }
-
-        .kpi-card:hover {
-            border-color: var(--muted);
-        }
-
-        .kpi-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 10px;
-        }
-
-        .kpi-value {
-            font-family: 'DM Serif Display', serif;
-            font-size: 28px;
-            color: var(--text);
-        }
-
-        .kpi-change {
-            font-size: 11px;
-            margin-top: 6px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .up {
-            color: var(--accent);
-        }
-
-        .down {
-            color: #c03030;
-        }
-
-        .kpi-accent-bar {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 3px;
-            height: 100%;
-            border-radius: 0 12px 12px 0;
-        }
-
-        /* ── Grid layout ── */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-        }
-
-        /* ── Panel ── */
-        .panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            overflow: hidden;
-        }
-
-        .panel-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .panel-title {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .panel-action {
-            font-size: 12px;
-            color: var(--accent);
-            cursor: pointer;
-            font-family: 'DM Mono', monospace;
-        }
-
-        .panel-body {
-            padding: 0;
-        }
-
-        /* ── Table ── */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            text-align: left;
-            padding: 11px 20px;
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--muted);
-            border-bottom: 1px solid var(--border);
-            font-weight: 400;
-        }
-
-        td {
-            padding: 13px 20px;
-            font-size: 13px;
-            border-bottom: 1px solid rgba(204, 222, 206, 0.5);
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background: rgba(26, 107, 58, 0.03);
-        }
-
-        /* ── Status chips ── */
-        .chip {
-            display: inline-flex;
-            align-items: center;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-family: 'DM Mono', monospace;
-            font-weight: 500;
-        }
-
-        .chip-green {
-            background: rgba(26, 107, 58, 0.12);
-            color: #1a6b3a;
-        }
-
-        .chip-amber {
-            background: rgba(224, 123, 42, 0.13);
-            color: #b85d12;
-        }
-
-        .chip-blue {
-            background: rgba(42, 138, 94, 0.13);
-            color: #1a6b3a;
-        }
-
-        .chip-red {
-            background: rgba(200, 50, 50, 0.10);
-            color: #c03030;
-        }
-
-        .chip-gray {
-            background: rgba(0, 0, 0, 0.06);
-            color: var(--muted);
-        }
-
-        /* ── Catalog ── */
-        .catalog-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            padding: 20px;
-        }
-
-        .catalog-item {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .catalog-item:hover {
-            border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        .catalog-img {
-            width: 100%;
-            height: 80px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            background: rgba(26, 107, 58, 0.06);
-        }
-
-        .catalog-name {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .catalog-sku {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            color: var(--muted);
-            margin-bottom: 8px;
-        }
-
-        .catalog-price {
-            font-family: 'DM Serif Display', serif;
-            font-size: 18px;
-            color: var(--accent);
-        }
-
-        .catalog-stock {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 4px;
-        }
-
-        .catalog-edit {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 28px;
-            height: 28px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 12px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .catalog-item:hover .catalog-edit {
-            opacity: 1;
-        }
-
-        /* ── Bar chart ── */
-        .bar-chart {
-            padding: 20px;
-            display: flex;
-            align-items: flex-end;
-            gap: 8px;
-            height: 180px;
-        }
-
-        .bar-wrap {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            height: 100%;
-            justify-content: flex-end;
-        }
-
-        .bar {
-            width: 100%;
-            border-radius: 4px 4px 0 0;
-            transition: all 0.4s cubic-bezier(.34, 1.56, .64, 1);
-        }
-
-        .bar:hover {
-            filter: brightness(1.15);
-            cursor: pointer;
-        }
-
-        .bar-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            color: var(--muted);
-        }
-
-        .bar-val {
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            color: var(--text2);
-            margin-bottom: 2px;
-        }
-
-        /* ── Progress ── */
-        .progress-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
-            border-bottom: 1px solid rgba(204, 222, 206, 0.5);
-        }
-
-        .progress-row:last-child {
-            border-bottom: none;
-        }
-
-        .progress-label {
-            font-size: 13px;
-            flex: 1;
-        }
-
-        .progress-bar-wrap {
-            width: 120px;
-            height: 6px;
-            background: var(--surface2);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            border-radius: 3px;
-        }
-
-        .progress-pct {
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-            color: var(--text2);
-            width: 36px;
-            text-align: right;
-        }
-
-        /* ── Timeline ── */
-        .timeline {
-            padding: 4px 20px 16px;
-        }
-
-        .tl-item {
-            display: flex;
-            gap: 14px;
-            padding: 12px 0;
-            position: relative;
-        }
-
-        .tl-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-top: 4px;
-            flex-shrink: 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        .tl-line {
-            position: absolute;
-            left: 4px;
-            top: 22px;
-            width: 2px;
-            background: var(--border);
-            bottom: 0;
-        }
-
-        .tl-item:last-child .tl-line {
-            display: none;
-        }
-
-        .tl-meta {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            color: var(--muted);
-            margin-bottom: 2px;
-        }
-
-        .tl-text {
-            font-size: 13px;
-        }
-
-        /* ── Client card ── */
-        .client-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 18px;
-            transition: all 0.2s;
-        }
-
-        .client-card:hover {
-            border-color: var(--accent3);
-            transform: translateY(-2px);
-        }
-
-        .client-head {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .client-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .client-name {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .client-location {
-            font-size: 11px;
-            color: var(--muted);
-        }
-
-        .client-stats {
-            display: flex;
-            gap: 16px;
-        }
-
-        .client-stat-val {
-            font-family: 'DM Serif Display', serif;
-            font-size: 16px;
-        }
-
-        .client-stat-label {
-            font-size: 10px;
-            color: var(--muted);
-        }
-
-        /* ── Inventory ── */
-        .inv-gauge {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            padding: 20px;
-        }
-
-        .inv-row {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .inv-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .inv-name {
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .inv-count {
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-            color: var(--text2);
-        }
-
-        .inv-bar-bg {
-            height: 8px;
-            background: var(--surface2);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .inv-bar-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-
-        /* ── Settings form ── */
-        .settings-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            padding: 24px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-label {
-            font-size: 11px;
-            font-family: 'DM Mono', monospace;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .form-input {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 14px;
-            color: var(--text);
-            font-family: 'Epilogue', sans-serif;
-            font-size: 13px;
-            transition: border-color 0.2s;
-            outline: none;
-        }
-
-        .form-input:focus {
-            border-color: var(--accent);
-        }
-
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        .zone-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(42, 138, 94, 0.1);
-            color: var(--accent3);
-            border: 1px solid rgba(42, 138, 94, 0.2);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin: 4px;
-        }
-
-        .zone-tag span {
-            cursor: pointer;
-            opacity: 0.6;
-        }
-
-        .zone-tag span:hover {
-            opacity: 1;
-        }
-
-        .payment-method {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 20px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .payment-method.selected {
-            border-color: var(--accent);
-            background: rgba(26, 107, 58, 0.05);
-        }
-
-        .payment-method:hover {
-            border-color: var(--muted);
-        }
-
-        .pm-icon {
-            width: 36px;
-            height: 36px;
-            background: var(--surface2);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        .pm-name {
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .pm-detail {
-            font-size: 11px;
-            color: var(--muted);
-        }
-
-        .pm-check {
-            margin-left: auto;
-            color: var(--accent);
-            font-size: 16px;
-        }
-
-        .map-placeholder {
-            background: var(--surface2);
-            border-radius: 10px;
-            height: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--muted);
-            border: 1px dashed var(--border);
-            flex-direction: column;
-            gap: 8px;
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-        }
-
-        /* ── Donut chart ── */
-        .donut-wrap {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            padding: 20px;
-        }
-
-        .donut {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            flex-shrink: 0;
-        }
-
-        .donut svg {
-            transform: rotate(-90deg);
-        }
-
-        .donut-center {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .donut-pct {
-            font-family: 'DM Serif Display', serif;
-            font-size: 20px;
-        }
-
-        .donut-label {
-            font-size: 9px;
-            color: var(--muted);
-            font-family: 'DM Mono', monospace;
-        }
-
-        .donut-legend {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-        }
-
-        .legend-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--surface2);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--muted);
-            border-radius: 2px;
-        }
-
-        select option {
-            background: var(--surface);
-            color: var(--text);
-        }
-    </style>
+    <link rel="stylesheet" href="supplier.css">
 </head>
 
 <body>
@@ -1002,7 +40,7 @@
                     <polyline points="9 12 11 14 15 10" />
                 </svg>
                 Manage Orders
-                <span class="badge">9</span>
+                <span class="badge" id="pendingOrdersBadge">0</span>
             </div>
             <div class="nav-item" onclick="show('inventory', this)">
                 <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -1072,88 +110,40 @@
             <section class="section active" id="sec-catalog">
                 <div class="kpi-row">
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent)"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-primary"></div>
                         <div class="kpi-label">Total Products</div>
-                        <div class="kpi-value">86</div>
-                        <div class="kpi-change up">↑ 4 added this month</div>
+                        <div class="kpi-value" id="catalogTotalProducts">—</div>
+                        <div class="kpi-change" id="catalogTotalChange"><span class="kpi-change-muted">Loading...</span>
+                        </div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent2)"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-secondary"></div>
                         <div class="kpi-label">Active Listings</div>
-                        <div class="kpi-value">74</div>
-                        <div class="kpi-change"><span style="color:var(--muted)">12 pending review</span></div>
+                        <div class="kpi-value" id="catalogActiveListings">—</div>
+                        <div class="kpi-change" id="catalogActiveChange"><span
+                                class="kpi-change-muted">Loading...</span></div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent3)"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-tertiary"></div>
                         <div class="kpi-label">Avg. Price</div>
-                        <div class="kpi-value">$38</div>
-                        <div class="kpi-change up">↑ 2.8% vs last month</div>
+                        <div class="kpi-value" id="catalogAvgPrice">—</div>
+                        <div class="kpi-change" id="catalogAvgPriceChange"><span
+                                class="kpi-change-muted">Loading...</span></div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--muted)"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-muted"></div>
                         <div class="kpi-label">Top Category</div>
-                        <div class="kpi-value" style="font-size:18px;margin-top:4px;">Layer Feed</div>
-                        <div class="kpi-change"><span style="color:var(--muted)">41% of catalog</span></div>
-                    </div>
-                </div>
-
-                <div class="panel" style="margin-bottom:20px">
-                    <div class="panel-header">
-                        <span class="panel-title">Live Product Manager (API)</span>
-                        <button class="btn btn-ghost" onclick="loadSupplierProducts()">Refresh</button>
-                    </div>
-                    <div style="padding:16px 20px">
-                        <div style="display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:8px;margin-bottom:12px">
-                            <input id="liveProductName" class="form-input" placeholder="Product name">
-                            <select id="liveProductCategory" class="form-input">
-                                <option value="feed">Feed</option>
-                                <option value="vaccine">Vaccine</option>
-                                <option value="equipment">Equipment</option>
-                                <option value="chicks">Chicks</option>
-                                <option value="eggs">Eggs</option>
-                                <option value="broilers">Broilers</option>
-                                <option value="other">Other</option>
-                            </select>
-                            <input id="liveProductPrice" class="form-input" type="number" step="0.01" placeholder="Price">
-                            <input id="liveProductUnit" class="form-input" placeholder="Unit (bag, unit...)">
-                            <input id="liveProductStock" class="form-input" type="number" placeholder="Stock">
-                        </div>
-                        <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
-                            <input id="liveProductDescription" class="form-input" placeholder="Description (optional)"
-                                style="flex:1">
-                            <button class="btn btn-primary" onclick="createSupplierProduct()">Add Product</button>
-                        </div>
-                        <div id="liveSupplierMessage" style="font-size:12px;color:var(--muted);margin-bottom:10px;"></div>
-                        <div style="overflow-x:auto">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Category</th>
-                                        <th>Price</th>
-                                        <th>Unit</th>
-                                        <th>Stock</th>
-                                        <th>Active</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="live-products-body">
-                                    <tr>
-                                        <td colspan="8">Loading products...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <div class="kpi-value font-size-18 margin-top-4" id="catalogTopCategory">—</div>
+                        <div class="kpi-change" id="catalogTopCategoryChange"><span
+                                class="kpi-change-muted">Loading...</span></div>
                     </div>
                 </div>
 
                 <div class="panel">
                     <div class="panel-header">
                         <span class="panel-title">Poultry Product Catalog</span>
-                        <div style="display:flex;gap:12px;align-items:center">
-                            <select
-                                style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;font-size:12px;outline:none;">
+                        <div class="catalog-filter-wrapper">
+                            <select class="catalog-category-select" aria-label="Filter by category">
                                 <option>All Categories</option>
                                 <option>Layer Feed</option>
                                 <option>Broiler Feed</option>
@@ -1165,69 +155,10 @@
                             <span class="panel-action">View All →</span>
                         </div>
                     </div>
-                    <div class="catalog-grid">
-                        <div class="catalog-item">
-                            <div class="catalog-edit">✏️</div>
-                            <div class="catalog-img">🥚</div>
-                            <div class="catalog-name">Layer Mash Premium</div>
-                            <div class="catalog-sku">SKU: LFD-001</div>
-                            <div class="catalog-price">$28.00 <span
-                                    style="font-size:11px;color:var(--muted);font-family:'Epilogue'">/50kg bag</span>
-                            </div>
-                            <div class="catalog-stock"><span class="chip chip-green">In Stock</span> &nbsp;540 bags
-                            </div>
-                        </div>
-                        <div class="catalog-item">
-                            <div class="catalog-edit">✏️</div>
-                            <div class="catalog-img">🐣</div>
-                            <div class="catalog-name">Chick Starter Crumble</div>
-                            <div class="catalog-sku">SKU: CST-008</div>
-                            <div class="catalog-price">$32.50 <span
-                                    style="font-size:11px;color:var(--muted);font-family:'Epilogue'">/50kg bag</span>
-                            </div>
-                            <div class="catalog-stock"><span class="chip chip-green">In Stock</span> &nbsp;310 bags
-                            </div>
-                        </div>
-                        <div class="catalog-item">
-                            <div class="catalog-edit">✏️</div>
-                            <div class="catalog-img">🍗</div>
-                            <div class="catalog-name">Broiler Finisher Feed</div>
-                            <div class="catalog-sku">SKU: BRF-022</div>
-                            <div class="catalog-price">$26.00 <span
-                                    style="font-size:11px;color:var(--muted);font-family:'Epilogue'">/50kg bag</span>
-                            </div>
-                            <div class="catalog-stock"><span class="chip chip-amber">Limited</span> &nbsp;45 bags</div>
-                        </div>
-                        <div class="catalog-item">
-                            <div class="catalog-edit">✏️</div>
-                            <div class="catalog-img">💊</div>
-                            <div class="catalog-name">Newcastle Vaccine (100D)</div>
-                            <div class="catalog-sku">SKU: VAC-014</div>
-                            <div class="catalog-price">$14.00 <span
-                                    style="font-size:11px;color:var(--muted);font-family:'Epilogue'">/vial</span></div>
-                            <div class="catalog-stock"><span class="chip chip-red">Low Stock</span> &nbsp;18 vials</div>
-                        </div>
-                        <div class="catalog-item">
-                            <div class="catalog-edit">✏️</div>
-                            <div class="catalog-img">🌡️</div>
-                            <div class="catalog-name">Poultry Heat Lamp</div>
-                            <div class="catalog-sku">SKU: EQP-033</div>
-                            <div class="catalog-price">$54.00 <span
-                                    style="font-size:11px;color:var(--muted);font-family:'Epilogue'">/unit</span></div>
-                            <div class="catalog-stock"><span class="chip chip-green">In Stock</span> &nbsp;120 units
-                            </div>
-                        </div>
-                        <div class="catalog-item">
-                            <div class="catalog-edit">✏️</div>
-                            <div class="catalog-img">🧴</div>
-                            <div class="catalog-name">Calcium &amp; Vitamin D3 Mix</div>
-                            <div class="catalog-sku">SKU: SUP-009</div>
-                            <div class="catalog-price">$19.50 <span
-                                    style="font-size:11px;color:var(--muted);font-family:'Epilogue'">/5kg pack</span>
-                            </div>
-                            <div class="catalog-stock"><span class="chip chip-green">In Stock</span> &nbsp;230 packs
-                            </div>
-                        </div>
+                    <div class="catalog-grid"
+                        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 20px;">
+                        <div style="grid-column: 1/-1; padding: 20px; text-align: center; color: var(--text2);">Loading
+                            products...</div>
                     </div>
                 </div>
             </section>
@@ -1236,28 +167,29 @@
             <section class="section" id="sec-orders">
                 <div class="kpi-row">
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent2)"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-secondary"></div>
                         <div class="kpi-label">Pending Orders</div>
-                        <div class="kpi-value">9</div>
-                        <div class="kpi-change"><span style="color:var(--accent2)">Needs action</span></div>
+                        <div class="kpi-value" id="pendingOrdersCount">0</div>
+                        <div class="kpi-change"><span class="kpi-change-accent2"
+                                id="pendingOrdersDesc">Loading...</span></div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent3)"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-tertiary"></div>
                         <div class="kpi-label">In Transit</div>
-                        <div class="kpi-value">21</div>
-                        <div class="kpi-change up">On schedule</div>
+                        <div class="kpi-value" id="inTransitCount">0</div>
+                        <div class="kpi-change up" id="inTransitDesc">Loading...</div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent)"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-primary"></div>
                         <div class="kpi-label">Delivered This Week</div>
-                        <div class="kpi-value">53</div>
-                        <div class="kpi-change up">↑ 14% vs last week</div>
+                        <div class="kpi-value" id="deliveredCount">0</div>
+                        <div class="kpi-change up" id="deliveredDesc">Loading...</div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:#c03030"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-error"></div>
                         <div class="kpi-label">Issues / Returns</div>
-                        <div class="kpi-value">2</div>
-                        <div class="kpi-change down">1 spoilage claim open</div>
+                        <div class="kpi-value" id="issuesCount">0</div>
+                        <div class="kpi-change down" id="issuesDesc">No issues</div>
                     </div>
                 </div>
 
@@ -1278,56 +210,10 @@
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="orders-table-body">
                             <tr>
-                                <td><span style="font-family:'DM Mono',monospace;font-size:11px;">#ORD-7201</span></td>
-                                <td>Amara Osei — SunRise Farm</td>
-                                <td>Layer Mash × 20 bags</td>
-                                <td style="font-family:'DM Serif Display',serif;">$560</td>
-                                <td style="color:var(--muted);font-size:12px;">Feb 17</td>
-                                <td><span class="chip chip-amber">Pending</span></td>
-                                <td><button class="btn btn-primary"
-                                        style="padding:5px 12px;font-size:11px;">Process</button></td>
-                            </tr>
-                            <tr>
-                                <td><span style="font-family:'DM Mono',monospace;font-size:11px;">#ORD-7200</span></td>
-                                <td>Fatima Diallo — GoldenEgg Co.</td>
-                                <td>Chick Starter × 10, Vaccine × 5</td>
-                                <td style="font-family:'DM Serif Display',serif;">$395</td>
-                                <td style="color:var(--muted);font-size:12px;">Feb 17</td>
-                                <td><span class="chip chip-blue">Processing</span></td>
-                                <td><button class="btn btn-ghost"
-                                        style="padding:5px 12px;font-size:11px;">Track</button></td>
-                            </tr>
-                            <tr>
-                                <td><span style="font-family:'DM Mono',monospace;font-size:11px;">#ORD-7199</span></td>
-                                <td>Kwame Asante — BroilerKing</td>
-                                <td>Broiler Finisher × 30 bags</td>
-                                <td style="font-family:'DM Serif Display',serif;">$780</td>
-                                <td style="color:var(--muted);font-size:12px;">Feb 16</td>
-                                <td><span class="chip chip-green">Delivered</span></td>
-                                <td><button class="btn btn-ghost"
-                                        style="padding:5px 12px;font-size:11px;">Invoice</button></td>
-                            </tr>
-                            <tr>
-                                <td><span style="font-family:'DM Mono',monospace;font-size:11px;">#ORD-7198</span></td>
-                                <td>Nia Mensah — HenHouse Ltd.</td>
-                                <td>Heat Lamps × 4, Vit D3 × 6 packs</td>
-                                <td style="font-family:'DM Serif Display',serif;">$333</td>
-                                <td style="color:var(--muted);font-size:12px;">Feb 15</td>
-                                <td><span class="chip chip-amber">Pending</span></td>
-                                <td><button class="btn btn-primary"
-                                        style="padding:5px 12px;font-size:11px;">Process</button></td>
-                            </tr>
-                            <tr>
-                                <td><span style="font-family:'DM Mono',monospace;font-size:11px;">#ORD-7197</span></td>
-                                <td>Kofi Boateng — FreePeck Farm</td>
-                                <td>Newcastle Vaccine × 12 vials</td>
-                                <td style="font-family:'DM Serif Display',serif;">$168</td>
-                                <td style="color:var(--muted);font-size:12px;">Feb 14</td>
-                                <td><span class="chip chip-red">Spoilage Claim</span></td>
-                                <td><button class="btn btn-ghost"
-                                        style="padding:5px 12px;font-size:11px;">Resolve</button></td>
+                                <td colspan="7" style="padding: 20px; text-align: center; color: var(--text2);">Loading
+                                    orders...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1338,156 +224,35 @@
             <section class="section" id="sec-clients">
                 <div class="kpi-row">
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent3)"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-tertiary"></div>
                         <div class="kpi-label">Registered Farms</div>
-                        <div class="kpi-value">183</div>
-                        <div class="kpi-change up">↑ 11 new this month</div>
+                        <div class="kpi-value" id="registeredFarmsCount">0</div>
+                        <div class="kpi-change up" id="registeredFarmsDesc">Loading...</div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent)"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-primary"></div>
                         <div class="kpi-label">Active Farmers</div>
-                        <div class="kpi-value">141</div>
-                        <div class="kpi-change"><span style="color:var(--muted)">Ordered in last 30 days</span></div>
+                        <div class="kpi-value" id="activeFarmersCount">0</div>
+                        <div class="kpi-change"><span class="kpi-change-muted" id="activeFarmersDesc">Loading...</span>
+                        </div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent2)"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-secondary"></div>
                         <div class="kpi-label">Avg. Order Value</div>
-                        <div class="kpi-value">$274</div>
-                        <div class="kpi-change up">↑ 4.6% vs Q3</div>
+                        <div class="kpi-value" id="avgOrderValueAmount">KES 0</div>
+                        <div class="kpi-change up" id="avgOrderValueDesc">Loading...</div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--muted)"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-muted"></div>
                         <div class="kpi-label">Retention Rate</div>
-                        <div class="kpi-value">88%</div>
-                        <div class="kpi-change up">↑ Industry avg. 73%</div>
+                        <div class="kpi-value" id="retentionRateValue">0%</div>
+                        <div class="kpi-change up" id="retentionRateDesc">Loading...</div>
                     </div>
                 </div>
 
-                <div class="grid-3">
-                    <div class="client-card">
-                        <div class="client-head">
-                            <div class="client-avatar" style="background:rgba(26,107,58,0.12)">🐔</div>
-                            <div>
-                                <div class="client-name">Amara Osei</div>
-                                <div class="client-location">📍 SunRise Farm, Kumasi</div>
-                            </div>
-                            <span class="chip chip-green" style="margin-left:auto">Active</span>
-                        </div>
-                        <div class="client-stats">
-                            <div>
-                                <div class="client-stat-val">$6,240</div>
-                                <div class="client-stat-label">Lifetime value</div>
-                            </div>
-                            <div>
-                                <div class="client-stat-val">24</div>
-                                <div class="client-stat-label">Orders</div>
-                            </div>
-                            <div>
-                                <div class="client-stat-val">3yr</div>
-                                <div class="client-stat-label">Partner</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="client-card">
-                        <div class="client-head">
-                            <div class="client-avatar" style="background:rgba(224,123,42,0.12)">🥚</div>
-                            <div>
-                                <div class="client-name">Fatima Diallo</div>
-                                <div class="client-location">📍 GoldenEgg Co., Dakar</div>
-                            </div>
-                            <span class="chip chip-blue" style="margin-left:auto">New</span>
-                        </div>
-                        <div class="client-stats">
-                            <div>
-                                <div class="client-stat-val">$790</div>
-                                <div class="client-stat-label">Lifetime value</div>
-                            </div>
-                            <div>
-                                <div class="client-stat-val">3</div>
-                                <div class="client-stat-label">Orders</div>
-                            </div>
-                            <div>
-                                <div class="client-stat-val">2mo</div>
-                                <div class="client-stat-label">Partner</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="client-card">
-                        <div class="client-head">
-                            <div class="client-avatar" style="background:rgba(42,138,94,0.12)">🍗</div>
-                            <div>
-                                <div class="client-name">Kwame Asante</div>
-                                <div class="client-location">📍 BroilerKing, Accra</div>
-                            </div>
-                            <span class="chip chip-green" style="margin-left:auto">Active</span>
-                        </div>
-                        <div class="client-stats">
-                            <div>
-                                <div class="client-stat-val">$18,900</div>
-                                <div class="client-stat-label">Lifetime value</div>
-                            </div>
-                            <div>
-                                <div class="client-stat-val">68</div>
-                                <div class="client-stat-label">Orders</div>
-                            </div>
-                            <div>
-                                <div class="client-stat-val">5yr</div>
-                                <div class="client-stat-label">Partner</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="client-card">
-                        <div class="client-head">
-                            <div class="client-avatar" style="background:rgba(122,155,130,0.15)">🐓</div>
-                            <div>
-                                <div class="client-name">Nia Mensah</div>
-                                <div class="client-location">📍 HenHouse Ltd., Tamale</div>
-                            </div>
-                            <span class="chip chip-amber" style="margin-left:auto">At Risk</span>
-                        </div>
-                        <div class="client-stats">
-                            <div>
-                                <div class="client-stat-val">$3,120</div>
-                                <div class="client-stat-label">Lifetime value</div>
-                            </div>
-                            <div>
-                                <div class="client-stat-val">12</div>
-                                <div class="client-stat-label">Orders</div>
-                            </div>
-                            <div>
-                                <div class="client-stat-val">2yr</div>
-                                <div class="client-stat-label">Partner</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="client-card">
-                        <div class="client-head">
-                            <div class="client-avatar" style="background:rgba(26,107,58,0.12)">🐔</div>
-                            <div>
-                                <div class="client-name">Kofi Boateng</div>
-                                <div class="client-location">📍 FreePeck Farm, Cape Coast</div>
-                            </div>
-                            <span class="chip chip-green" style="margin-left:auto">Active</span>
-                        </div>
-                        <div class="client-stats">
-                            <div>
-                                <div class="client-stat-val">$9,450</div>
-                                <div class="client-stat-label">Lifetime value</div>
-                            </div>
-                            <div>
-                                <div class="client-stat-val">37</div>
-                                <div class="client-stat-label">Orders</div>
-                            </div>
-                            <div>
-                                <div class="client-stat-val">4yr</div>
-                                <div class="client-stat-label">Partner</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="client-card"
-                        style="border-style:dashed;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;cursor:pointer;min-height:140px;">
-                        <div style="font-size:28px;">+</div>
-                        <div style="font-size:13px;color:var(--muted)">Invite New Farm</div>
+                <div class="grid-3" id="clients-grid">
+                    <div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--text2);">
+                        Loading farm connections...
                     </div>
                 </div>
             </section>
@@ -1496,143 +261,77 @@
             <section class="section" id="sec-inventory">
                 <div class="kpi-row">
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent)"></div>
-                        <div class="kpi-label">SKUs Tracked</div>
-                        <div class="kpi-value">86</div>
-                        <div class="kpi-change"><span style="color:var(--muted)">Across 3 stores</span></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-primary"></div>
+                        <div class="kpi-label">Total SKUs</div>
+                        <div class="kpi-value" id="totalSKUs">0</div>
+                        <div class="kpi-change"><span class="kpi-change-muted" id="totalSKUsDesc">Loading...</span>
+                        </div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:#c03030"></div>
-                        <div class="kpi-label">Low Stock Alerts</div>
-                        <div class="kpi-value">5</div>
-                        <div class="kpi-change down">Needs restocking</div>
+                        <div class="kpi-accent-bar kpi-accent-bar-error"></div>
+                        <div class="kpi-label">Low Stock Alert</div>
+                        <div class="kpi-value" id="lowStockCount">0</div>
+                        <div class="kpi-change down" id="lowStockDesc">Below 10 units</div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent2)"></div>
-                        <div class="kpi-label">Reorder Points Hit</div>
-                        <div class="kpi-value">3</div>
-                        <div class="kpi-change"><span style="color:var(--accent2)">POs suggested</span></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-secondary"></div>
+                        <div class="kpi-label">Total Stock Value</div>
+                        <div class="kpi-value" id="totalInventoryValue">KES 0</div>
+                        <div class="kpi-change"><span class="kpi-change-muted">Calculated</span></div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent3)"></div>
-                        <div class="kpi-label">Inventory Value</div>
-                        <div class="kpi-value">$142K</div>
-                        <div class="kpi-change up">↑ 3.4% this week</div>
+                        <div class="kpi-accent-bar kpi-accent-bar-tertiary"></div>
+                        <div class="kpi-label">Average Stock</div>
+                        <div class="kpi-value" id="avgStock">0</div>
+                        <div class="kpi-change"><span class="kpi-change-muted">Per product</span></div>
                     </div>
                 </div>
 
                 <div class="grid-2">
                     <div class="panel">
                         <div class="panel-header">
-                            <span class="panel-title">Feed &amp; Supplies Stock Levels</span>
-                            <span class="panel-action">Set Reorder Points →</span>
+                            <span class="panel-title">Product Stock Levels</span>
+                            <span class="panel-action">← Back to Catalog</span>
                         </div>
-                        <div class="inv-gauge">
-                            <div class="inv-row">
-                                <div class="inv-meta"><span class="inv-name">Layer Mash Premium</span><span
-                                        class="inv-count">540 / 800 bags</span></div>
-                                <div class="inv-bar-bg">
-                                    <div class="inv-bar-fill" style="width:67%;background:var(--accent)"></div>
-                                </div>
-                            </div>
-                            <div class="inv-row">
-                                <div class="inv-meta"><span class="inv-name">Chick Starter Crumble</span><span
-                                        class="inv-count">310 / 600 bags</span></div>
-                                <div class="inv-bar-bg">
-                                    <div class="inv-bar-fill" style="width:52%;background:var(--accent3)"></div>
-                                </div>
-                            </div>
-                            <div class="inv-row">
-                                <div class="inv-meta"><span class="inv-name">Broiler Finisher Feed</span><span
-                                        class="inv-count" style="color:var(--accent2)">45 / 600 bags</span></div>
-                                <div class="inv-bar-bg">
-                                    <div class="inv-bar-fill" style="width:7%;background:var(--accent2)"></div>
-                                </div>
-                            </div>
-                            <div class="inv-row">
-                                <div class="inv-meta"><span class="inv-name">Newcastle Vaccine</span><span
-                                        class="inv-count" style="color:#c03030">18 / 200 vials</span></div>
-                                <div class="inv-bar-bg">
-                                    <div class="inv-bar-fill" style="width:9%;background:#c03030"></div>
-                                </div>
-                            </div>
-                            <div class="inv-row">
-                                <div class="inv-meta"><span class="inv-name">Poultry Heat Lamps</span><span
-                                        class="inv-count">120 / 200 units</span></div>
-                                <div class="inv-bar-bg">
-                                    <div class="inv-bar-fill" style="width:60%;background:var(--accent)"></div>
-                                </div>
-                            </div>
-                            <div class="inv-row">
-                                <div class="inv-meta"><span class="inv-name">Calcium &amp; Vitamin D3 Mix</span><span
-                                        class="inv-count">230 / 400 packs</span></div>
-                                <div class="inv-bar-bg">
-                                    <div class="inv-bar-fill" style="width:57%;background:var(--accent3)"></div>
-                                </div>
+                        <div class="inv-gauge" id="inventoryGauge">
+                            <div style="padding: 20px; text-align: center; color: var(--text2);">Loading inventory...
                             </div>
                         </div>
                     </div>
 
-                    <div style="display:flex;flex-direction:column;gap:20px;">
+                    <div class="bottom-section-flex">
                         <div class="panel">
                             <div class="panel-header"><span class="panel-title">Recent Stock Activity</span></div>
-                            <div class="timeline">
-                                <div class="tl-item">
-                                    <div class="tl-dot" style="background:var(--accent)"></div>
-                                    <div class="tl-line"></div>
-                                    <div>
-                                        <div class="tl-meta">Today, 08:30 AM</div>
-                                        <div class="tl-text">Received 200 bags Layer Mash — Store A, Accra</div>
-                                    </div>
-                                </div>
-                                <div class="tl-item">
-                                    <div class="tl-dot" style="background:#c03030"></div>
-                                    <div class="tl-line"></div>
-                                    <div>
-                                        <div class="tl-meta">Yesterday, 02:15 PM</div>
-                                        <div class="tl-text">⚠️ Low stock: Newcastle Vaccine below reorder point</div>
-                                    </div>
-                                </div>
-                                <div class="tl-item">
-                                    <div class="tl-dot" style="background:var(--accent3)"></div>
-                                    <div class="tl-line"></div>
-                                    <div>
-                                        <div class="tl-meta">Feb 15, 10:00 AM</div>
-                                        <div class="tl-text">Dispatched 30 bags Broiler Finisher to Kumasi depot</div>
-                                    </div>
-                                </div>
-                                <div class="tl-item">
-                                    <div class="tl-dot" style="background:var(--muted)"></div>
-                                    <div>
-                                        <div class="tl-meta">Feb 14, 01:45 PM</div>
-                                        <div class="tl-text">PO #PO-044 raised — 500 vials Newcastle Vaccine</div>
-                                    </div>
-                                </div>
+                            <div class="timeline" id="recentStockActivityTimeline"
+                                style="padding: 20px; text-align: center; color: var(--text2);">No stock activity yet
                             </div>
                         </div>
                         <div class="panel">
-                            <div class="panel-header"><span class="panel-title">Storage Location Capacity</span></div>
+                            <div class="panel-header"><span class="panel-title">Stock Status Summary</span></div>
                             <div>
                                 <div class="progress-row">
-                                    <span class="progress-label">Store A — Accra</span>
+                                    <span class="progress-label">In Stock (>50)</span>
                                     <div class="progress-bar-wrap">
-                                        <div class="progress-bar" style="width:81%;background:var(--accent)"></div>
+                                        <div class="progress-bar progress-bar-accent" id="inStockBar"
+                                            style="width: 0%;"></div>
                                     </div>
-                                    <span class="progress-pct">81%</span>
+                                    <span class="progress-pct" id="inStockPct">0%</span>
                                 </div>
                                 <div class="progress-row">
-                                    <span class="progress-label">Store B — Kumasi</span>
+                                    <span class="progress-label">Limited (10-50)</span>
                                     <div class="progress-bar-wrap">
-                                        <div class="progress-bar" style="width:63%;background:var(--accent3)"></div>
+                                        <div class="progress-bar progress-bar-accent3" id="limitedStockBar"
+                                            style="width: 0%;"></div>
                                     </div>
-                                    <span class="progress-pct">63%</span>
+                                    <span class="progress-pct" id="limitedStockPct">0%</span>
                                 </div>
                                 <div class="progress-row">
-                                    <span class="progress-label">Store C — Tamale</span>
-                                    <div class="progress-bar-wrap">
-                                        <div class="progress-bar" style="width:29%;background:var(--accent2)"></div>
-                                    </div>
-                                    <span class="progress-pct">29%</span>
+                                    <span class="progress-label">Low Stock (<10)< /span>
+                                            <div class="progress-bar-wrap">
+                                                <div class="progress-bar progress-bar-error" id="lowStockBar"
+                                                    style="width: 0%;"></div>
+                                            </div>
+                                            <span class="progress-pct" id="lowStockPct">0%</span>
                                 </div>
                             </div>
                         </div>
@@ -1644,28 +343,32 @@
             <section class="section" id="sec-reports">
                 <div class="kpi-row">
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent)"></div>
-                        <div class="kpi-label">Revenue (Feb)</div>
-                        <div class="kpi-value">$31,480</div>
-                        <div class="kpi-change up">↑ 19% vs Jan</div>
+                        <div class="kpi-accent-bar kpi-accent-bar-primary"></div>
+                        <div class="kpi-label">Revenue (This Month)</div>
+                        <div class="kpi-value" id="revenueValue">—</div>
+                        <div class="kpi-change" id="revenueChange"><span class="kpi-change-muted">No data yet</span>
+                        </div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent2)"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-secondary"></div>
                         <div class="kpi-label">Orders Completed</div>
-                        <div class="kpi-value">218</div>
-                        <div class="kpi-change up">↑ 12% vs Jan</div>
+                        <div class="kpi-value" id="ordersCompletedValue">—</div>
+                        <div class="kpi-change" id="ordersCompletedChange"><span class="kpi-change-muted">No data
+                                yet</span></div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--accent3)"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-tertiary"></div>
                         <div class="kpi-label">Gross Margin</div>
-                        <div class="kpi-value">28.6%</div>
-                        <div class="kpi-change up">↑ 1.4 pts</div>
+                        <div class="kpi-value" id="grossMarginValue">—</div>
+                        <div class="kpi-change" id="grossMarginChange"><span class="kpi-change-muted">Calculated</span>
+                        </div>
                     </div>
                     <div class="kpi-card">
-                        <div class="kpi-accent-bar" style="background:var(--muted)"></div>
+                        <div class="kpi-accent-bar kpi-accent-bar-muted"></div>
                         <div class="kpi-label">YTD Revenue</div>
-                        <div class="kpi-value">$57,900</div>
-                        <div class="kpi-change"><span style="color:var(--muted)">Goal: $320K</span></div>
+                        <div class="kpi-value" id="ytdRevenueValue">—</div>
+                        <div class="kpi-change" id="ytdRevenueChange"><span class="kpi-change-muted">Year to date</span>
+                        </div>
                     </div>
                 </div>
 
@@ -1673,58 +376,27 @@
                     <div class="panel">
                         <div class="panel-header">
                             <span class="panel-title">Monthly Revenue</span>
-                            <select
-                                style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:6px;font-size:11px;outline:none;">
+                            <select class="report-category-select" aria-label="Select year" id="revenueYearSelect">
                                 <option>2026</option>
                                 <option>2025</option>
                             </select>
                         </div>
-                        <div class="bar-chart" id="bar-chart"></div>
+                        <div class="bar-chart" id="bar-chart"
+                            style="padding: 20px; text-align: center; color: var(--text2); height: 180px; display: flex; align-items: center; justify-content: center;">
+                            Analytics data will appear here
+                        </div>
                     </div>
 
                     <div class="panel">
                         <div class="panel-header"><span class="panel-title">Revenue by Category</span></div>
-                        <div class="donut-wrap">
-                            <div class="donut">
-                                <svg width="100" height="100" viewBox="0 0 100 100">
-                                    <circle cx="50" cy="50" r="38" fill="none" stroke="#ccdece" stroke-width="14" />
-                                    <circle cx="50" cy="50" r="38" fill="none" stroke="#1a6b3a" stroke-width="14"
-                                        stroke-dasharray="100 139" stroke-dashoffset="0" />
-                                    <circle cx="50" cy="50" r="38" fill="none" stroke="#e07b2a" stroke-width="14"
-                                        stroke-dasharray="62 177" stroke-dashoffset="-100" />
-                                    <circle cx="50" cy="50" r="38" fill="none" stroke="#2a8a5e" stroke-width="14"
-                                        stroke-dasharray="28 211" stroke-dashoffset="-162" />
-                                    <circle cx="50" cy="50" r="38" fill="none" stroke="#7a9b82" stroke-width="14"
-                                        stroke-dasharray="49 190" stroke-dashoffset="-190" />
-                                </svg>
-                                <div class="donut-center">
-                                    <div class="donut-pct">$31K</div>
-                                    <div class="donut-label">Feb</div>
-                                </div>
-                            </div>
-                            <div class="donut-legend">
-                                <div class="legend-item">
-                                    <div class="legend-dot" style="background:#1a6b3a"></div>Layer Feed &nbsp;<span
-                                        style="color:var(--muted);font-size:11px;">41%</span>
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-dot" style="background:#e07b2a"></div>Broiler Feed &nbsp;<span
-                                        style="color:var(--muted);font-size:11px;">25%</span>
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-dot" style="background:#2a8a5e"></div>Vaccines &nbsp;<span
-                                        style="color:var(--muted);font-size:11px;">12%</span>
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-dot" style="background:#7a9b82"></div>Equip &amp; Suppl.
-                                    &nbsp;<span style="color:var(--muted);font-size:11px;">22%</span>
-                                </div>
-                            </div>
+                        <div class="donut-wrap" id="donutChartContainer"
+                            style="padding: 20px; text-align: center; color: var(--text2); height: 180px; display: flex; align-items: center; justify-content: center;">
+                            Analytics data will appear here
                         </div>
                     </div>
                 </div>
 
-                <div class="panel" style="margin-top:20px">
+                <div class="panel panel-margin-top-20">
                     <div class="panel-header"><span class="panel-title">Top Performing Products</span></div>
                     <table>
                         <thead>
@@ -1736,41 +408,10 @@
                                 <th>Margin</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="topProductsTableBody">
                             <tr>
-                                <td>Layer Mash Premium</td>
-                                <td>460 bags</td>
-                                <td style="font-family:'DM Serif Display',serif;">$12,880</td>
-                                <td class="up">↑ 28%</td>
-                                <td><span class="chip chip-green">31%</span></td>
-                            </tr>
-                            <tr>
-                                <td>Broiler Finisher Feed</td>
-                                <td>298 bags</td>
-                                <td style="font-family:'DM Serif Display',serif;">$7,748</td>
-                                <td class="up">↑ 15%</td>
-                                <td><span class="chip chip-green">29%</span></td>
-                            </tr>
-                            <tr>
-                                <td>Chick Starter Crumble</td>
-                                <td>184 bags</td>
-                                <td style="font-family:'DM Serif Display',serif;">$5,980</td>
-                                <td class="up">↑ 21%</td>
-                                <td><span class="chip chip-amber">27%</span></td>
-                            </tr>
-                            <tr>
-                                <td>Poultry Heat Lamp</td>
-                                <td>62 units</td>
-                                <td style="font-family:'DM Serif Display',serif;">$3,348</td>
-                                <td class="down">↓ 3%</td>
-                                <td><span class="chip chip-amber">24%</span></td>
-                            </tr>
-                            <tr>
-                                <td>Newcastle Vaccine (100D)</td>
-                                <td>110 vials</td>
-                                <td style="font-family:'DM Serif Display',serif;">$1,540</td>
-                                <td class="up">↑ 44%</td>
-                                <td><span class="chip chip-green">48%</span></td>
+                                <td colspan="5" style="padding: 20px; text-align: center; color: var(--text2);">
+                                    Analytics data will appear here</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1779,34 +420,36 @@
 
             <!-- ══ SETTINGS ══ -->
             <section class="section" id="sec-settings">
-                <div class="grid-2" style="gap:20px; align-items:start">
-                    <div style="display:flex;flex-direction:column;gap:20px;">
+                <div class="grid-2 settings-grid">
+                    <div class="bottom-section-flex">
                         <div class="panel">
                             <div class="panel-header"><span class="panel-title">Company Profile</span></div>
                             <div class="settings-grid">
                                 <div class="form-group">
-                                    <label class="form-label">Company Name</label>
-                                    <input class="form-input" value="PrimeFlock Supplies Ltd." type="text">
+                                    <label class="form-label" for="companyName">Company Name</label>
+                                    <input id="companyName" class="form-input" placeholder="Company name" type="text">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Registration No.</label>
-                                    <input class="form-input" value="GH-BUS-20211047" type="text">
+                                    <label class="form-label" for="registrationNo">Registration No.</label>
+                                    <input id="registrationNo" class="form-input"
+                                        placeholder="Business registration number" type="text">
                                 </div>
                                 <div class="form-group full">
-                                    <label class="form-label">Business Address</label>
-                                    <input class="form-input" value="22 Poultry Lane, Kumasi, Ashanti Region, Ghana"
+                                    <label class="form-label" for="businessAddress">Business Address</label>
+                                    <input id="businessAddress" class="form-input" placeholder="Full business address"
                                         type="text">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Phone</label>
-                                    <input class="form-input" value="+233 20 812 3344" type="text">
+                                    <label class="form-label" for="phone">Phone</label>
+                                    <input id="phone" class="form-input" placeholder="Contact phone number" type="text">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Email</label>
-                                    <input class="form-input" value="orders@primeflock.gh" type="email">
+                                    <label class="form-label" for="email">Email</label>
+                                    <input id="email" class="form-input" placeholder="Business email address"
+                                        type="email">
                                 </div>
-                                <div class="form-group full" style="padding:0 0 8px 0">
-                                    <button class="btn btn-primary" style="margin-top:8px;width:fit-content">Save
+                                <div class="form-group full padding-bottom-8">
+                                    <button class="btn btn-primary btn-margin-top-8">Save
                                         Profile</button>
                                 </div>
                             </div>
@@ -1814,120 +457,44 @@
 
                         <div class="panel">
                             <div class="panel-header"><span class="panel-title">Delivery Zones</span></div>
-                            <div style="padding:16px 20px">
-                                <div style="margin-bottom:12px;">
-                                    <div class="zone-tag">Greater Accra <span>✕</span></div>
-                                    <div class="zone-tag">Ashanti <span>✕</span></div>
-                                    <div class="zone-tag">Northern <span>✕</span></div>
-                                    <div class="zone-tag">Eastern <span>✕</span></div>
-                                    <div class="zone-tag">Brong-Ahafo <span>✕</span></div>
+                            <div class="padding-16-20">
+                                <div class="margin-bottom-12" id="deliveryZonesContainer"
+                                    style="min-height: 40px; display: flex; align-items: center; color: var(--text2); font-size: 14px;">
+                                    No delivery zones configured yet
                                 </div>
-                                <div style="display:flex;gap:8px;margin-top:14px;">
-                                    <input class="form-input" placeholder="Add delivery region..." style="flex:1">
-                                    <button class="btn btn-primary">Add</button>
+                                <div class="flex-gap-8 margin-top-14">
+                                    <input class="form-input form-input-flex" placeholder="Add delivery region..."
+                                        aria-label="Add delivery region" id="deliveryZoneInput">
+                                    <button class="btn btn-primary" id="addDeliveryZoneBtn">Add</button>
                                 </div>
-                                <div class="map-placeholder" style="margin-top:16px">
-                                    <span style="font-size:24px">🗺️</span>
+                                <div class="map-placeholder margin-top-16">
+                                    <span class="map-icon">🗺️</span>
                                     <span>Interactive delivery zone map — coming soon</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div style="display:flex;flex-direction:column;gap:20px;">
+                    <div class="bottom-section-flex">
                         <div class="panel">
                             <div class="panel-header"><span class="panel-title">Payment Methods</span></div>
-                            <div style="padding:16px 20px">
-                                <div class="payment-method selected" onclick="selectPM(this)">
-                                    <div class="pm-icon">🏦</div>
-                                    <div>
-                                        <div class="pm-name">Bank Transfer</div>
-                                        <div class="pm-detail">Stanbic Bank — ••• 6614</div>
-                                    </div>
-                                    <div class="pm-check">✓</div>
-                                </div>
-                                <div class="payment-method" onclick="selectPM(this)">
-                                    <div class="pm-icon">📱</div>
-                                    <div>
-                                        <div class="pm-name">Mobile Money</div>
-                                        <div class="pm-detail">MTN MoMo — +233 20 812 3344</div>
-                                    </div>
-                                    <div class="pm-check" style="display:none">✓</div>
-                                </div>
-                                <div class="payment-method" onclick="selectPM(this)">
-                                    <div class="pm-icon">💳</div>
-                                    <div>
-                                        <div class="pm-name">Card on File</div>
-                                        <div class="pm-detail">Visa ••• 8820 — Exp 11/28</div>
-                                    </div>
-                                    <div class="pm-check" style="display:none">✓</div>
-                                </div>
-                                <button class="btn btn-ghost"
-                                    style="width:100%;margin-top:8px;justify-content:center;display:flex">+ Add Payment
-                                    Method</button>
+                            <div class="padding-16-20" id="paymentMethodsContainer"
+                                style="min-height: 80px; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 14px;">
+                                No payment methods configured yet
                             </div>
                         </div>
 
                         <div class="panel">
                             <div class="panel-header"><span class="panel-title">Preferences</span></div>
-                            <div style="padding:16px 20px;display:flex;flex-direction:column;gap:14px;">
-                                <div style="display:flex;justify-content:space-between;align-items:center;">
-                                    <div>
-                                        <div style="font-size:13px;font-weight:500">Order Notifications</div>
-                                        <div style="font-size:11px;color:var(--muted);margin-top:2px">Email & SMS for
-                                            new farm orders</div>
-                                    </div>
-                                    <div class="toggle on" onclick="toggleSwitch(this)"
-                                        style="width:40px;height:22px;background:var(--accent);border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s">
-                                        <div
-                                            style="width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:2px;right:2px;transition:right 0.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style="display:flex;justify-content:space-between;align-items:center;">
-                                    <div>
-                                        <div style="font-size:13px;font-weight:500">Vaccine Expiry Alerts</div>
-                                        <div style="font-size:11px;color:var(--muted);margin-top:2px">Notify 30 days
-                                            before batch expiry</div>
-                                    </div>
-                                    <div class="toggle on" onclick="toggleSwitch(this)"
-                                        style="width:40px;height:22px;background:var(--accent);border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s">
-                                        <div
-                                            style="width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:2px;right:2px;transition:right 0.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style="display:flex;justify-content:space-between;align-items:center;">
-                                    <div>
-                                        <div style="font-size:13px;font-weight:500">Auto-accept Bulk Feed Orders</div>
-                                        <div style="font-size:11px;color:var(--muted);margin-top:2px">Orders ≥10 bags
-                                            auto-confirmed</div>
-                                    </div>
-                                    <div class="toggle" onclick="toggleSwitch(this)"
-                                        style="width:40px;height:22px;background:var(--surface2);border:1px solid var(--border);border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s">
-                                        <div
-                                            style="width:18px;height:18px;background:var(--muted);border-radius:50%;position:absolute;top:2px;left:2px;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style="display:flex;justify-content:space-between;align-items:center;">
-                                    <div>
-                                        <div style="font-size:13px;font-weight:500">Weekly Flock Health Report</div>
-                                        <div style="font-size:11px;color:var(--muted);margin-top:2px">Summary emailed
-                                            every Monday 7am</div>
-                                    </div>
-                                    <div class="toggle on" onclick="toggleSwitch(this)"
-                                        style="width:40px;height:22px;background:var(--accent);border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s">
-                                        <div
-                                            style="width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:2px;right:2px;transition:right 0.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)">
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="padding-16-20 flex-column-gap-14" id="preferencesContainer"
+                                style="min-height: 120px; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 14px;">
+                                No preferences configured yet
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
+        </div>
+        </section>
 
         </div>
     </main>
@@ -1992,45 +559,43 @@
         let currentSectionKey = 'catalog';
 
         async function loadSupplierProducts() {
-            const body = document.getElementById('live-products-body');
+            const grid = document.querySelector('.catalog-grid');
             const message = document.getElementById('liveSupplierMessage');
 
-            if (!body || typeof api === 'undefined') {
+            if (!grid || typeof api === 'undefined') {
                 return;
             }
 
-            body.innerHTML = '<tr><td colspan="8">Loading products...</td></tr>';
-            if (message) {
-                message.textContent = '';
-            }
+            grid.innerHTML = '<div style="grid-column: 1/-1; padding: 20px; text-align: center; color: var(--color-muted);">Loading products...</div>';
 
             try {
                 const products = await api.supplier.getProducts();
 
-                if (!products.length) {
-                    body.innerHTML = '<tr><td colspan="8">No products found. Add your first product above.</td></tr>';
+                if (!products || !Array.isArray(products) || products.length === 0) {
+                    grid.innerHTML = '<div style="grid-column: 1/-1; padding: 20px; text-align: center; color: var(--color-muted);">No products found. Add your first product using the button above.</div>';
                     return;
                 }
 
-                body.innerHTML = products.map((product) => `
-                    <tr>
-                        <td><strong>#${product.id}</strong></td>
-                        <td>${product.name}</td>
-                        <td>${product.category}</td>
-                        <td>${Number(product.price_per_unit || 0).toFixed(2)}</td>
-                        <td>${product.unit}</td>
-                        <td>${product.stock_quantity}</td>
-                        <td>${product.is_active ? 'Yes' : 'No'}</td>
-                        <td>
-                            <div style="display:flex;gap:6px">
-                                <button class="btn btn-ghost btn-sm" onclick="quickEditProduct(${product.id}, '${product.name.replace(/'/g, "\\'")}', ${product.price_per_unit}, ${product.stock_quantity}, ${product.is_active})">Edit</button>
-                                <button class="btn btn-danger btn-sm" onclick="removeProduct(${product.id})">Del</button>
+                grid.innerHTML = products.map((product) => `
+                    <div class="catalog-item" onclick="viewProduct(${product.id})" style="cursor: pointer;">
+                        <div class="catalog-image-wrapper">
+                            <div class="catalog-img" style="background-size: cover; background-position: center; ${product.product_image ? `background-image: url('${product.product_image}')` : ''}; min-height: 120px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">
+                                ${!product.product_image ? '📦' : ''}
                             </div>
-                        </td>
-                    </tr>
+                        </div>
+                        <div class="catalog-name">${product.name}</div>
+                        <div class="catalog-sku">Category: ${product.category}</div>
+                        <div class="catalog-price">KES ${Number(product.unit_price || 0).toFixed(2)} <span class="catalog-price-label">/${product.unit_of_measure}</span></div>
+                        <div class="catalog-stock">
+                            <span class="chip ${product.stock_quantity > 50 ? 'chip-green' : product.stock_quantity > 10 ? 'chip-amber' : 'chip-red'}">
+                                ${product.stock_quantity > 50 ? 'In Stock' : product.stock_quantity > 10 ? 'Limited' : 'Low Stock'}
+                            </span>
+                            &nbsp;${product.stock_quantity} units
+                        </div>
+                    </div>
                 `).join('');
             } catch (error) {
-                body.innerHTML = `<tr><td colspan="8">Failed to load products: ${error.message}</td></tr>`;
+                grid.innerHTML = `<div style="grid-column: 1/-1; padding: 20px; text-align: center; color: var(--color-error);">Failed to load products: ${error.message}</div>`;
             }
         }
 
@@ -2038,7 +603,7 @@
             const name = document.getElementById('liveProductName')?.value?.trim() || '';
             const category = document.getElementById('liveProductCategory')?.value || 'other';
             const price = Number(document.getElementById('liveProductPrice')?.value || 0);
-            const unit = document.getElementById('liveProductUnit')?.value?.trim() || 'unit';
+            const unitOfMeasure = document.getElementById('liveProductUnit')?.value?.trim() || 'unit';
             const stock = Number(document.getElementById('liveProductStock')?.value || 0);
             const description = document.getElementById('liveProductDescription')?.value?.trim() || '';
 
@@ -2052,9 +617,10 @@
                     name,
                     category,
                     description: description || null,
-                    price_per_unit: price,
-                    unit,
+                    unit_price: price,
+                    unit_of_measure: unitOfMeasure,
                     stock_quantity: stock,
+                    product_image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', // Placeholder 1x1 transparent PNG
                 });
 
                 clearSupplierForm();
@@ -2091,7 +657,7 @@
             try {
                 await api.supplier.updateProduct(productId, {
                     name: name.trim(),
-                    price_per_unit: price,
+                    unit_price: price,
                     stock_quantity: stock,
                     is_active: Boolean(isActive),
                 });
@@ -2138,15 +704,31 @@
             message.style.color = isError ? '#c03030' : 'var(--accent)';
         }
 
+        function viewProduct(productId) {
+            window.location.href = `product-view.html?id=${productId}`;
+        }
+
+        function handleInviteFarm() {
+            window.location.href = 'invite-farm.html';
+        }
+
         function handlePrimaryAction() {
             if (currentSectionKey === 'catalog') {
-                createSupplierProduct();
+                window.location.href = 'supplier-add-product.html';
                 return;
             }
             showSupplierMessage(`No API action configured for "${currentSectionKey}" yet.`);
         }
 
         loadSupplierProducts();
+
+        // TODO: Implement catalog KPI updates
+        // When products are loaded, calculate and update:
+        // - #catalogTotalProducts (count of all products)
+        // - #catalogActiveListings (count of active products)
+        // - #catalogAvgPrice (average price of products)
+        // - #catalogTopCategory (most common category)
+        // with their respective change indicators
 
         const pages = {
             catalog: { title: 'Manage Catalog', subtitle: 'Manage your poultry feed, supplements, and equipment offerings. Update pricing and availability.', btn: '+ Add Product' },
@@ -2171,33 +753,354 @@
             if (key === 'catalog') {
                 loadSupplierProducts();
             }
+            if (key === 'inventory') {
+                loadInventory();
+            }
+            if (key === 'orders') {
+                loadOrders();
+            }
+            if (key === 'clients') {
+                loadClients();
+            }
+        }
+
+        async function loadInventory() {
+            try {
+                const products = await api.supplier.getProducts();
+
+                if (!products || products.length === 0) {
+                    document.getElementById('inventoryGauge').innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text2);">No products found. Add products from the catalog.</div>';
+                    return;
+                }
+
+                // Calculate metrics
+                const totalSKUs = products.length;
+                const lowStockCount = products.filter(p => p.stock_quantity < 10).length;
+                const totalValue = products.reduce((sum, p) => sum + (p.unit_price * p.stock_quantity), 0);
+                const avgStock = Math.round(products.reduce((sum, p) => sum + p.stock_quantity, 0) / totalSKUs);
+
+                // Count stock levels
+                const inStockCount = products.filter(p => p.stock_quantity > 50).length;
+                const limitedCount = products.filter(p => p.stock_quantity > 10 && p.stock_quantity <= 50).length;
+                const lowCount = products.filter(p => p.stock_quantity <= 10).length;
+
+                // Update KPIs
+                document.getElementById('totalSKUs').textContent = totalSKUs;
+                document.getElementById('totalSKUsDesc').textContent = `Total products`;
+                document.getElementById('lowStockCount').textContent = lowStockCount;
+                document.getElementById('totalInventoryValue').textContent = `KES ${(totalValue / 1000).toFixed(1)}K`;
+                document.getElementById('avgStock').textContent = avgStock;
+
+                // Render inventory gauge
+                const gaugeHTML = products.map(product => {
+                    const stockPercent = Math.min((product.stock_quantity / 100) * 100, 100);
+                    const stockColor = product.stock_quantity > 50 ? 'accent' : product.stock_quantity > 10 ? 'accent3' : 'error';
+                    const stockStatus = product.stock_quantity > 50 ? 'In Stock' : product.stock_quantity > 10 ? 'Limited' : 'Low Stock';
+                    const statusColor = product.stock_quantity > 50 ? '' : product.stock_quantity > 10 ? 'color-accent2' : 'color-error';
+
+                    return `
+                        <div class="inv-row" onclick="viewProduct(${product.id})" style="cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                            <div class="inv-meta">
+                                <span class="inv-name">${product.name}</span>
+                                <span class="inv-count ${statusColor}">${product.stock_quantity} ${product.unit_of_measure}</span>
+                                <span class="inv-status" style="font-size: 12px; color: var(--text2); margin-left: 8px;">${stockStatus}</span>
+                            </div>
+                            <div class="inv-bar-bg">
+                                <div class="inv-bar-fill progress-bar-${Math.round(stockPercent)}-${stockColor}"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('inventoryGauge').innerHTML = gaugeHTML;
+
+                // Update stock status bars
+                document.getElementById('inStockBar').style.width = (inStockCount / totalSKUs * 100) + '%';
+                document.getElementById('inStockPct').textContent = Math.round(inStockCount / totalSKUs * 100) + '%';
+
+                document.getElementById('limitedStockBar').style.width = (limitedCount / totalSKUs * 100) + '%';
+                document.getElementById('limitedStockPct').textContent = Math.round(limitedCount / totalSKUs * 100) + '%';
+
+                document.getElementById('lowStockBar').style.width = (lowCount / totalSKUs * 100) + '%';
+                document.getElementById('lowStockPct').textContent = Math.round(lowCount / totalSKUs * 100) + '%';
+
+            } catch (error) {
+                document.getElementById('inventoryGauge').innerHTML = `<div style="padding: 20px; text-align: center; color: var(--color-error);">Failed to load inventory: ${error.message}</div>`;
+            }
+        }
+
+        async function loadOrders() {
+            const tbody = document.getElementById('orders-table-body');
+
+            if (!tbody || typeof api === 'undefined') {
+                return;
+            }
+
+            tbody.innerHTML = '<tr><td colspan="7" style="padding: 20px; text-align: center; color: var(--text2);">Loading orders...</td></tr>';
+
+            try {
+                const orders = await api.supplier.getOrders();
+
+                if (!orders || !Array.isArray(orders) || orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="padding: 20px; text-align: center; color: var(--text2);">No orders yet. Farmers will see your products and place orders.</td></tr>';
+
+                    // Update KPI values to 0
+                    document.getElementById('pendingOrdersCount').textContent = '0';
+                    document.getElementById('pendingOrdersDesc').textContent = 'Needs action';
+                    document.getElementById('inTransitCount').textContent = '0';
+                    document.getElementById('inTransitDesc').textContent = 'On schedule';
+                    document.getElementById('deliveredCount').textContent = '0';
+                    document.getElementById('deliveredDesc').textContent = 'This week';
+                    document.getElementById('issuesCount').textContent = '0';
+                    return;
+                }
+
+                // Count orders by status
+                const pending = orders.filter(o => o.status === 'pending').length;
+                const inTransit = orders.filter(o => o.status === 'in_transit' || o.status === 'processing').length;
+                const delivered = orders.filter(o => o.status === 'delivered').length;
+                const issues = orders.filter(o => o.status === 'cancelled' || o.status === 'returned').length;
+
+                // Update badge with pending orders count
+                const badge = document.getElementById('pendingOrdersBadge');
+                if (badge) {
+                    badge.textContent = pending;
+                }
+
+                // Update KPI values
+                document.getElementById('pendingOrdersCount').textContent = pending;
+                document.getElementById('pendingOrdersDesc').textContent = pending > 0 ? 'Needs action' : 'All caught up';
+                document.getElementById('inTransitCount').textContent = inTransit;
+                document.getElementById('inTransitDesc').textContent = 'On schedule';
+                document.getElementById('deliveredCount').textContent = delivered;
+                document.getElementById('deliveredDesc').textContent = 'This week';
+                document.getElementById('issuesCount').textContent = issues;
+
+                // Format date helper
+                const formatDate = (dateStr) => {
+                    if (!dateStr) return 'N/A';
+                    const date = new Date(dateStr);
+                    const options = { month: 'short', day: 'numeric' };
+                    return date.toLocaleDateString('en-US', options);
+                };
+
+                // Get status chip color
+                const getStatusChip = (status) => {
+                    const statusMap = {
+                        'pending': 'chip-amber',
+                        'processing': 'chip-blue',
+                        'in_transit': 'chip-blue',
+                        'delivered': 'chip-green',
+                        'returned': 'chip-red',
+                        'cancelled': 'chip-red',
+                    };
+                    return statusMap[status] || 'chip-muted';
+                };
+
+                // Get status label
+                const getStatusLabel = (status) => {
+                    const statusMap = {
+                        'pending': 'Pending',
+                        'processing': 'Processing',
+                        'in_transit': 'In Transit',
+                        'delivered': 'Delivered',
+                        'returned': 'Returned',
+                        'cancelled': 'Cancelled',
+                    };
+                    return statusMap[status] || status;
+                };
+
+                // Get button action
+                const getButtonAction = (status) => {
+                    if (status === 'pending') return 'Process';
+                    if (status === 'processing') return 'Track';
+                    if (status === 'in_transit') return 'Track';
+                    if (status === 'delivered') return 'Invoice';
+                    if (status === 'returned' || status === 'cancelled') return 'Resolve';
+                    return 'View';
+                };
+
+                const getButtonVariant = (status) => {
+                    if (status === 'pending') return 'btn-primary';
+                    return 'btn-ghost';
+                };
+
+                // Render orders
+                tbody.innerHTML = orders.map((order) => {
+                    const itemsText = order.items && order.items.length > 0
+                        ? order.items.map(item => `${item.product_name} × ${item.quantity}`).join(', ')
+                        : 'No items';
+
+                    const total = order.total_amount ? `KES ${Number(order.total_amount).toFixed(2)}` : 'KES 0.00';
+
+                    return `
+                        <tr>
+                            <td><span class="order-id-cell">#ORD-${order.id}</span></td>
+                            <td>${order.farmer_name || 'Unknown'} — ${order.farm_name || 'N/A'}</td>
+                            <td>${itemsText}</td>
+                            <td class="order-amount">${total}</td>
+                            <td class="order-date">${formatDate(order.created_at)}</td>
+                            <td><span class="chip ${getStatusChip(order.status)}">${getStatusLabel(order.status)}</span></td>
+                            <td><button class="btn ${getButtonVariant(order.status)} order-button-cell" onclick="alert('Order management feature coming soon')">${getButtonAction(order.status)}</button></td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="7" style="padding: 20px; text-align: center; color: var(--color-error);">Failed to load orders: ${error.message}</td></tr>`;
+            }
+        }
+
+        async function loadClients() {
+            const grid = document.getElementById('clients-grid');
+
+            if (!grid || typeof api === 'undefined') {
+                return;
+            }
+
+            grid.innerHTML = '<div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--text2);">Loading farm connections...</div>';
+
+            try {
+                const customers = await api.supplier.getCustomers();
+
+                let clientCards = '';
+                let hasCustomers = customers && Array.isArray(customers) && customers.length > 0;
+
+                if (hasCustomers) {
+                    // Calculate metrics
+                    const totalFarms = customers.length;
+                    const activeFarmers = customers.filter(c => c.is_active).length;
+                    const totalOrders = customers.reduce((sum, c) => sum + (c.order_count || 0), 0);
+                    const avgOrderValue = totalOrders > 0
+                        ? (customers.reduce((sum, c) => sum + (c.lifetime_value || 0), 0) / totalOrders)
+                        : 0;
+                    const retentionRate = totalFarms > 0
+                        ? Math.round((customers.filter(c => c.is_active).length / totalFarms) * 100)
+                        : 0;
+
+                    // Update KPI values
+                    document.getElementById('registeredFarmsCount').textContent = totalFarms;
+                    document.getElementById('registeredFarmsDesc').textContent = `${totalFarms} farms connected`;
+                    document.getElementById('activeFarmersCount').textContent = activeFarmers;
+                    document.getElementById('activeFarmersDesc').textContent = `Ordered in last 30 days`;
+                    document.getElementById('avgOrderValueAmount').textContent = `KES ${avgOrderValue.toFixed(0)}`;
+                    document.getElementById('avgOrderValueDesc').textContent = `↑ Average order`;
+                    document.getElementById('retentionRateValue').textContent = `${retentionRate}%`;
+                    document.getElementById('retentionRateDesc').textContent = `↑ Engagement rate`;
+
+                    // Get status badge
+                    const getStatusBadge = (isActive) => {
+                        return isActive ? { class: 'chip-green', text: 'Active' } : { class: 'chip-amber', text: 'Inactive' };
+                    };
+
+                    // Get avatar color
+                    const getAvatarClass = (index) => {
+                        const classes = ['client-avatar-muted', 'client-avatar-accent', 'client-avatar-accent2', 'client-avatar-accent3'];
+                        return classes[index % classes.length];
+                    };
+
+                    // Render customer cards
+                    clientCards = customers.map((customer, index) => {
+                        const status = getStatusBadge(customer.is_active);
+                        const avatarClass = getAvatarClass(index);
+                        const emoji = ['🐔', '🥚', '🍗', '🐓'][index % 4];
+
+                        return `
+                            <div class="client-card">
+                                <div class="client-head">
+                                    <div class="client-avatar ${avatarClass}">${emoji}</div>
+                                    <div>
+                                        <div class="client-name">${customer.name || 'Unnamed Farm'}</div>
+                                        <div class="client-location">📍 ${customer.location || 'Location not set'}</div>
+                                    </div>
+                                    <span class="chip ${status.class}" style="margin-left:auto">${status.text}</span>
+                                </div>
+                                <div class="client-stats">
+                                    <div>
+                                        <div class="client-stat-val">KES ${(customer.lifetime_value || 0).toFixed(0)}</div>
+                                        <div class="client-stat-label">Lifetime value</div>
+                                    </div>
+                                    <div>
+                                        <div class="client-stat-val">${customer.order_count || 0}</div>
+                                        <div class="client-stat-label">Orders</div>
+                                    </div>
+                                    <div>
+                                        <div class="client-stat-val">${customer.partnership_duration || 'New'}</div>
+                                        <div class="client-stat-label">Partner</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    // No customers - show message
+                    clientCards = `
+                        <div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--text2);">
+                            <div style="font-size: 18px; margin-bottom: 12px;">No farm connections yet</div>
+                            <div style="font-size: 14px; color: var(--text3);">When farmers purchase from you, they will appear here. Invite farms to get started.</div>
+                        </div>
+                    `;
+
+                    // Reset KPI values to 0
+                    document.getElementById('registeredFarmsCount').textContent = '0';
+                    document.getElementById('registeredFarmsDesc').textContent = '0 new this month';
+                    document.getElementById('activeFarmersCount').textContent = '0';
+                    document.getElementById('activeFarmersDesc').textContent = 'No active orders';
+                    document.getElementById('avgOrderValueAmount').textContent = 'KES 0';
+                    document.getElementById('avgOrderValueDesc').textContent = 'No orders yet';
+                    document.getElementById('retentionRateValue').textContent = '0%';
+                    document.getElementById('retentionRateDesc').textContent = 'No data';
+                }
+
+                // Always add invite card at the end
+                const inviteCard = `
+                    <div class="client-card invite-card" data-action="invite-farm" style="cursor: pointer;">
+                        <div class="invite-icon">+</div>
+                        <div class="invite-text">Invite New Farm</div>
+                    </div>
+                `;
+
+                grid.innerHTML = clientCards + inviteCard;
+
+            } catch (error) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--color-error);">Failed to load farm connections: ${error.message}</div>`;
+            }
         }
 
         document.getElementById('primary-btn')?.addEventListener('click', handlePrimaryAction);
 
-        // Bar Chart
-        const months = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'];
-        const vals = [18200, 21400, 19600, 24800, 27100, 24300, 26420, 31480];
-        const max = Math.max(...vals);
-        const colors = ['var(--border)', 'var(--border)', 'var(--border)', 'var(--border)', 'var(--border)', 'var(--border)', 'var(--accent3)', 'var(--accent)'];
-
-        const chart = document.getElementById('bar-chart');
-        months.forEach((m, i) => {
-            const h = Math.round((vals[i] / max) * 120);
-            chart.innerHTML += `
-      <div class="bar-wrap">
-        <div class="bar-val">$${(vals[i] / 1000).toFixed(0)}K</div>
-        <div class="bar" style="height:${h}px;background:${colors[i]};" title="${m}: $${vals[i].toLocaleString()}"></div>
-        <div class="bar-label">${m}</div>
-      </div>`;
+        // Event delegation for dynamically created elements
+        document.addEventListener('click', (e) => {
+            const inviteCard = e.target.closest('[data-action="invite-farm"]');
+            if (inviteCard) {
+                handleInviteFarm();
+            }
         });
+
+        // TODO: Implement analytics data loading
+        // When analytics API endpoints are available, populate the following elements:
+        // - #revenueValue, #revenueChange, #ordersCompletedValue, #ordersCompletedChange
+        // - #grossMarginValue, #grossMarginChange, #ytdRevenueValue, #ytdRevenueChange
+        // - #bar-chart (monthly revenue bar chart)
+        // - #donutChartContainer (revenue by category pie/donut chart)
+        // - #topProductsTableBody (top performing products table)
+
+        // TODO: Implement settings data loading
+        // When settings API endpoints are available, populate the following:
+        // Company Profile: Load form fields (#companyName, #registrationNo, #businessAddress, #phone, #email)
+        // Delivery Zones: Load #deliveryZonesContainer with dynamic zone tags
+        // Payment Methods: Load #paymentMethodsContainer with configured payment options
+        // Preferences: Load #preferencesContainer with user preference toggles
+        // Note: selectPM() and toggleSwitch() helper functions are ready for use
 
         function selectPM(el) {
             document.querySelectorAll('.payment-method').forEach(m => {
                 m.classList.remove('selected');
+                m.setAttribute('aria-checked', 'false');
                 m.querySelector('.pm-check').style.display = 'none';
             });
             el.classList.add('selected');
+            el.setAttribute('aria-checked', 'true');
             el.querySelector('.pm-check').style.display = 'block';
         }
 
@@ -2205,6 +1108,7 @@
             const ball = el.querySelector('div');
             if (el.classList.contains('on')) {
                 el.classList.remove('on');
+                el.setAttribute('aria-checked', 'false');
                 el.style.background = 'var(--surface2)';
                 el.style.border = '1px solid var(--border)';
                 ball.style.background = 'var(--muted)';
@@ -2212,6 +1116,7 @@
                 ball.style.left = '2px';
             } else {
                 el.classList.add('on');
+                el.setAttribute('aria-checked', 'true');
                 el.style.background = 'var(--accent)';
                 el.style.border = 'none';
                 ball.style.background = '#fff';
