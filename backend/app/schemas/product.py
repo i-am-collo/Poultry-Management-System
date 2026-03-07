@@ -20,6 +20,7 @@ class ProductCreate(BaseModel):
     product_image: str
     unit_of_measure: str = "unit"
     stock_quantity: int = Field(default=0, ge=0)
+    visible_to_farmers_only: bool = False
 
     @field_validator("name")
     @classmethod
@@ -57,6 +58,7 @@ class ProductUpdate(BaseModel):
     unit_of_measure: str | None = None
     stock_quantity: int | None = Field(default=None, ge=0)
     is_active: bool | None = None
+    visible_to_farmers_only: bool | None = None
 
     @field_validator("name")
     @classmethod
@@ -102,6 +104,7 @@ class ProductResponse(BaseModel):
     unit_of_measure: str
     stock_quantity: int
     is_active: bool
+    visible_to_farmers_only: bool
     created_at: datetime
     updated_at: datetime
 
@@ -117,3 +120,4 @@ class BuyerProductSearchResponse(BaseModel):
     unit_price: float
     unit_of_measure: str
     stock_quantity: int
+    visible_to_farmers_only: bool

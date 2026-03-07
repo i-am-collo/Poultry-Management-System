@@ -18,6 +18,7 @@ class Product(Base):
     unit_of_measure = Column(String(30), nullable=False, default="unit")
     stock_quantity = Column(Integer, nullable=False, default=0)
     is_active = Column(Boolean, nullable=False, default=True)
+    visible_to_farmers_only = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(
         DateTime,

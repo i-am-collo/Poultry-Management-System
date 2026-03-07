@@ -36,6 +36,7 @@ def serialize_product(product: Product) -> ProductResponse:
         unit_of_measure=product.unit_of_measure,
         stock_quantity=product.stock_quantity,
         is_active=product.is_active,
+        visible_to_farmers_only=product.visible_to_farmers_only,
         created_at=product.created_at,
         updated_at=product.updated_at,
     )

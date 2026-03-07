@@ -44,9 +44,9 @@ def serialize_order(order: Order) -> OrderResponse:
 def search_products(
     q: str | None = Query(default=None, min_length=1),
     db: Session = Depends(get_db),
-    _: User = Depends(require_role("buyer", "farmer")),
+    current_user: User = Depends(require_role("buyer", "farmer")),
 ):
-    products = search_active_products(db, q)
+    products = search_active_products(db, q, user_role=current_user.role)
     if not products:
         return []
 
@@ -66,6 +66,7 @@ def search_products(
             unit_price=product.unit_price,
             unit_of_measure=product.unit_of_measure,
             stock_quantity=product.stock_quantity,
+            visible_to_farmers_only=product.visible_to_farmers_only,
         )
         for product in products
     ]

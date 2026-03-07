@@ -15,6 +15,7 @@ def create_product(db: Session, supplier_id: int, payload: ProductCreate) -> Pro
         unit_price=payload.unit_price,
         unit_of_measure=payload.unit_of_measure,
         stock_quantity=payload.stock_quantity,
+        visible_to_farmers_only=payload.visible_to_farmers_only,
     )
     db.add(product)
     db.commit()
@@ -59,8 +60,12 @@ def delete_product(db: Session, product: Product) -> None:
     db.commit()
 
 
-def search_active_products(db: Session, query: str | None) -> list[Product]:
+def search_active_products(db: Session, query: str | None, user_role: str | None = None) -> list[Product]:
     products_query = db.query(Product).filter(Product.is_active.is_(True), Product.stock_quantity > 0)
+
+    # Filter by role: buyers cannot see farmer-only products
+    if user_role == "buyer":
+        products_query = products_query.filter(Product.visible_to_farmers_only.is_(False))
 
     if query:
         search_text = f"%{query.strip()}%"
