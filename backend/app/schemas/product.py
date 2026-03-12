@@ -95,7 +95,9 @@ class ProductUpdate(BaseModel):
 
 class ProductResponse(BaseModel):
     id: int
-    supplier_id: int
+    supplier_id: int | None = None
+    farmer_id: int | None = None
+    product_source: str = "supplier"
     name: str
     category: str
     description: str | None
@@ -111,8 +113,11 @@ class ProductResponse(BaseModel):
 
 class BuyerProductSearchResponse(BaseModel):
     id: int
-    supplier_id: int
-    supplier_name: str
+    supplier_id: int | None = None
+    supplier_name: str | None = None
+    farmer_id: int | None = None
+    farmer_name: str | None = None
+    product_source: str = "supplier"
     name: str
     category: str
     description: str | None
@@ -121,3 +126,30 @@ class BuyerProductSearchResponse(BaseModel):
     unit_of_measure: str
     stock_quantity: int
     visible_to_farmers_only: bool
+
+
+# ════════════════════════════════════
+# SUPPLIER ONBOARDING REGISTRATION
+# ════════════════════════════════════
+
+class SupplierRegisterRequest(BaseModel):
+    """Simplified supplier onboarding registration"""
+    business_name: str
+    contact_person: str
+    county: str
+    phone: str
+    email: str
+    kra_pin: str
+    categories: list[str] = []
+    payment_mpesa_till: str
+
+
+class BuyerRegisterRequest(BaseModel):
+    """Simplified buyer onboarding registration"""
+    full_name: str
+    business_name: str
+    county: str
+    phone: str
+    email: str
+    buyer_type: str
+    preferred_payment: str

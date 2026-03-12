@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import distinct
+import json
 
 from app.core.deps import require_role
 from app.crud.product import (
@@ -10,6 +11,7 @@ from app.crud.product import (
     get_products_by_supplier,
     update_product,
 )
+from app.crud.supplier import create_supplier_profile, get_supplier_profile, supplier_profile_exists
 from app.crud.farm_invitation import create_farm_invitation
 from app.db.database import get_db
 from app.models.product import Product
@@ -17,7 +19,7 @@ from app.models.user import User
 from app.models.order import Order, OrderItem
 from app.models.farm_invitation import FarmInvitation
 from app.schemas.auth import MessageResponse
-from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
+from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate, SupplierRegisterRequest
 from app.schemas.farm_invitation import FarmInvitationCreate, FarmInvitationResponse
 from app.schemas.order import OrderResponse
 
@@ -159,3 +161,113 @@ def get_supplier_customers(
         })
     
     return response
+
+
+@router.get("/all-farms")
+def get_all_available_farms(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("supplier")),
+):
+    """Get all farms available for invitation"""
+    # Get all farmer users who haven't been invited yet
+    all_farmers = db.query(User).filter(User.role == 'farmer').all()
+    
+    # Get already invited farm emails
+    invited_emails = db.query(FarmInvitation.farmer_email).filter(
+        FarmInvitation.supplier_id == current_user.id
+    ).all()
+    invited_emails = {email[0] for email in invited_emails}
+    
+    # Build response with farm info
+    response = []
+    for farmer in all_farmers:
+        # Skip if already invited
+        if farmer.email in invited_emails:
+            continue
+        
+        # Try to get farm profile details
+        farm_info = {
+            "id": farmer.id,
+            "farmer_name": farmer.name,
+            "farmer_email": farmer.email,
+            "farm_name": farmer.name,  # Default to farmer name if no profile
+            "location": farmer.phone or "Not specified",
+            "flock_count": 0,
+            "size_acres": "—",
+        }
+        
+        response.append(farm_info)
+    
+    return response
+
+
+# ════════════════════════════════════
+# ONBOARDING REGISTRATION ENDPOINT
+# ════════════════════════════════════
+
+@router.post("/register", status_code=status.HTTP_201_CREATED)
+def supplier_complete_registration(
+    payload: SupplierRegisterRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("supplier")),
+):
+    """
+    Complete supplier onboarding registration in a single call.
+    Stores supplier profile information.
+    """
+    try:
+        # Check if profile already exists
+        if supplier_profile_exists(db, current_user.id):
+            raise HTTPException(status_code=400, detail="Supplier profile already exists for this user")
+        
+        # Create supplier profile
+        profile = create_supplier_profile(db, current_user.id, payload)
+        
+        return {
+            "message": "Supplier registration completed successfully",
+            "supplier_id": current_user.id,
+            "business_name": profile.business_name
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Registration failed: {str(e)}")
+
+
+@router.get("/profile", response_model=dict)
+def get_supplier_profile_endpoint(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("supplier")),
+):
+    """Get supplier profile"""
+    profile = get_supplier_profile(db, current_user.id)
+    
+    if not profile:
+        # If profile doesn't exist yet, return basic info
+        products = get_products_by_supplier(db, current_user.id)
+        return {
+            "supplier_id": current_user.id,
+            "email": current_user.email,
+            "phone": current_user.phone or "",
+            "products_count": len(products),
+            "products": [serialize_product(p) for p in products[:10]]
+        }
+    
+    products = get_products_by_supplier(db, current_user.id)
+    categories = json.loads(profile.categories) if isinstance(profile.categories, str) else profile.categories
+    
+    return {
+        "supplier_id": current_user.id,
+        "business_name": profile.business_name,
+        "contact_person": profile.contact_person,
+        "email": profile.email,
+        "phone": profile.phone,
+        "county": profile.county,
+        "kra_pin": profile.kra_pin,
+        "categories": categories,
+        "payment_mpesa_till": profile.payment_mpesa_till,
+        "products_count": len(products),
+        "products": [serialize_product(p) for p in products[:10]]
+    }

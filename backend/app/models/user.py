@@ -6,8 +6,7 @@ from app.db.database import Base
 
 from sqlalchemy.orm import relationship
 
-notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
-user = relationship("User", back_populates="notifications")
+
 class User(Base):
     __tablename__ = "users"
 
@@ -20,4 +19,5 @@ class User(Base):
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     
     orders = relationship("Order", back_populates="user", cascade="all, delete-orphan")
-    
+    farms = relationship("Farm", back_populates="farmer", cascade="all, delete-orphan")
+    notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")

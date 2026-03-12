@@ -64,10 +64,25 @@ async def register(user: RegisterRequest, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=LoginResponse)
 def login(user: LoginRequest, db: Session = Depends(get_db)):
+    print(f"🔍 Login attempt: email='{user.email}'")
+    
     db_user = get_user_by_email(db, user.email)
-    if not db_user or not verify_password(user.password, db_user.hashed_password):
+    
+    if not db_user:
+        print(f"❌ User not found: {user.email}")
         raise HTTPException(status_code=400, detail="Invalid credentials")
-
+    
+    print(f"✅ User found: {db_user.email}")
+    
+    password_valid = verify_password(user.password, db_user.hashed_password)
+    print(f"🔐 Password verification: {password_valid}")
+    
+    if not password_valid:
+        print(f"❌ Invalid password for user: {user.email}")
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+    
+    print(f"✅ Login successful for: {user.email}")
+    
     access_token = create_access_token(db_user.email, db_user.role)
     refresh_token = create_refresh_token(db_user.email)
 

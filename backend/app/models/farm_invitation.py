@@ -17,7 +17,8 @@ class FarmInvitation(Base):
     __tablename__ = "farm_invitations"
 
     id = Column(Integer, primary_key=True, index=True)
-    supplier_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
+    farmer_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=True)  # Farmer sending the invitation
+    supplier_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)  # Supplier being invited
     farm_name = Column(String(120), nullable=False)
     farmer_name = Column(String(120), nullable=False)
     farmer_email = Column(String(255), index=True, nullable=False)
@@ -35,3 +36,4 @@ class FarmInvitation(Base):
     )
 
     supplier = relationship("User", foreign_keys=[supplier_id])
+    farmer = relationship("User", foreign_keys=[farmer_id], viewonly=True)

@@ -3,12 +3,13 @@ from sqlalchemy.orm import Session
 
 from app.core.deps import require_role
 from app.crud.product import get_product_by_id, search_active_products
+from app.crud.buyer import create_buyer_profile, buyer_profile_exists
 from app.db.database import get_db
 from app.models.order import Order, OrderItem
 from app.models.product import Product
 from app.models.user import User
 from app.schemas.order import OrderCreate, OrderResponse, OrderItemResponse
-from app.schemas.product import BuyerProductSearchResponse
+from app.schemas.product import BuyerProductSearchResponse, BuyerRegisterRequest
 
 router = APIRouter(prefix="/buyers", tags=["Buyers"])
 
@@ -18,6 +19,7 @@ def serialize_order_item(item: OrderItem) -> OrderItemResponse:
         id=item.id,
         order_id=item.order_id,
         product_id=item.product_id,
+        product_name=item.product.name if item.product else "Unknown Product",
         quantity=item.quantity,
         unit_price=item.unit_price,
         total_price=item.total_price,
@@ -46,19 +48,39 @@ def search_products(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("buyer", "farmer")),
 ):
-    products = search_active_products(db, q, user_role=current_user.role)
+    # Get all active products (both supplier and farmer)
+    query = db.query(Product).filter(Product.is_active == True)
+    
+    if q:
+        query = query.filter(
+            (Product.name.ilike(f"%{q}%")) |
+            (Product.description.ilike(f"%{q}%")) |
+            (Product.category.ilike(f"%{q}%"))
+        )
+    
+    products = query.all()
+    
     if not products:
         return []
 
-    supplier_ids = {product.supplier_id for product in products}
+    # Get supplier and farmer names
+    supplier_ids = {product.supplier_id for product in products if product.supplier_id}
+    farmer_ids = {product.farmer_id for product in products if product.farmer_id}
+    
     suppliers = db.query(User).filter(User.id.in_(supplier_ids)).all() if supplier_ids else []
+    farmers = db.query(User).filter(User.id.in_(farmer_ids)).all() if farmer_ids else []
+    
     supplier_name_by_id = {supplier.id: supplier.name for supplier in suppliers}
+    farmer_name_by_id = {farmer.id: farmer.name for farmer in farmers}
 
     return [
         BuyerProductSearchResponse(
             id=product.id,
             supplier_id=product.supplier_id,
-            supplier_name=supplier_name_by_id.get(product.supplier_id, "Unknown supplier"),
+            supplier_name=supplier_name_by_id.get(product.supplier_id, "Unknown supplier") if product.supplier_id else None,
+            farmer_id=product.farmer_id,
+            farmer_name=farmer_name_by_id.get(product.farmer_id, "Unknown farmer") if product.farmer_id else None,
+            product_source=product.product_source,
             name=product.name,
             category=product.category,
             description=product.description,
@@ -158,3 +180,56 @@ def get_order(
         raise HTTPException(status_code=404, detail="Order not found")
 
     return serialize_order(order)
+
+
+# ════════════════════════════════════
+# ONBOARDING REGISTRATION ENDPOINT
+# ════════════════════════════════════
+
+@router.post("/register", status_code=status.HTTP_201_CREATED)
+def buyer_complete_registration(
+    payload: BuyerRegisterRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("buyer")),
+):
+    """
+    Complete buyer onboarding registration in a single call.
+    Stores buyer profile information.
+    """
+    try:
+        # Check if profile already exists
+        if buyer_profile_exists(db, current_user.id):
+            raise HTTPException(status_code=400, detail="Buyer profile already exists for this user")
+        
+        # Create buyer profile
+        profile = create_buyer_profile(db, current_user.id, payload)
+        
+        return {
+            "message": "Buyer registration completed successfully",
+            "buyer_id": current_user.id,
+            "business_name": profile.business_name
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Registration failed: {str(e)}")
+
+
+@router.get("/profile", response_model=dict)
+def get_buyer_profile(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("buyer")),
+):
+    """Get buyer profile and order history"""
+    orders = db.query(Order).filter(Order.user_id == current_user.id).all()
+    
+    return {
+        "buyer_id": current_user.id,
+        "email": current_user.email,
+        "phone": current_user.phone or "",
+        "orders_count": len(orders),
+        "total_spent": sum(order.total_amount for order in orders),
+        "recent_orders": [serialize_order(o) for o in orders[-5:]]  # Last 5 orders
+    }

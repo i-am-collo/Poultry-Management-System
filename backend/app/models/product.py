@@ -9,7 +9,9 @@ class Product(Base):
     __tablename__ = "products"
 
     id = Column(Integer, primary_key=True, index=True)
-    supplier_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
+    supplier_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=True)
+    farmer_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=True)
+    product_source = Column(String(50), default="supplier")
     name = Column(String(120), nullable=False)
     category = Column(String(50), nullable=False)
     description = Column(Text, nullable=True)

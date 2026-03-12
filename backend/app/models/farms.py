@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text
 
 from app.db.database import Base
 from sqlalchemy.orm import relationship
@@ -14,6 +14,8 @@ class Farm(Base):
     farm_name = Column(String(120), nullable=False)
     location = Column(String(255), nullable=False)
     size = Column(Float, nullable=False)
+    phone = Column(String(30), nullable=True)
+    description = Column(Text, nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
     

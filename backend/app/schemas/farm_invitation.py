@@ -1,12 +1,14 @@
 from datetime import datetime
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 import re
 
 
 class FarmInvitationCreate(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+    
     farmName: str = Field(..., min_length=1, max_length=120)
     farmerName: str = Field(..., min_length=1, max_length=120)
-    farmerEmail: str = Field(..., max_length=255)
+    farmerEmail: str = Field(..., min_length=1, max_length=255)
     farmerPhone: str | None = Field(None, max_length=30)
     farmLocation: str | None = Field(None, max_length=255)
     farmType: str | None = Field(None, max_length=50)
@@ -15,6 +17,8 @@ class FarmInvitationCreate(BaseModel):
     @field_validator("farmerEmail")
     @classmethod
     def validate_email(cls, v: str) -> str:
+        if not v or not v.strip():
+            raise ValueError("Email is required")
         email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
         if not re.match(email_pattern, v):
             raise ValueError("Invalid email address")

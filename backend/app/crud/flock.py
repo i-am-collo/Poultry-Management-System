@@ -11,6 +11,7 @@ def create_flock(db: Session, farmer_id: int, payload: FlockCreate) -> Flock:
         breed=payload.breed,
         quantity=payload.quantity,
         age_weeks=payload.age_weeks,
+        purpose=payload.purpose,
         health_status=payload.health_status,
         daily_feed_kg=payload.daily_feed_kg,
         notes=payload.notes,

@@ -14,20 +14,18 @@ def _validate_text(value: str, field_name: str) -> str:
 
 class FlockCreate(BaseModel):
     breed: str
-    purpose: str
+    bird_type: str | None = None
     quantity: int = Field(gt=0)
+    age_weeks: int | None = None
+    purpose: str | None = None
     health_status: str = "healthy"
     daily_feed_kg: float = Field(default=0, ge=0)
+    notes: str | None = None
 
     @field_validator("breed")
     @classmethod
     def validate_breed(cls, value: str) -> str:
         return _validate_text(value, "Breed")
-
-    @field_validator("purpose")
-    @classmethod
-    def validate_purpose(cls, value: str) -> str:
-        return _validate_text(value, "Purpose")
 
     @field_validator("health_status")
     @classmethod
@@ -40,10 +38,13 @@ class FlockCreate(BaseModel):
 
 class FlockUpdate(BaseModel):
     breed: str | None = None
-    purpose: str | None = None
+    bird_type: str | None = None
     quantity: int | None = Field(default=None, gt=0)
+    age_weeks: int | None = None
+    purpose: str | None = None
     health_status: str | None = None
     daily_feed_kg: float | None = Field(default=None, ge=0)
+    notes: str | None = None
 
     @field_validator("breed")
     @classmethod
@@ -51,13 +52,6 @@ class FlockUpdate(BaseModel):
         if value is None:
             return value
         return _validate_text(value, "Breed")
-
-    @field_validator("purpose")
-    @classmethod
-    def validate_purpose(cls, value: str | None) -> str | None:
-        if value is None:
-            return value
-        return _validate_text(value, "Purpose")
 
     @field_validator("health_status")
     @classmethod
@@ -74,9 +68,12 @@ class FlockResponse(BaseModel):
     id: int
     farmer_id: int
     breed: str
-    purpose: str
+    bird_type: str | None
     quantity: int
+    age_weeks: int | None
+    purpose: str | None
     health_status: str
     daily_feed_kg: float
+    notes: str | None
     created_at: datetime
     updated_at: datetime

@@ -29,6 +29,7 @@ class OrderItemResponse(BaseModel):
     id: int
     order_id: int
     product_id: int
+    product_name: str
     quantity: int
     unit_price: float
     total_price: float
@@ -39,6 +40,8 @@ class OrderItemResponse(BaseModel):
 class OrderResponse(BaseModel):
     id: int
     user_id: int
+    buyer_email: str | None
+    buyer_farm_name: str | None
     total_amount: float
     order_status: str
     payment_status: str
