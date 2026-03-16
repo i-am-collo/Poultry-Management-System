@@ -450,7 +450,7 @@ def get_pending_invitations(
 ):
     """Get all pending supplier invitations for this farmer"""
     invitations = db.query(FarmInvitation).filter(
-        FarmInvitation.farmer_id == current_user.id,
+        FarmInvitation.farmer_email == current_user.email,
         FarmInvitation.status == "pending"
     ).all()
     

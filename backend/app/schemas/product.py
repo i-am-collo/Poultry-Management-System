@@ -153,3 +153,41 @@ class BuyerRegisterRequest(BaseModel):
     email: str
     buyer_type: str
     preferred_payment: str
+
+
+# ════════════════════════════════════
+# MARKETPLACE RESPONSE SCHEMAS
+# ════════════════════════════════════
+
+class ProductDetailResponse(BuyerProductSearchResponse):
+    """Extended product details for single product view"""
+    seller_name: str | None = None
+    seller_location: str | None = None
+    seller_description: str | None = None
+    farm_name: str | None = None
+
+
+class SellerProfileResponse(BaseModel):
+    """Seller (farmer or supplier) profile with their products"""
+    seller_id: int
+    name: str
+    role: str
+    county: str | None = None
+    description: str | None = None
+    categories: list[str] | None = None
+    products: list[BuyerProductSearchResponse]
+
+
+class StockStatusResponse(BaseModel):
+    """Stock status polling response"""
+    product_id: int
+    stock_quantity: int
+    is_active: bool
+
+
+class MarketplaceProductsResponse(BaseModel):
+    """Paginated marketplace products response"""
+    items: list[BuyerProductSearchResponse]
+    total: int
+    page: int
+    pages: int

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status as http_status, Body
 from sqlalchemy.orm import Session
 from sqlalchemy import distinct
 import json
@@ -44,7 +44,40 @@ def serialize_product(product: Product) -> ProductResponse:
     )
 
 
-@router.post("/products", status_code=status.HTTP_201_CREATED, response_model=ProductResponse)
+def serialize_order_item(item: OrderItem) -> dict:
+    """Serialize OrderItem to dict with product name"""
+    return {
+        "id": item.id,
+        "order_id": item.order_id,
+        "product_id": item.product_id,
+        "product_name": item.product.name if item.product else "Unknown Product",
+        "quantity": item.quantity,
+        "unit_price": item.unit_price,
+        "total_price": item.total_price,
+        "created_at": item.created_at,
+        "updated_at": item.updated_at,
+    }
+
+
+def serialize_order(order: Order) -> dict:
+    """Serialize Order to dict with buyer and item details"""
+    buyer = order.user if order.user else None
+    return {
+        "id": order.id,
+        "user_id": order.user_id,
+        "buyer_email": buyer.email if buyer else None,
+        "buyer_farm_name": buyer.name if buyer else "Unknown",
+        "total_amount": order.total_amount,
+        "order_status": order.order_status.value if hasattr(order.order_status, 'value') else str(order.order_status),
+        "payment_status": order.payment_status.value if hasattr(order.payment_status, 'value') else str(order.payment_status),
+        "items": [serialize_order_item(item) for item in order.items],
+        "note": order.note,
+        "created_at": order.created_at,
+        "updated_at": order.updated_at,
+    }
+
+
+@router.post("/products", status_code=http_status.HTTP_201_CREATED, response_model=ProductResponse)
 def add_product(
     payload: ProductCreate,
     db: Session = Depends(get_db),
@@ -91,7 +124,7 @@ def remove_product(
     delete_product(db, product)
     return {"message": "Product deleted successfully"}
 
-@router.post("/invite-farm", status_code=status.HTTP_201_CREATED, response_model=FarmInvitationResponse)
+@router.post("/invite-farm", status_code=http_status.HTTP_201_CREATED, response_model=FarmInvitationResponse)
 def invite_farm(
     payload: FarmInvitationCreate,
     db: Session = Depends(get_db),
@@ -117,7 +150,56 @@ def get_supplier_orders(
         Product.supplier_id == current_user.id
     ).distinct().all()
     
-    return orders
+    return [serialize_order(order) for order in orders]
+
+
+@router.patch("/orders/{order_id}", response_model=OrderResponse)
+def update_order_status(
+    order_id: int,
+    status: str = Body(..., embed=True),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("supplier")),
+):
+    """Update order status (supplier can approve/reject orders)"""
+    from app.models.order import OrderStatus
+    
+    # Verify order exists and supplier has products in this order
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise HTTPException(
+            status_code=http_status.HTTP_404_NOT_FOUND,
+            detail="Order not found"
+        )
+    
+    # Verify supplier has products in this order
+    has_products = db.query(OrderItem).join(
+        Product, OrderItem.product_id == Product.id
+    ).filter(
+        OrderItem.order_id == order_id,
+        Product.supplier_id == current_user.id
+    ).first()
+    
+    if not has_products:
+        raise HTTPException(
+            status_code=http_status.HTTP_403_FORBIDDEN,
+            detail="You don't have products in this order"
+        )
+    
+    # Validate status
+    try:
+        order_status = OrderStatus[status]
+    except KeyError:
+        raise HTTPException(
+            status_code=http_status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid status. Allowed values: {', '.join([s.value for s in OrderStatus])}"
+        )
+    
+    # Update order status
+    order.order_status = order_status
+    db.commit()
+    db.refresh(order)
+    
+    return serialize_order(order)
 
 
 @router.get("/customers")
@@ -205,7 +287,7 @@ def get_all_available_farms(
 # ONBOARDING REGISTRATION ENDPOINT
 # ════════════════════════════════════
 
-@router.post("/register", status_code=status.HTTP_201_CREATED)
+@router.post("/register", status_code=http_status.HTTP_201_CREATED)
 def supplier_complete_registration(
     payload: SupplierRegisterRequest,
     db: Session = Depends(get_db),
