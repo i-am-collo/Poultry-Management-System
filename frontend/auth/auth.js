@@ -347,11 +347,20 @@ function initializeLoginForm() {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Signing In...';
 
+        // Log credentials for debugging
+        console.log('📤 Login credentials:', {
+            email: email,
+            password: '***hidden***' // Don't log actual password
+        });
+
         try {
+            console.log('📤 Sending login request to /auth/login');
             const response = await api.auth.login({
                 email,
                 password,
             });
+
+            console.log('✅ Login response:', response);
 
             // Store authentication data with access and refresh tokens
             storeAuthData(response.access_token, response.refresh_token, response.user);
@@ -376,6 +385,7 @@ function initializeLoginForm() {
                 }
             }, 1500);
         } catch (error) {
+            console.error('❌ Login error:', error);
             showMessage(error.message || 'Login failed. Please check your credentials.', 'error');
             submitBtn.disabled = false;
             submitBtn.textContent = 'Sign In';

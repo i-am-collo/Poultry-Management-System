@@ -64,6 +64,26 @@ aside {
 nav {
     padding: 16px 12px;
     flex: 1;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+/* Scrollbar styling */
+nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+nav::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+nav::-webkit-scrollbar-thumb:hover {
+    background: var(--muted);
 }
 
 .nav-group-label {
@@ -132,37 +152,56 @@ nav {
     border-radius: 20px;
 }
 
+.nav-item.danger {
+    color: rgba(255, 120, 120, .75)
+}
+
+.nav-item.danger:hover {
+    background: rgba(255, 100, 100, .12);
+    color: #ff8a80
+}
+
 .sidebar-footer {
-    padding: 16px 12px;
+    padding: 14px 12px;
     border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface2);
 }
 
 .supplier-card {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    background: var(--surface2);
-    border-radius: 10px;
+    gap: 12px;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    width: 100%;
 }
 
 .avatar {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     background: linear-gradient(135deg, #1a6b3a, #2a8a5e);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'DM Serif Display', serif;
-    font-size: 15px;
+    font-size: 16px;
     color: #fff;
     flex-shrink: 0;
+    font-weight: 700;
 }
 
 .supplier-name {
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .supplier-role {
@@ -2602,4 +2641,103 @@ select option {
         padding: 9px 10px;
         font-size: 16px;
     }
+}
+
+/* ── PILL TABS STYLING ── */
+.stabs {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    border-bottom: none;
+}
+
+.stab {
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Epilogue', sans-serif;
+    transition: all 0.2s ease;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.stab:hover {
+    color: var(--accent);
+    background: rgba(26, 107, 58, 0.05);
+}
+
+.stab.active {
+    background: var(--accent);
+    color: white;
+    border-bottom: 2px solid var(--accent);
+}
+
+/* ── ROUNDED CARDS ── */
+.client-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.client-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: var(--accent3);
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+/* ── GHOST BUTTONS ── */
+.btn-ghost {
+    background: transparent;
+    border: 1.5px solid var(--accent3);
+    color: var(--accent3);
+    padding: 10px 24px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.btn-ghost:hover {
+    background: rgba(42, 138, 94, 0.08);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.btn-ghost:active {
+    transform: scale(0.98);
+}
+
+/* ── CALM ERROR MESSAGES ── */
+.message-box.error,
+#inviteFormMessage[style*="color: #c03030"],
+.error-message {
+    background: transparent !important;
+    color: var(--text2) !important;
+    border: none !important;
+    border-left: none !important;
+    text-align: center;
+    font-size: 14px;
+    padding: 12px 0 !important;
+}
+
+.message-box.error::before,
+.error-message::before {
+    content: none !important;
 }

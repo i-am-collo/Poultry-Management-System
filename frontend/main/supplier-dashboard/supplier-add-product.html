@@ -40,7 +40,7 @@
                     <polyline points="9 12 11 14 15 10" />
                 </svg>
                 Manage Orders
-                <span class="badge">9</span>
+                <span class="badge" id="ordersBadge">0</span>
             </div>
             <div class="nav-item" onclick="redirectDashboard()">
                 <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -81,9 +81,9 @@
 
         <div class="sidebar-footer">
             <div class="supplier-card">
-                <div class="avatar">P</div>
+                <div class="avatar" id="userAvatar">?</div>
                 <div>
-                    <div class="supplier-name">PrimeFlock Supplies</div>
+                    <div class="supplier-name" id="userFullName">Loading...</div>
                     <div class="supplier-role">Verified Poultry Supplier</div>
                 </div>
             </div>
@@ -143,7 +143,7 @@
                                     <label for="productPrice">Price per Unit <span class="highlight">*</span></label>
                                     <input id="productPrice" type="number" step="0.01" min="0" placeholder="e.g., 28.50"
                                         required>
-                                    <span class="help-text">Price in local currency (GHS)</span>
+                                    <span class="help-text">Price in Kenyan Shillings (KES)</span>
                                 </div>
                                 <div class="form-field">
                                     <label for="productUnitOfMeasure">Unit of Measure <span
@@ -177,6 +177,18 @@
                                 </div>
                             </div>
 
+                            <div class="form-row full">
+                                <div class="form-field" style="display: flex; align-items: center; gap: 12px;">
+                                    <input id="visibleToFarmersOnly" type="checkbox">
+                                    <label for="visibleToFarmersOnly" style="margin: 0; cursor: pointer;">
+                                        Visible to farmers only
+                                        <span class="help-text" style="display: block; margin-top: 4px;">When checked,
+                                            only farmers will see this product. Buyers will not have access to
+                                            it.</span>
+                                    </label>
+                                </div>
+                            </div>
+
                             <div class="form-actions">
                                 <button type="button" class="btn btn-ghost" onclick="goToCatalog()">Cancel</button>
                                 <button type="submit" class="btn btn-primary">Create Product</button>
@@ -190,6 +202,50 @@
 
     <script src="../../api-client.js"></script>
     <script>
+        // Load user data on page initialization
+        function loadUserData() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const userFullName = document.getElementById('userFullName');
+                const userAvatar = document.getElementById('userAvatar');
+
+                if (user.first_name && user.last_name) {
+                    userFullName.textContent = `${user.first_name} ${user.last_name}`;
+                    // Set avatar to first letter of first name
+                    const firstLetter = user.first_name.charAt(0).toUpperCase();
+                    userAvatar.textContent = firstLetter;
+                } else {
+                    userFullName.textContent = 'Supplier';
+                    userAvatar.textContent = 'S';
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                document.getElementById('userFullName').textContent = 'Supplier';
+                document.getElementById('userAvatar').textContent = 'S';
+            }
+        }
+
+        // Load order count for badge
+        async function loadOrderCount() {
+            try {
+                const orders = await api.supplier.getOrders();
+                const pendingOrders = orders ? orders.filter(o => o.status === 'pending').length : 0;
+                const badge = document.getElementById('ordersBadge');
+                if (badge) {
+                    badge.textContent = pendingOrders;
+                }
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                document.getElementById('ordersBadge').textContent = '0';
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserData();
+            loadOrderCount();
+        });
+
         (function guardSupplierAddProduct() {
             const accessToken = localStorage.getItem('accessToken');
             const role = localStorage.getItem('userRole');
@@ -290,6 +346,7 @@
             const stock = parseInt(document.getElementById('productStock').value);
             const imageFile = document.getElementById('productImage').files[0];
             const description = document.getElementById('productDescription').value.trim() || null;
+            const visibleToFarmersOnly = document.getElementById('visibleToFarmersOnly').checked;
 
             // Validation
             if (!productName || !category || !unitOfMeasure) {
@@ -330,18 +387,25 @@
                     unit_of_measure: unitOfMeasure,
                     stock_quantity: stock,
                     product_image: base64Image,
+                    visible_to_farmers_only: visibleToFarmersOnly,
                 });
 
-                showMessage('success', `✓ Product "${productName}" created successfully! Redirecting to catalog...`);
+                console.log('Full API Response:', JSON.stringify(response));
+                console.log('Response ID:', response?.id);
 
-                // Reset form
-                document.getElementById('addProductForm').reset();
-
-                // Redirect after 2 seconds
-                setTimeout(() => {
-                    goToCatalog();
-                }, 2000);
+                // Redirect to product view page
+                if (response && response.id) {
+                    const redirectUrl = `product-view.html?id=${response.id}`;
+                    console.log('Redirecting to:', redirectUrl);
+                    setTimeout(() => {
+                        window.location.href = redirectUrl;
+                    }, 100);
+                } else {
+                    console.error('No ID in response');
+                    showMessage('error', 'Product created but redirect failed. No ID returned.');
+                }
             } catch (error) {
+                console.error('Error caught:', error);
                 showMessage('error', `Failed to create product: ${error.message || 'Unknown error'}`);
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalText;

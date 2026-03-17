@@ -21,8 +21,8 @@
         <div class="sb-head">
             <div class="sb-logo">🐓</div>
             <div class="sb-brand">
-                <div class="sb-brand-name">FarmDirect</div>
-                <div class="sb-brand-tag">PMS v2.0</div>
+                <div class="sb-brand-name">PoultryHub</div>
+                <div class="sb-brand-tag">Farmers Dashboard</div>
             </div>
         </div>
         <nav class="sb-nav">
@@ -52,7 +52,6 @@
                     <path d="M9 12h6M9 16h4" />
                 </svg>
                 <span>Buyer Orders</span>
-                <span class="nav-badge">5</span>
             </div>
             <div class="nav-item" onclick="showPage('market',this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -62,6 +61,20 @@
                     <path d="M2 7h20" />
                 </svg>
                 <span>Marketplace</span>
+            </div>
+            <div class="nav-item" onclick="showPage('products',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1" />
+                    <circle cx="20" cy="21" r="1" />
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
+                <span>My Products</span>
+            </div>
+            <div class="nav-item" onclick="showPage('messages',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                <span>Messages <span class="nav-badge" id="messagesBadge" style="display: none;">0</span></span>
             </div>
             <div class="nav-grp">Insights</div>
             <div class="nav-item" onclick="showPage('analytics',this)">
@@ -91,10 +104,10 @@
             </div>
         </nav>
         <div class="sb-foot">
-            <div class="f-avatar">JM</div>
+            <div class="f-avatar" id="sb-avatar"></div>
             <div class="f-info">
-                <div class="f-name">John Mwangi</div>
-                <div class="f-role">Farm Manager · Kiambu</div>
+                <div class="f-name" id="sb-name"></div>
+                <div class="f-role" id="sb-role">Farm Manager · Kiambu</div>
             </div>
         </div>
     </aside>
@@ -144,8 +157,8 @@
             </div>
             <button class="tb-profile" onclick="showPage('settings',document.querySelectorAll('.nav-item')[6])"
                 title="Go to settings" aria-label="Account menu">
-                <div class="tb-av">JM</div>
-                <span class="tb-pname">John Mwangi</span>
+                <div class="tb-av" id="tb-avatar"></div>
+                <span class="tb-pname" id="tb-name"></span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="m6 9 6 6 6-6" />
                 </svg>
@@ -161,9 +174,9 @@
 
                 <div class="welcome">
                     <div>
-                        <h1>Good morning, John! 🌱</h1>
+                        <h1 id="greeting-msg">Good morning! 🌱</h1>
                         <p>Here's what's happening on your farm today.</p>
-                        <div class="welcome-date">Monday, 23 February 2026 · Kiambu County, Kenya</div>
+                        <div class="welcome-date">Tuesday, 17 March 2026 · Kiambu County, Kenya</div>
                     </div>
                     <div class="welcome-emoji">🐔</div>
                 </div>
@@ -276,8 +289,11 @@
                 <div class="card">
                     <div class="card-head">
                         <div class="card-head-title">Recent Buyer Orders</div>
-                        <button class="btn btn-secondary btn-sm"
-                            onclick="showPage('orders',document.querySelectorAll('.nav-item')[2])">View All</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary btn-sm" onclick="loadBuyerOrders()">🔄 Refresh</button>
+                            <button class="btn btn-secondary btn-sm"
+                                onclick="showPage('orders',document.querySelectorAll('.nav-item')[2])">View All</button>
+                        </div>
                     </div>
                     <div class="table-wrap">
                         <table>
@@ -455,7 +471,39 @@
             </div>
 
             <!-- ═══════════════════════════════════════
-         PAGE 5: ANALYTICS
+         PAGE 5: MY PRODUCTS
+    ═══════════════════════════════════════ -->
+            <div id="page-products" class="page">
+                <div class="sec-hd">
+                    <div>
+                        <div class="sec-title">My Products</div>
+                        <div class="sec-sub">Manage products for sale to buyers</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('modal-add-product')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>Add Product
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <div class="card-head-title">Your Products</div>
+                        <button class="btn btn-secondary btn-sm" onclick="loadFarmerProducts()">Refresh</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="farmerProductsContainer">
+                            <div style="padding: 40px 20px; text-align: center; color: var(--text2);">
+                                Loading your products...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════
+         PAGE 6: ANALYTICS
     ═══════════════════════════════════════ -->
             <div id="page-analytics" class="page">
                 <div class="sec-hd">
@@ -557,7 +605,167 @@
             </div>
 
             <!-- ═══════════════════════════════════════
-         PAGE 6: ACCOUNT SETTINGS
+         PAGE 6: MESSAGES & INVITATIONS
+    ═══════════════════════════════════════ -->
+            <div id="page-messages" class="page">
+                <div class="sec-hd">
+                    <div>
+                        <div class="sec-title">Messages & Invitations</div>
+                        <div class="sec-sub">Manage supplier connections and messages</div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="stabs">
+                    <div class="stab active" onclick="switchMessagesTab(this,'tab-invitations')">📬 Pending Invitations
+                    </div>
+                    <div class="stab" onclick="switchMessagesTab(this,'tab-conversations')">💬 Conversations</div>
+                    <div class="stab" onclick="switchMessagesTab(this,'tab-browse')">🔍 Browse Suppliers</div>
+                    <div class="stab" onclick="switchMessagesTab(this,'tab-invite')">📩 Invite Supplier</div>
+                </div>
+
+                <!-- PENDING INVITATIONS TAB -->
+                <div id="tab-invitations" class="spanel active">
+                    <div class="card">
+                        <div class="card-head">
+                            <div class="card-head-title">Pending Supplier Invitations</div>
+                            <button class="btn btn-secondary btn-sm" onclick="loadPendingInvitations()">Refresh</button>
+                        </div>
+                        <div class="card-body">
+                            <div id="invitationsContainer"
+                                style="padding: 40px 20px; text-align: center; color: var(--text2);">
+                                Loading invitations...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONVERSATIONS TAB -->
+                <div id="tab-conversations" class="spanel">
+                    <div style="display: grid; grid-template-columns: 250px 1fr; gap: 16px;">
+                        <!-- Suppliers List -->
+                        <div class="card" style="height: fit-content;">
+                            <div class="card-head">
+                                <div class="card-head-title">Connected Suppliers</div>
+                                <button class="btn btn-secondary btn-sm"
+                                    onclick="loadConnectedSuppliers()">Refresh</button>
+                            </div>
+                            <div class="card-body" style="padding: 0;">
+                                <div id="suppliersList" style="max-height: 400px; overflow-y: auto;">
+                                    <div style="padding: 20px; text-align: center; color: var(--text2);">Loading
+                                        suppliers...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Messages Thread -->
+                        <div class="card">
+                            <div class="card-head">
+                                <div id="threadHeader" class="card-head-title">Select a supplier to chat</div>
+                            </div>
+                            <div id="messagesThread" class="card-body"
+                                style="display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto;">
+                                <div style="padding: 40px 20px; text-align: center; color: var(--text2);">Select a
+                                    supplier from the list</div>
+                            </div>
+                            <div style="padding: 16px; border-top: 1px solid var(--border); display: none;"
+                                id="messageInputGroup">
+                                <div style="display: flex; gap: 8px;">
+                                    <textarea id="messageInput" class="form-input" placeholder="Type your message..."
+                                        style="flex: 1; min-height: 60px; resize: none;"></textarea>
+                                    <button class="btn btn-primary" onclick="sendMessageToSupplier()"
+                                        style="align-self: flex-end;">Send</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BROWSE SUPPLIERS TAB -->
+                <div id="tab-browse" class="spanel">
+                    <div class="card">
+                        <div class="card-head">
+                            <div class="card-head-title">Browse & Connect with Suppliers</div>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="supplierSearchInput" class="form-input"
+                                    placeholder="Search suppliers..." style="flex: 1; max-width: 250px;">
+                                <button class="btn btn-secondary btn-sm" onclick="loadAllSuppliers()">Refresh</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="suppliersGridContainer"
+                                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px;">
+                                <div
+                                    style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--text2);">
+                                    Loading suppliers...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INVITE SUPPLIER TAB -->
+                <div id="tab-invite" class="spanel">
+                    <div class="card">
+                        <div class="card-head">
+                            <div class="card-head-title">Invite Supplier</div>
+                        </div>
+                        <div class="card-body">
+                            <div style="max-width: 600px; margin: 0 auto;">
+                                <div style="margin-bottom: 16px; font-size: 13px; color: var(--text2);">
+                                    Invite poultry suppliers to connect with your farm and grow your business
+                                </div>
+                                <div class="g2">
+                                    <div class="form-grp" style="grid-column: 1/-1;">
+                                        <label class="form-label">Supplier *</label>
+                                        <select id="inviteSupplierSelect" class="form-input" title="Select a supplier"
+                                            onchange="selectSupplierForInvite()">
+                                            <option value="">Select a supplier...</option>
+                                        </select>
+                                        <input type="hidden" id="inviteSupplierID">
+                                        <small
+                                            style="color: var(--text2); font-size: 11px; margin-top: 4px; display: block;">Choose
+                                            a supplier from the list</small>
+                                    </div>
+                                    <div class="form-grp">
+                                        <label class="form-label">Email Address *</label>
+                                        <input type="email" id="inviteEmail" class="form-input"
+                                            placeholder="farmer@example.com">
+                                        <small
+                                            style="color: var(--text2); font-size: 11px; margin-top: 4px; display: block;">Where
+                                            the invitation will be sent</small>
+                                    </div>
+                                    <div class="form-grp">
+                                        <label class="form-label">Phone Number</label>
+                                        <input type="tel" id="invitePhone" class="form-input"
+                                            placeholder="+1 (555) 123-4567">
+                                        <small
+                                            style="color: var(--text2); font-size: 11px; margin-top: 4px; display: block;">Optional
+                                            contact number</small>
+                                    </div>
+                                    <div class="form-grp" style="grid-column: 1/-1;">
+                                        <label class="form-label">Message</label>
+                                        <textarea id="inviteMessage" class="form-textarea"
+                                            placeholder="Write a personal message to include in the invitation (optional)"
+                                            style="min-height: 80px; resize: vertical;"></textarea>
+                                        <small
+                                            style="color: var(--text2); font-size: 11px; margin-top: 4px; display: block;">This
+                                            will be included in the invitation</small>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                                    <button class="btn btn-secondary" style="flex: 1;" onclick="resetInviteForm()">Clear
+                                        Form</button>
+                                    <button class="btn btn-primary" style="flex: 1;"
+                                        onclick="submitSupplierInvitation()">Send Invitation</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════
+         PAGE 7: ACCOUNT SETTINGS
     ═══════════════════════════════════════ -->
             <div id="page-settings" class="page">
                 <div class="sec-hd">
@@ -579,40 +787,40 @@
                     <div class="card">
                         <div class="card-head">
                             <div class="card-head-title">Farm Profile</div><button class="btn btn-primary btn-sm"
-                                onclick="showToast('✅ Profile saved!')">Save Changes</button>
+                                onclick="saveProfileChanges()">Save Changes</button>
                         </div>
                         <div class="card-body">
                             <div
                                 style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid var(--border)">
                                 <div
                                     style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--g600),var(--g200));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--g900);flex-shrink:0">
-                                    JM</div>
+                                </div>
                                 <div>
-                                    <div style="font-weight:700;font-size:15px">John Mwangi</div>
-                                    <div style="font-size:11px;color:var(--t300);margin-bottom:8px">Sunrise Poultry Farm
-                                        · Kiambu County</div>
+                                    <div style="font-weight:700;font-size:15px"></div>
+                                    <div style="font-size:11px;color:var(--t300);margin-bottom:8px"></div>
                                     <button class="btn btn-secondary btn-sm"
                                         onclick="showToast('Opening file picker…')">Change Photo</button>
                                 </div>
                             </div>
                             <div class="g2">
                                 <div class="form-grp"><label class="form-label">Full Name</label><input
-                                        class="form-input" title="Full Name" value="John Mwangi"></div>
+                                        id="profileFullName" class="form-input" title="Full Name" value=""></div>
                                 <div class="form-grp"><label class="form-label">Farm Name</label><input
-                                        class="form-input" title="Farm Name" value="Sunrise Poultry Farm"></div>
+                                        id="profileFarmName" class="form-input" title="Farm Name" value=""></div>
                                 <div class="form-grp"><label class="form-label">Location</label><input
-                                        class="form-input" title="Farm Location" value="Kiambu County, Kenya"></div>
+                                        id="profileLocation" class="form-input" title="Farm Location" value=""></div>
                                 <div class="form-grp"><label class="form-label">Phone Number</label><input
-                                        class="form-input" title="Phone Number" value="+254 712 000 001"></div>
+                                        id="profilePhone" class="form-input" title="Phone Number" value=""></div>
                                 <div class="form-grp"><label class="form-label">Email Address</label><input
-                                        class="form-input" type="email" title="Email Address"
-                                        value="john.mwangi@farm.co.ke"></div>
+                                        id="profileEmail" class="form-input" type="email" title="Email Address"
+                                        value=""></div>
                                 <div class="form-grp"><label class="form-label">Farm Size (acres)</label><input
-                                        class="form-input" title="Farm Size in acres" value="4.5"></div>
+                                        id="profileFarmSize" class="form-input" title="Farm Size in acres" value="">
+                                </div>
                             </div>
                             <div class="form-grp" style="margin-top:14px"><label class="form-label">Farm
-                                    Description</label><textarea class="form-textarea"
-                                    title="Farm Description">Sunrise Poultry Farm is a family-run enterprise specializing in broiler and layer production. We supply fresh, healthy birds across Kiambu and Nairobi counties.</textarea>
+                                    Description</label><textarea id="profileDescription" class="form-textarea"
+                                    title="Farm Description"></textarea>
                             </div>
                         </div>
                     </div>
@@ -628,11 +836,14 @@
                             <div class="card-body">
                                 <div style="display:flex;flex-direction:column;gap:12px">
                                     <div class="form-grp"><label class="form-label">Current Password</label><input
-                                            class="form-input" type="password" placeholder="••••••••"></div>
+                                            class="form-input" type="password" title="Current Password"
+                                            placeholder="••••••••"></div>
                                     <div class="form-grp"><label class="form-label">New Password</label><input
-                                            class="form-input" type="password" placeholder="••••••••"></div>
+                                            class="form-input" type="password" title="New Password"
+                                            placeholder="••••••••"></div>
                                     <div class="form-grp"><label class="form-label">Confirm New Password</label><input
-                                            class="form-input" type="password" placeholder="••••••••"></div>
+                                            class="form-input" type="password" title="Confirm New Password"
+                                            placeholder="••••••••"></div>
                                     <button type="button" class="btn btn-primary"
                                         onclick="showToast('✅ Password updated!')">Update
                                         Password</button>
@@ -680,7 +891,7 @@
                                 <div style="display:flex;justify-content:space-between;align-items:flex-end">
                                     <div>
                                         <div class="pay-card-label">Cardholder</div>
-                                        <div class="pay-card-name">John Mwangi</div>
+                                        <div class="pay-card-name" id="card-holder-name"></div>
                                     </div>
                                     <div style="text-align:right">
                                         <div class="pay-card-label">Expires</div>
@@ -711,10 +922,12 @@
                                     <span class="badge bg-green" style="margin-left:auto">Active</span>
                                 </div>
                                 <div class="form-grp" style="margin-bottom:12px"><label class="form-label">M-Pesa
-                                        Business Till No.</label><input class="form-input" value="542100"
+                                        Business Till No.</label><input class="form-input"
+                                        title="M-Pesa Business Till Number" value="542100"
                                         placeholder="Enter till number"></div>
                                 <div class="form-grp"><label class="form-label">Paybill Account No.</label><input
-                                        class="form-input" value="JM-FARM-001" placeholder="Account number"></div>
+                                        class="form-input" title="Paybill Account Number" value="JM-FARM-001"
+                                        placeholder="Account number"></div>
                                 <button type="button" class="btn btn-primary" style="margin-top:12px;width:100%"
                                     onclick="showToast('✅ M-Pesa settings saved!')">Save M-Pesa Settings</button>
                             </div>
@@ -804,11 +1017,11 @@
 
     <!-- ════════ MODALS ════════ -->
 
-    <!-- Add Flock Modal -->
+    <!-- Add/Edit Flock Modal -->
     <div class="modal-bd" id="modal-flock" onclick="closeModalOnBack(event,'modal-flock')">
         <div class="modal-box">
             <div class="modal-head">
-                <div class="modal-title">Add New Flock Batch</div>
+                <div class="modal-title" id="flockModalTitle">Add New Flock Batch</div>
                 <button class="modal-close" onclick="closeModal('modal-flock')" title="Close dialog"
                     aria-label="Close dialog">✕</button>
             </div>
@@ -845,7 +1058,8 @@
             </div>
             <div class="modal-foot">
                 <button class="btn btn-secondary" onclick="closeModal('modal-flock')">Cancel</button>
-                <button class="btn btn-primary" onclick="createFlockFromModal()">Add Flock</button>
+                <button class="btn btn-primary" id="flockModalSubmitBtn" onclick="saveFlockFromModal()">Add
+                    Flock</button>
             </div>
         </div>
     </div>
@@ -901,24 +1115,82 @@
         </div>
     </div>
 
+    <!-- Add Product Modal -->
+    <div class="modal-bd" id="modal-add-product" onclick="closeModalOnBack(event,'modal-add-product')">
+        <div class="modal-box">
+            <div class="modal-head">
+                <div class="modal-title">Add Product for Sale</div>
+                <button class="modal-close" onclick="closeModal('modal-add-product')" title="Close dialog"
+                    aria-label="Close dialog">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="g2">
+                    <div class="form-grp">
+                        <label class="form-label">Product Name *</label>
+                        <input class="form-input" id="prodName" placeholder="e.g., Free-range Chickens, Eggs…">
+                    </div>
+                    <div class="form-grp">
+                        <label class="form-label">Category *</label>
+                        <select class="form-input" id="prodCategory" title="Select product category">
+                            <option value="">Select category</option>
+                            <option value="broilers">Broilers</option>
+                            <option value="eggs">Eggs</option>
+                            <option value="chicks">Chicks</option>
+                            <option value="equipment">Equipment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-grp">
+                        <label class="form-label">Unit Price (KES) *</label>
+                        <input class="form-input" id="prodPrice" type="number" placeholder="Price per unit" min="0"
+                            step="0.01">
+                    </div>
+                    <div class="form-grp">
+                        <label class="form-label">Unit of Measure *</label>
+                        <input class="form-input" id="prodUOM" placeholder="e.g., per bird, per dozen, kg…">
+                    </div>
+                    <div class="form-grp">
+                        <label class="form-label">Stock Quantity *</label>
+                        <input class="form-input" id="prodStock" type="number" placeholder="Available units" min="0">
+                    </div>
+                    <div class="form-grp" style="grid-column: 1/-1;">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="prodDesc" placeholder="Describe your product…"></textarea>
+                    </div>
+                    <div class="form-grp" style="grid-column: 1/-1;">
+                        <label class="form-label">Product Image</label>
+                        <div id="prodImagePreview"
+                            style="margin-bottom: 12px; width: 100%; height: 180px; background: var(--surface2); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 14px; border: 2px dashed var(--border);">
+                            <span>No image selected</span>
+                        </div>
+                        <input class="form-input" id="prodImage" type="file" accept="image/*"
+                            title="Select product image" onchange="previewProductImage(event)" style="padding: 8px;">
+                        <small
+                            style="color: var(--text-muted); font-size: 12px; margin-top: 6px; display: block;">Supported
+                            formats: JPG, PNG, WebP (Max 2MB)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button class="btn btn-secondary" onclick="closeModal('modal-add-product')">Cancel</button>
+                <button class="btn btn-primary" onclick="createFarmerProduct()">Add Product</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast container -->
     <div class="toast-wrap" id="toastWrap"></div>
 
     <script src="../../api-client.js"></script>
     <script>
-        (function guardFarmerDashboard() {
-            const accessToken = localStorage.getItem('accessToken');
-            const role = localStorage.getItem('userRole');
-
-            if (!accessToken || !role || isTokenExpired(accessToken)) {
-                clearAuthAndRedirectToLogin();
-                return;
-            }
-
-            if (role !== 'farmer') {
-                redirectToRoleDashboard(role);
-            }
-        })();
+        // Define key functions early so onclick handlers can find them
+        function showPage(id, navEl) { return true; }
+        function toggleSidebar() { return true; }
+        function closeSidebar() { return true; }
+        function closeModal(id) { return true; }
+        function closeModalOnBack(e, id) { return true; }
+        function logout() { return true; }
+        function openModal(id) { return true; }
 
         function isTokenExpired(token) {
             try {
@@ -1007,7 +1279,15 @@
             }
         }
 
+        // Track flock editing state
+        let currentEditingFlockId = null;
+
         async function createFlockFromModal() {
+            // Kept for backward compatibility - calls saveFlockFromModal
+            await saveFlockFromModal();
+        }
+
+        async function saveFlockFromModal() {
             const birdType = document.getElementById('flockBirdType')?.value || '';
             const breed = document.getElementById('flockBreed')?.value?.trim() || '';
             const quantityValue = document.getElementById('flockQuantity')?.value || '0';
@@ -1025,23 +1305,56 @@
                 return;
             }
 
-            try {
-                await api.farmer.registerFlock({
-                    bird_type: birdType,
-                    breed,
-                    quantity,
-                    age_weeks: ageWeeks,
-                    health_status: healthStatus,
-                    daily_feed_kg: Number.isFinite(dailyFeed) ? dailyFeed : 0,
-                    notes: notes || null,
-                });
+            // Check authentication
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                showToast('Authentication error: No access token found. Please log in again.');
+                console.error('No access token found');
+                return;
+            }
 
-                showToast('Flock created successfully.');
+            try {
+                if (currentEditingFlockId) {
+                    // Update existing flock
+                    console.log('Updating flock:', currentEditingFlockId);
+                    const response = await api.farmer.updateFlock(currentEditingFlockId, {
+                        bird_type: birdType,
+                        breed,
+                        quantity,
+                        age_weeks: ageWeeks,
+                        health_status: healthStatus,
+                        daily_feed_kg: Number.isFinite(dailyFeed) ? dailyFeed : 0,
+                        notes: notes || null,
+                    });
+
+                    console.log('Flock updated successfully:', response);
+                    showToast('Flock updated successfully.');
+                } else {
+                    // Create new flock
+                    console.log('Creating new flock with:', { birdType, breed, quantity, ageWeeks, healthStatus, dailyFeed });
+                    const response = await api.farmer.registerFlock({
+                        bird_type: birdType,
+                        breed,
+                        quantity,
+                        age_weeks: ageWeeks,
+                        health_status: healthStatus,
+                        daily_feed_kg: Number.isFinite(dailyFeed) ? dailyFeed : 0,
+                        notes: notes || null,
+                    });
+
+                    console.log('Flock created successfully:', response);
+                    showToast('Flock created successfully.');
+                }
+
                 closeModal('modal-flock');
                 clearFlockModal();
+                currentEditingFlockId = null;
                 await loadFarmerFlocks();
+                // Trigger immediate refresh if orders polling is active
+                await autoRefresh.trigger('farmerOrders');
             } catch (error) {
-                showToast(`Failed to create flock: ${error.message}`);
+                console.error('Error saving flock:', error.message, error);
+                showToast(`Failed to save flock: ${error.message}`);
             }
         }
 
@@ -1061,42 +1374,46 @@
             if (status) {
                 status.value = 'healthy';
             }
+            // Reset edit mode
+            currentEditingFlockId = null;
+            const titleEl = document.getElementById('flockModalTitle');
+            if (titleEl) titleEl.textContent = 'Add New Flock Batch';
+            const submitBtn = document.getElementById('flockModalSubmitBtn');
+            if (submitBtn) submitBtn.textContent = 'Add Flock';
+        }
+
+        async function editFlockFromTable(flockId) {
+            try {
+                // Fetch the specific flock data
+                const flock = await api.farmer.getFlockById(flockId);
+
+                // Store the ID for this editing session
+                currentEditingFlockId = flockId;
+
+                // Populate the form fields with flock data
+                document.getElementById('flockBirdType').value = flock.bird_type || '';
+                document.getElementById('flockBreed').value = flock.breed || '';
+                document.getElementById('flockQuantity').value = flock.quantity || 0;
+                document.getElementById('flockAgeWeeks').value = flock.age_weeks || 0;
+                document.getElementById('flockHealthStatus').value = flock.health_status || 'healthy';
+                document.getElementById('flockDailyFeed').value = flock.daily_feed_kg || 0;
+                document.getElementById('flockNotes').value = flock.notes || '';
+
+                // Update modal title and button
+                document.getElementById('flockModalTitle').textContent = `Edit Flock #${flockId} - ${flock.breed}`;
+                document.getElementById('flockModalSubmitBtn').textContent = 'Update Flock';
+
+                // Open the modal
+                openModal('modal-flock');
+            } catch (error) {
+                console.error('Error loading flock for editing:', error);
+                showToast(`Failed to load flock data: ${error.message}`);
+            }
         }
 
         async function quickEditFlock(flockId, currentQuantity, currentStatus) {
-            const quantityInput = prompt('Update quantity', String(currentQuantity));
-            if (quantityInput === null) {
-                return;
-            }
-
-            const nextQuantity = Number(quantityInput);
-            if (!Number.isFinite(nextQuantity) || nextQuantity <= 0) {
-                showToast('Quantity must be a positive number.');
-                return;
-            }
-
-            const statusInput = prompt('Update health status (healthy/monitor/sick/quarantine)', currentStatus);
-            if (statusInput === null) {
-                return;
-            }
-
-            const normalizedStatus = statusInput.trim().toLowerCase();
-            const allowed = ['healthy', 'monitor', 'sick', 'quarantine'];
-            if (!allowed.includes(normalizedStatus)) {
-                showToast('Invalid status value.');
-                return;
-            }
-
-            try {
-                await api.farmer.updateFlock(flockId, {
-                    quantity: nextQuantity,
-                    health_status: normalizedStatus,
-                });
-                showToast('Flock updated.');
-                await loadFarmerFlocks();
-            } catch (error) {
-                showToast(`Failed to update flock: ${error.message}`);
-            }
+            // Now opens the modal instead of using prompts
+            await editFlockFromTable(flockId);
         }
 
         async function removeFlock(flockId) {
@@ -1114,8 +1431,6 @@
             }
         }
 
-        loadFarmerFlocks();
-
         /* ── BUYER ORDERS FUNCTIONS ── */
         async function loadBuyerOrders() {
             const container = document.getElementById('buyerOrdersContainer');
@@ -1124,11 +1439,488 @@
             container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: var(--text2);">Loading buyer orders...</div>';
 
             try {
-                // TODO: Implement API call to fetch orders placed by buyers with this farmer
-                // For now, show a placeholder message
-                container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: var(--text2);">No buyer orders yet. Orders from buyers will appear here.</div>';
+                console.log('🔄 Fetching orders from /farmers/orders...');
+                const orders = await api.farmer.getOrders() || [];
+                console.log('✅ Orders loaded:', orders);
+
+                if (!orders.length) {
+                    container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: var(--text2);">No buyer orders yet. Orders from buyers will appear here.</div>';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Buyer / Farm</th>
+                                    <th>Items</th>
+                                    <th>Total (KES)</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${orders.map(order => {
+                    const itemsHtml = order.items && order.items.length > 0
+                        ? order.items.map(item => `${item.product_name} × ${item.quantity}`).join(', ')
+                        : 'N/A';
+                    const buyerName = order.buyer_farm_name || 'Unknown';
+                    const buyerEmail = order.buyer_email || 'N/A';
+                    const statusColor = order.order_status === 'pending' ? 'bg-orange' :
+                        order.order_status === 'confirmed' ? 'bg-yellow' :
+                            order.order_status === 'delivered' ? 'bg-green' : 'bg-gray';
+                    return `
+                                        <tr>
+                                            <td><strong>#${order.id}</strong></td>
+                                            <td>${buyerName}<br><small style="color: var(--text2);">${buyerEmail}</small></td>
+                                            <td>${itemsHtml}</td>
+                                            <td>${Number(order.total_amount || 0).toLocaleString()}</td>
+                                            <td>${new Date(order.created_at).toLocaleDateString()}</td>
+                                            <td><span class="badge ${statusColor}">${order.order_status}</span></td>
+                                            <td><button class="btn btn-primary btn-sm" onclick="showOrderDetailsModal(${order.id})">View</button></td>
+                                        </tr>
+                                    `;
+                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
             } catch (error) {
-                container.innerHTML = `<div style="padding: 40px 20px; text-align: center; color: var(--color-error);">Failed to load orders: ${error.message}</div>`;
+                console.error('❌ Error loading orders:', error);
+                console.error('Error details:', error.message, error.status, error.response);
+                const errorMsg = error.status === 401 ? 'Session expired - please login again' :
+                    error.status === 403 ? 'You do not have permission to view orders' :
+                        error.status === 404 ? 'Orders endpoint not found' :
+                            error.message || 'Unknown error';
+                container.innerHTML = `<div style="padding: 40px 20px; text-align: center; color: var(--color-error);">Failed to load orders: ${errorMsg}</div>`;
+            }
+        }
+
+        function showOrderDetailsModal(orderId) {
+            // Find the order data
+            const orders = window.currentOrdersData || [];
+            const order = orders.find(o => o.id === orderId);
+
+            if (!order) {
+                showToast('❌ Order not found');
+                return;
+            }
+
+            // Calculate subtotal and item details
+            const itemsHtml = order.items && order.items.length > 0
+                ? order.items.map(item => `
+                    <div style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span style="font-weight: 500;">${item.product_name}</span>
+                            <span style="font-weight: 600;">KES ${Number(item.total_price).toLocaleString()}</span>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text2); display: flex; justify-content: space-between;">
+                            <span>KES ${Number(item.unit_price).toLocaleString()} × ${item.quantity} units</span>
+                        </div>
+                    </div>
+                `).join('')
+                : '<div>No items</div>';
+
+            const getStatusLabel = (status) => {
+                const labels = {
+                    pending: '⏳ Pending',
+                    approved: '✓ Approved',
+                    shipped: '✓ Done',
+                    delivered: '✅ Delivered',
+                    cancelled: '✗ Cancelled'
+                };
+                return labels[status] || status;
+            };
+
+            const orderStatusColor = order.order_status === 'pending' ? 'bg-orange' :
+                order.order_status === 'approved' ? 'bg-yellow' :
+                    order.order_status === 'shipped' ? 'bg-green' :
+                        order.order_status === 'delivered' ? 'bg-green' : 'bg-gray';
+
+            const paymentStatusColor = order.payment_status === 'pending' ? 'bg-orange' :
+                order.payment_status === 'paid' ? 'bg-green' : 'bg-gray';
+
+            const deliveryDate = new Date(order.created_at);
+            deliveryDate.setDate(deliveryDate.getDate() + 3); // Estimate 3 days delivery
+            const formattedDeliveryDate = deliveryDate.toLocaleDateString('en-KE', { month: 'short', day: 'numeric', year: 'numeric' });
+
+            const modalContent = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;" id="orderDetailsModal">
+                    <div style="background: white; border-radius: var(--rmd); max-width: 650px; width: 95%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                        <!-- Header -->
+                        <div style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #f8f9fa;">
+                            <div>
+                                <h3 style="margin: 0 0 4px 0;">Order #${order.id}</h3>
+                                <div style="font-size: 12px; color: var(--text2);">${new Date(order.created_at).toLocaleDateString()}</div>
+                            </div>
+                            <button onclick="document.getElementById('orderDetailsModal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text2);">✕</button>
+                        </div>
+
+                        <!-- Content -->
+                        <div style="padding: 20px;">
+                            <!-- Buyer Info -->
+                            <div style="margin-bottom: 24px; padding: 16px; background: var(--surface2); border-radius: var(--rsm);">
+                                <div style="font-size: 12px; color: var(--text2); margin-bottom: 8px; text-transform: uppercase; font-weight: 600;">Buyer Information</div>
+                                <div style="display: grid; gap: 12px;">
+                                    <div>
+                                        <div style="font-size: 11px; color: var(--text2);">BUYER / FARM</div>
+                                        <div style="font-weight: 600;">${order.buyer_farm_name || 'Unknown'}</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 11px; color: var(--text2);">EMAIL ADDRESS</div>
+                                        <div style="font-size: 14px;">${order.buyer_email || 'N/A'}</div>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 8px;" onclick="alert('📞 Contact buyer at: ${order.buyer_email}')">📞 Contact Buyer</button>
+                                </div>
+                            </div>
+
+                            <!-- Order Items & Summary -->
+                            <div style="margin-bottom: 24px;">
+                                <div style="font-size: 12px; color: var(--text2); margin-bottom: 12px; text-transform: uppercase; font-weight: 600;">Order Items</div>
+                                <div style="background: var(--surface2); padding: 16px; border-radius: var(--rsm); margin-bottom: 12px;">
+                                    ${itemsHtml}
+                                </div>
+                            </div>
+
+                            <!-- Order Summary -->
+                            <div style="margin-bottom: 24px; padding: 16px; background: var(--g50); border-radius: var(--rsm); border: 1px solid var(--border);">
+                                <div style="font-size: 12px; color: var(--text2); margin-bottom: 12px; text-transform: uppercase; font-weight: 600;">Order Summary</div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px;">
+                                    <span>Subtotal:</span>
+                                    <span>KES ${Number(order.total_amount).toLocaleString()}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 12px 0; font-size: 16px; font-weight: 700;">
+                                    <span>Total:</span>
+                                    <span>KES ${Number(order.total_amount).toLocaleString()}</span>
+                                </div>
+                            </div>
+
+                            <!-- Status Info -->
+                            <div style="margin-bottom: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div style="padding: 12px; background: var(--surface2); border-radius: var(--rsm);">
+                                    <div style="font-size: 11px; color: var(--text2); margin-bottom: 6px; text-transform: uppercase;">Order Status</div>
+                                    <span class="badge ${orderStatusColor}" style="display: inline-block;">${getStatusLabel(order.order_status)}</span>
+                                </div>
+                                <div style="padding: 12px; background: var(--surface2); border-radius: var(--rsm);">
+                                    <div style="font-size: 11px; color: var(--text2); margin-bottom: 6px; text-transform: uppercase;">Payment Status</div>
+                                    <span class="badge ${paymentStatusColor}" style="display: inline-block;">${order.payment_status}</span>
+                                </div>
+                            </div>
+
+                            <!-- Delivery Info -->
+                            <div style="margin-bottom: 24px; padding: 16px; background: var(--surface2); border-radius: var(--rsm);">
+                                <div style="font-size: 12px; color: var(--text2); margin-bottom: 12px; text-transform: uppercase; font-weight: 600;">Delivery Information</div>
+                                <div style="display: grid; gap: 12px;">
+                                    <div>
+                                        <div style="font-size: 11px; color: var(--text2);">ESTIMATED DELIVERY</div>
+                                        <div style="font-weight: 500;">📅 ${formattedDeliveryDate}</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 11px; color: var(--text2);">ORDER PLACED</div>
+                                        <div style="font-weight: 500;">📆 ${new Date(order.created_at).toLocaleDateString('en-KE', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Notes (if any) -->
+                            ${order.note ? `
+                                <div style="margin-bottom: 24px; padding: 16px; background: var(--g50); border-left: 3px solid var(--accent); border-radius: var(--rsm);">
+                                    <div style="font-size: 12px; color: var(--text2); margin-bottom: 8px; text-transform: uppercase; font-weight: 600;">Buyer Notes</div>
+                                    <div style="font-size: 14px; color: var(--text1);">"${order.note}"</div>
+                                </div>
+                            ` : ''}
+
+                            <!-- Action Buttons -->
+                            <div style="display: flex; gap: 12px;">
+                                <button class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('orderDetailsModal').remove()">Close</button>
+                                <button class="btn btn-primary" style="flex: 1;" onclick="confirmAndDispatchOrder(${order.id})">✓ Confirm & Dispatch</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Inject modal
+            document.body.insertAdjacentHTML('beforeend', modalContent);
+        }
+
+        async function confirmAndDispatchOrder(orderId) {
+            try {
+                showToast('📦 Processing order dispatch...');
+                await api.farmer.dispatchOrder(orderId);
+                showToast('✅ Order confirmed and dispatched!');
+                document.getElementById('orderDetailsModal')?.remove();
+                await loadBuyerOrders();
+            } catch (error) {
+                showToast(`❌ Failed to dispatch order: ${error.message}`);
+            }
+        }
+
+        // Store orders data for modal access
+        const originalLoadBuyerOrders = loadBuyerOrders;
+        loadBuyerOrders = async function () {
+            try {
+                const orders = await api.farmer.getOrders() || [];
+                window.currentOrdersData = orders;
+                const container = document.getElementById('buyerOrdersContainer');
+                if (!container) return;
+
+                if (!orders.length) {
+                    container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: var(--text2);">No buyer orders yet. Orders from buyers will appear here.</div>';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Buyer / Farm</th>
+                                    <th>Items</th>
+                                    <th>Total (KES)</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${orders.map(order => {
+                    const itemsHtml = order.items && order.items.length > 0
+                        ? order.items.map(item => `${item.product_name} × ${item.quantity}`).join(', ')
+                        : 'N/A';
+                    const buyerName = order.buyer_farm_name || 'Unknown';
+                    const buyerEmail = order.buyer_email || 'N/A';
+                    const statusColor = order.order_status === 'pending' ? 'bg-orange' :
+                        order.order_status === 'approved' ? 'bg-yellow' :
+                            order.order_status === 'shipped' ? 'bg-green' :
+                                order.order_status === 'delivered' ? 'bg-green' : 'bg-gray';
+                    const statusLabel = order.order_status === 'shipped' ? '✓ Done' :
+                        order.order_status === 'approved' ? '✓ Approved' :
+                            order.order_status === 'pending' ? '⏳ Pending' :
+                                order.order_status === 'delivered' ? '✅ Delivered' : order.order_status;
+                    return `
+                                        <tr>
+                                            <td><strong>#${order.id}</strong></td>
+                                            <td>${buyerName}<br><small style="color: var(--text2);">${buyerEmail}</small></td>
+                                            <td>${itemsHtml}</td>
+                                            <td>${Number(order.total_amount || 0).toLocaleString()}</td>
+                                            <td>${new Date(order.created_at).toLocaleDateString()}</td>
+                                            <td><span class="badge ${statusColor}">${statusLabel}</span></td>
+                                            <td><button class="btn btn-primary btn-sm" onclick="showOrderDetailsModal(${order.id})">View</button></td>
+                                        </tr>
+                                    `;
+                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (error) {
+                const container = document.getElementById('buyerOrdersContainer');
+                if (container) {
+                    container.innerHTML = `<div style="padding: 40px 20px; text-align: center; color: var(--color-error);">Failed to load orders: ${error.message}</div>`;
+                }
+            }
+        };
+
+        /* ── FARMER PRODUCTS FUNCTIONS ── */
+        async function loadFarmerProducts() {
+            const container = document.getElementById('farmerProductsContainer');
+            if (!container) return;
+
+            container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: var(--text2);">Loading your products...</div>';
+
+            try {
+                const products = await api.farmer.getProducts() || [];
+
+                if (!products.length) {
+                    container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: var(--text2);">No products yet. Add your first product using the button above.</div>';
+                    return;
+                }
+
+                renderFarmerProducts(products);
+            } catch (error) {
+                container.innerHTML = `<div style="padding: 40px 20px; text-align: center; color: var(--color-error);">Failed to load products: ${error.message}</div>`;
+            }
+        }
+
+        function renderFarmerProducts(products) {
+            const container = document.getElementById('farmerProductsContainer');
+            if (!container) return;
+
+            if (!products.length) {
+                container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: var(--text2);">No products yet. Add your first product using the button above.</div>';
+                return;
+            }
+
+            const categoryMap = {
+                'feed': '🌾',
+                'medicines': '💊',
+                'equipment': '🔧',
+                'vaccines': '💉',
+                'broilers': '🐔',
+                'eggs': '🥚',
+                'chicks': '🐣',
+                'other': '📦'
+            };
+
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px;">
+                    ${products.map(product => {
+                const icon = categoryMap[product.category?.toLowerCase()] || '📦';
+                const imageHtml = product.product_image && product.product_image.trim() &&
+                    (product.product_image.startsWith('http') || product.product_image.startsWith('/') || product.product_image.startsWith('data:'))
+                    ? `<img src="${product.product_image}" alt="${product.name}" style="width: 100%; height: 100%; object-fit: cover;">`
+                    : `<svg viewBox="0 0 200 200" style="width: 70%; height: 70%; color: var(--text2);" fill="currentColor">
+                                <rect x="10" y="10" width="180" height="180" fill="var(--g100)" stroke="var(--g300)" stroke-width="2"/>
+                                <circle cx="60" cy="60" r="20" fill="var(--g300)"/>
+                                <path d="M 10 190 L 80 120 L 140 170 L 190 90 L 190 190 Z" fill="var(--g300)"></path>
+                            </svg>`;
+
+                return `
+                            <div class="prod-card">
+                                <div class="prod-img" style="background: var(--g50); overflow: hidden; display: flex; align-items: center; justify-content: center;">${imageHtml}</div>
+                                <div class="prod-body">
+                                    <div class="prod-name">${product.name}</div>
+                                    <div class="prod-sup"><span style="display: inline-block; padding: 2px 8px; background: var(--accent); color: white; border-radius: 3px; font-size: 12px; margin-bottom: 4px;">🌾 Your Product</span> · Stock: ${product.stock_quantity} ${product.unit_of_measure || 'units'}</div>
+                                    <div class="prod-price">KES ${Number(product.unit_price).toLocaleString()} <span>/ ${product.unit_of_measure || 'unit'}</span></div>
+                                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                                        <span class="badge ${product.is_active ? 'bg-green' : 'bg-gray'}">${product.is_active ? 'Active' : 'Inactive'}</span>
+                                    </div>
+                                    <div class="button-group">
+                                        <button class="btn btn-secondary flex-1" onclick="deleteProduct(${product.id})" style="font-size: 13px;">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+            }).join('')}
+                </div>
+            `;
+        }
+
+        function previewProductImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('prodImagePreview');
+
+            if (!file) {
+                preview.innerHTML = '<span>No image selected</span>';
+                return;
+            }
+
+            // Validate file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('❌ Image size must be less than 2MB');
+                event.target.value = '';
+                preview.innerHTML = '<span>No image selected</span>';
+                return;
+            }
+
+            // Validate file type
+            if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+                showToast('❌ Please upload JPG, PNG, or WebP image');
+                event.target.value = '';
+                preview.innerHTML = '<span>No image selected</span>';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.innerHTML = `<img src="${e.target.result}" alt="Product preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function createFarmerProduct() {
+            const name = document.getElementById('prodName')?.value?.trim() || '';
+            const category = document.getElementById('prodCategory')?.value?.trim() || '';
+            const price = Number(document.getElementById('prodPrice')?.value || 0);
+            const uom = document.getElementById('prodUOM')?.value?.trim() || '';
+            const stock = Number(document.getElementById('prodStock')?.value || 0);
+            const desc = document.getElementById('prodDesc')?.value?.trim() || '';
+            const imageFile = document.getElementById('prodImage')?.files?.[0];
+
+            console.log('Add Product Form Data:', { name, category, price, uom, stock, desc, imageFile });
+
+            if (!name || !category || price <= 0 || !uom || stock <= 0) {
+                showToast('⚠️ Please fill in all required fields with valid values');
+                console.warn('Validation failed:', { name, category, price, uom, stock });
+                return;
+            }
+
+            if (!imageFile) {
+                showToast('⚠️ Please select a product image');
+                return;
+            }
+
+            // Convert image to base64
+            const reader = new FileReader();
+            reader.onload = async function (e) {
+                try {
+                    const imageBase64 = e.target.result;
+                    console.log('Image converted to base64, size:', imageBase64.length);
+
+                    const productData = {
+                        name,
+                        category,
+                        unit_price: price,
+                        unit_of_measure: uom,
+                        stock_quantity: stock,
+                        description: desc || null,
+                        product_image: imageBase64,
+                        visible_to_farmers_only: false,
+                    };
+
+                    console.log('Sending product data to API:', { ...productData, product_image: '...' });
+
+                    const response = await api.farmer.addProduct(productData);
+
+                    console.log('Product created successfully:', response);
+                    showToast('✅ Product added successfully!');
+                    closeModal('modal-add-product');
+                    clearProductForm();
+                    await loadFarmerProducts();
+                    // Trigger immediate refresh if marketplace polling is active
+                    await autoRefresh.trigger('farmerMarketplace');
+                } catch (error) {
+                    console.error('Error adding product:', error);
+                    console.error('Error details:', error.response?.data || error.message);
+                    showToast(`❌ Failed to add product: ${error.message || 'Unknown error'}`);
+                }
+            };
+
+            reader.onerror = function (error) {
+                console.error('FileReader error:', error);
+                showToast('❌ Failed to read image file');
+            };
+
+            reader.readAsDataURL(imageFile);
+        }
+
+        function clearProductForm() {
+            const fields = ['prodName', 'prodCategory', 'prodPrice', 'prodUOM', 'prodStock', 'prodDesc', 'prodImage'];
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            // Reset image preview
+            const preview = document.getElementById('prodImagePreview');
+            if (preview) {
+                preview.innerHTML = '<span>No image selected</span>';
+            }
+        }
+
+        async function deleteProduct(productId) {
+            if (!confirm('Delete this product?')) return;
+
+            try {
+                await api.farmer.deleteProduct(productId);
+                showToast('✅ Product deleted');
+                await loadFarmerProducts();
+            } catch (error) {
+                showToast(`❌ Failed to delete: ${error.message}`);
             }
         }
 
@@ -1145,7 +1937,10 @@
             container.innerHTML = '<div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--text2);">Loading products from suppliers...</div>';
 
             try {
-                allMarketplaceProducts = await api.buyer.getAllProducts() || [];
+                const allProducts = await api.buyer.getAllProducts() || [];
+
+                // Filter to show ONLY supplier products
+                allMarketplaceProducts = allProducts.filter(product => product.product_source === 'supplier');
 
                 if (!allMarketplaceProducts.length) {
                     container.innerHTML = '<div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--text2);">No products available from suppliers at the moment.</div>';
@@ -1172,20 +1967,22 @@
                 'medicines': '💊',
                 'equipment': '🔧',
                 'vaccines': '💉',
+                'broilers': '🐔',
+                'eggs': '🥚',
+                'chicks': '🐣',
                 'other': '📦'
             };
 
             container.innerHTML = products.map(product => {
                 const icon = categoryMap[product.category?.toLowerCase()] || '📦';
-                const stockStatus = product.stock_quantity > 0 ? 'In Stock' : 'Out of Stock';
                 const isAvailable = product.stock_quantity > 0;
+                const sourceName = product.supplier_name || 'Unknown Supplier';
 
                 let imageHtml = '';
                 if (product.product_image && product.product_image.trim() &&
                     (product.product_image.startsWith('http') || product.product_image.startsWith('/') || product.product_image.startsWith('data:'))) {
                     imageHtml = `<img src="${product.product_image}" alt="${product.name}" style="width: 100%; height: 100%; object-fit: cover;">`;
                 } else {
-                    // Default placeholder SVG when no image
                     imageHtml = `
                         <svg viewBox="0 0 200 200" style="width: 70%; height: 70%; color: var(--text2);" fill="currentColor">
                             <rect x="10" y="10" width="180" height="180" fill="var(--g100)" stroke="var(--g300)" stroke-width="2"/>
@@ -1200,7 +1997,7 @@
                         <div class="prod-img" style="background: var(--g50); overflow: hidden; display: flex; align-items: center; justify-content: center;">${imageHtml}</div>
                         <div class="prod-body">
                             <div class="prod-name">${product.name}</div>
-                            <div class="prod-sup">${product.supplier_name} · Stock: ${product.stock_quantity} ${product.unit_of_measure || 'units'}</div>
+                            <div class="prod-sup"><span style="display: inline-block; padding: 2px 8px; background: var(--accent); color: white; border-radius: 3px; font-size: 12px; margin-bottom: 4px;">🏭 Supplier</span> · ${sourceName} · Stock: ${product.stock_quantity} ${product.unit_of_measure || 'units'}</div>
                             <div class="prod-price">KES ${Number(product.unit_price || 0).toLocaleString()} <span>/ ${product.unit_of_measure || 'unit'}</span></div>
                             <div class="button-group">
                                 <button class="btn btn-primary flex-1" ${!isAvailable ? 'disabled' : ''} onclick="viewProduct(${product.id})">
@@ -1299,7 +2096,7 @@
             container.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text2);">Loading your orders...</div>';
 
             try {
-                const orders = await api.buyer.getOrders() || [];
+                const orders = await api.farmer.getOrders() || [];
 
                 const badge = document.getElementById('activeOrdersBadge');
                 if (badge) {
@@ -1368,30 +2165,549 @@
         document.getElementById('marketplaceSearch')?.addEventListener('input', filterMarketplaceProducts);
         document.getElementById('categoryFilter')?.addEventListener('change', filterMarketplaceProducts);
 
-        const pageNames = { dashboard: 'Dashboard', flock: 'Flock Inventory', orders: 'Buyer Orders', market: 'Marketplace', analytics: 'Analytics', settings: 'Account Settings' };
+        // ────────────────────────────────────────
+        // MESSAGES & INVITATIONS FUNCTIONS
+        // ────────────────────────────────────────
+
+        let currentSelectedSupplierId = null;
+
+        function switchMessagesTab(el, panelId) {
+            el.closest('.stabs').querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            document.querySelectorAll('.spanel').forEach(p => p.classList.remove('active'));
+            const panel = document.getElementById(panelId);
+            if (panel) panel.classList.add('active');
+
+            // Load suppliers when invite tab is opened
+            if (panelId === 'tab-invite') {
+                loadInviteSuppliersList();
+            }
+        }
+
+        async function loadPendingInvitations() {
+            const container = document.getElementById('invitationsContainer');
+            if (!container) return;
+
+            container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: var(--text2);">Loading invitations...</div>';
+
+            try {
+                const invitations = await api.farmer.getPendingInvitations() || [];
+
+                // Update badge count
+                const badge = document.getElementById('messagesBadge');
+                if (badge) {
+                    badge.textContent = invitations.length;
+                    badge.style.display = invitations.length > 0 ? 'inline-flex' : 'none';
+                }
+
+                if (!invitations.length) {
+                    container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: var(--text2);">No pending invitations</div>';
+                    return;
+                }
+
+                const formatDate = (dateStr) => {
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                };
+
+                container.innerHTML = invitations.map(inv => {
+                    // Check if invitation is from supplier (has supplier_name) or from farmer (has farm_name)
+                    const isSupplierInvitation = inv.supplier_name && !inv.farm_name;
+                    const isFarmerInvitation = inv.farm_name && inv.farm_type;
+
+                    if (isSupplierInvitation) {
+                        // Supplier invitation to farmer
+                        return `
+                            <div class="section-divider">
+                                <div style="padding: 8px 12px; background: var(--acc-blue); color: white; border-radius: 4px; font-size: 11px; font-weight: 600; margin-bottom: 12px; display: inline-block;">📬 Supplier Invitation</div>
+                                <div class="text-semi-bold text-lg">${inv.supplier_name}</div>
+                                <div class="text-subtitle-sm" style="color: var(--text2); margin-top: 4px;">Supplier ID: ${inv.supplier_id}</div>
+                                <div class="text-subtitle-sm" style="color: var(--text2); margin-top: 4px;">${formatDate(inv.created_at)}</div>
+                                ${inv.message ? `<div style="margin-top: 8px; padding: 8px; background: var(--surface2); border-radius: 4px; font-size: 13px; color: var(--text2);">Message: ${inv.message}</div>` : ''}
+                                <div class="button-group" style="margin-top: 12px;">
+                                    <button class="btn btn-primary btn-sm" onclick="acceptInvitation(${inv.id})">✓ Accept</button>
+                                    <button class="btn btn-danger btn-sm" onclick="declineInvitation(${inv.id})">✗ Decline</button>
+                                </div>
+                            </div>
+                        `;
+                    } else if (isFarmerInvitation) {
+                        // Farmer invitation to supplier
+                        return `
+                            <div class="section-divider">
+                                <div style="padding: 8px 12px; background: var(--acc-green); color: white; border-radius: 4px; font-size: 11px; font-weight: 600; margin-bottom: 12px; display: inline-block;">🌾 Your Farm Detail</div>
+                                <div>
+                                    <div class="text-semi-bold text-lg">${inv.farm_name}</div>
+                                    <div class="text-subtitle-sm" style="color: var(--text2); margin-top: 4px;">👤 ${inv.farmer_name}</div>
+                                    <div class="text-subtitle-sm" style="color: var(--text2); margin-top: 2px;">📧 ${inv.email}</div>
+                                    ${inv.phone ? `<div class="text-subtitle-sm" style="color: var(--text2); margin-top: 2px;">📱 ${inv.phone}</div>` : ''}
+                                    ${inv.farm_location ? `<div class="text-subtitle-sm" style="color: var(--text2); margin-top: 2px;">📍 ${inv.farm_location}</div>` : ''}
+                                    ${inv.farm_type ? `<div class="text-subtitle-sm" style="color: var(--text2); margin-top: 2px;">🏠 ${inv.farm_type}</div>` : ''}
+                                    <div class="text-subtitle-sm" style="color: var(--text2); margin-top: 4px;">Sent: ${formatDate(inv.created_at)}</div>
+                                    ${inv.message ? `<div style="margin-top: 8px; padding: 8px; background: var(--surface2); border-radius: 4px; font-size: 13px; color: var(--text2);">Message: ${inv.message}</div>` : ''}
+                                </div>
+                                <div class="button-group" style="margin-top: 12px;">
+                                    <button class="btn btn-primary btn-sm" onclick="acceptInvitation(${inv.id})">✓ Accept</button>
+                                    <button class="btn btn-danger btn-sm" onclick="declineInvitation(${inv.id})">✗ Decline</button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Generic invitation
+                        return `
+                            <div class="section-divider">
+                                <div class="text-semi-bold text-lg">${inv.supplier_name || 'Unknown'}</div>
+                                <div class="text-subtitle-sm" style="color: var(--text2); margin-top: 4px;">${formatDate(inv.created_at)}</div>
+                                ${inv.message ? `<div style="margin-top: 8px; padding: 8px; background: var(--surface2); border-radius: 4px; font-size: 13px; color: var(--text2);">Message: ${inv.message}</div>` : ''}
+                                <div class="button-group" style="margin-top: 12px;">
+                                    <button class="btn btn-primary btn-sm" onclick="acceptInvitation(${inv.id})">✓ Accept</button>
+                                    <button class="btn btn-danger btn-sm" onclick="declineInvitation(${inv.id})">✗ Decline</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }).join('');
+            } catch (error) {
+                container.innerHTML = `<div style="padding: 40px 20px; text-align: center; color: var(--color-error);">Failed to load invitations: ${error.message}</div>`;
+            }
+        }
+
+        async function acceptInvitation(invitationId) {
+            try {
+                await api.farmer.acceptInvitation(invitationId);
+                showToast('✅ Invitation accepted!');
+                await loadPendingInvitations();
+                await loadConnectedSuppliers();
+            } catch (error) {
+                showToast(`❌ Failed to accept: ${error.message}`);
+            }
+        }
+
+        async function declineInvitation(invitationId) {
+            if (!confirm('Are you sure you want to decline this invitation?')) return;
+
+            try {
+                await api.farmer.declineInvitation(invitationId);
+                showToast('✅ Invitation declined');
+                await loadPendingInvitations();
+            } catch (error) {
+                showToast(`❌ Failed to decline: ${error.message}`);
+            }
+        }
+
+        async function loadConnectedSuppliers() {
+            const container = document.getElementById('suppliersList');
+            if (!container) return;
+
+            container.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text2);">Loading suppliers...</div>';
+
+            try {
+                const suppliers = await api.farmer.getConnectedSuppliers() || [];
+
+                if (!suppliers.length) {
+                    container.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text2);">No connected suppliers yet</div>';
+                    return;
+                }
+
+                container.innerHTML = suppliers.map(supplier => `
+                    <div class="message-supplier-item" onclick="selectConversation(${supplier.id}, '${supplier.name}')" style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
+                        <div class="text-semi-bold text-sm">${supplier.name}</div>
+                        <div class="text-subtitle-sm" style="color: var(--text2); font-size: 11px; margin-top: 2px;">${supplier.email}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--color-error);">Failed to load suppliers: ${error.message}</div>`;
+            }
+        }
+
+        async function selectConversation(supplierId, supplierName) {
+            currentSelectedSupplierId = supplierId;
+
+            // Update header
+            const header = document.getElementById('threadHeader');
+            if (header) {
+                header.textContent = `💬 Chat with ${supplierName}`;
+            }
+
+            // Show message input
+            const inputGroup = document.getElementById('messageInputGroup');
+            if (inputGroup) {
+                inputGroup.style.display = 'block';
+            }
+
+            // Load messages
+            try {
+                const messages = await api.farmer.getMessagesWithSupplier(supplierId) || [];
+                const thread = document.getElementById('messagesThread');
+                const currentUserId = JSON.parse(localStorage.getItem('user')).id;
+
+                if (!messages.length) {
+                    thread.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text2); flex: 1; display: flex; align-items: center; justify-content: center;">No messages yet. Start the conversation!</div>';
+                    return;
+                }
+
+                const formatTime = (dateStr) => {
+                    const date = new Date(dateStr);
+                    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                };
+
+                thread.innerHTML = messages.map(msg => {
+                    const isOwn = msg.sender_id === currentUserId;
+                    return `
+                        <div style="display: flex; flex-direction: column; ${isOwn ? 'align-items: flex-end' : 'align-items: flex-start'};">
+                            <div style="max-width: 70%; padding: 10px 14px; border-radius: 8px; background: ${isOwn ? 'var(--accent)' : 'var(--surface2)'}; color: ${isOwn ? 'white' : 'var(--text1)'};">
+                                ${msg.content}
+                            </div>
+                            <div style="font-size: 11px; color: var(--text2); margin-top: 4px;">${formatTime(msg.created_at)}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Auto-scroll to bottom
+                thread.scrollTop = thread.scrollHeight;
+            } catch (error) {
+                const thread = document.getElementById('messagesThread');
+                thread.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--color-error);">Failed to load messages: ${error.message}</div>`;
+            }
+        }
+
+        async function sendMessageToSupplier() {
+            if (!currentSelectedSupplierId) {
+                showToast('Please select a supplier first');
+                return;
+            }
+
+            const input = document.getElementById('messageInput');
+            const content = input.value.trim();
+
+            if (!content) {
+                showToast('Message cannot be empty');
+                return;
+            }
+
+            try {
+                input.disabled = true;
+                await api.farmer.sendMessageToSupplier(currentSelectedSupplierId, content);
+                input.value = '';
+                showToast('✅ Message sent!');
+                await selectConversation(currentSelectedSupplierId, document.getElementById('threadHeader').textContent.split(' with ')[1]);
+            } catch (error) {
+                showToast(`❌ Failed to send: ${error.message}`);
+            } finally {
+                input.disabled = false;
+                input.focus();
+            }
+        }
+
+        // ────────────────────────────────────────
+        // BROWSE SUPPLIERS FUNCTIONS
+        // ────────────────────────────────────────
+
+        let allSuppliers = [];
+
+        async function loadAllSuppliers() {
+            const container = document.getElementById('suppliersGridContainer');
+            if (!container) return;
+
+            container.innerHTML = '<div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--text2);">Loading suppliers...</div>';
+
+            try {
+                allSuppliers = await api.farmer.getAllSuppliers() || [];
+
+                if (!allSuppliers.length) {
+                    container.innerHTML = '<div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--text2);">No suppliers available</div>';
+                    return;
+                }
+
+                renderAllSuppliers(allSuppliers);
+            } catch (error) {
+                container.innerHTML = `<div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--color-error);">Failed to load suppliers: ${error.message}</div>`;
+            }
+        }
+
+        function renderAllSuppliers(suppliers) {
+            const container = document.getElementById('suppliersGridContainer');
+            if (!container) return;
+
+            if (!suppliers.length) {
+                container.innerHTML = '<div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--text2);">No suppliers match your search</div>';
+                return;
+            }
+
+            container.innerHTML = suppliers.map(supplier => {
+                let statusBadge = '';
+                let actionButton = '';
+
+                if (supplier.connection_status === 'connected' || supplier.connection_status === 'accepted') {
+                    statusBadge = '<span class="badge bg-green" style="margin-top: 8px;">✓ Connected</span>';
+                    actionButton = `<button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="selectConversation(${supplier.id}, '${supplier.name}')">Open Chat</button>`;
+                } else if (supplier.connection_status === 'pending') {
+                    statusBadge = '<span class="badge bg-orange" style="margin-top: 8px;">⏳ Pending</span>';
+                    actionButton = '<button class="btn btn-secondary btn-sm" style="width: 100%;" disabled>Request Sent</button>';
+                } else if (supplier.connection_status === 'declined') {
+                    statusBadge = '<span class="badge bg-red" style="margin-top: 8px;">✗ Declined</span>';
+                    actionButton = `<button class="btn btn-primary btn-sm" style="width: 100%;" onclick="requestSupplierConnection(${supplier.id}, '${supplier.name}')">Try Again</button>`;
+                } else {
+                    statusBadge = '';
+                    actionButton = `<button class="btn btn-primary btn-sm" style="width: 100%;" onclick="requestSupplierConnection(${supplier.id}, '${supplier.name}')">Connect</button>`;
+                }
+
+                return `
+                    <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface1); display: flex; flex-direction: column; gap: 8px;">
+                        <div class="text-semi-bold text-sm">${supplier.name}</div>
+                        <div class="text-subtitle-sm" style="font-size: 11px; color: var(--text2); word-break: break-all;">${supplier.email}</div>
+                        <div class="text-subtitle-sm" style="font-size: 11px; color: var(--text2);">📱 ${supplier.phone}</div>
+                        ${statusBadge}
+                        ${actionButton}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterSuppliers() {
+            const searchInput = document.getElementById('supplierSearchInput');
+            const searchTerm = (searchInput?.value || '').toLowerCase();
+
+            const filtered = allSuppliers.filter(supplier => {
+                return supplier.name.toLowerCase().includes(searchTerm) ||
+                    supplier.email.toLowerCase().includes(searchTerm) ||
+                    supplier.phone.toLowerCase().includes(searchTerm);
+            });
+
+            renderAllSuppliers(filtered);
+        }
+
+        let currentInviteSupplierId = null;
+        let currentInviteSupplierName = null;
+
+        function requestSupplierConnection(supplierId, supplierName) {
+            // Switch to the invite supplier tab
+            currentInviteSupplierId = supplierId;
+            currentInviteSupplierName = supplierName;
+
+            // Pre-fill the supplier name and ID
+            document.getElementById('inviteSupplierName').value = supplierName;
+            document.getElementById('inviteSupplierID').value = supplierId;
+
+            // Clear other fields
+            document.getElementById('inviteFarmName').value = '';
+            document.getElementById('inviteFarmerName').value = '';
+            document.getElementById('inviteEmail').value = '';
+            document.getElementById('invitePhone').value = '';
+            document.getElementById('inviteFarmLocation').value = '';
+            document.getElementById('inviteFarmType').value = '';
+            document.getElementById('inviteMessage').value = '';
+
+            // Switch to the invite tab
+            const inviteTab = document.querySelector('[onclick*="tab-invite"]');
+            if (inviteTab) {
+                switchMessagesTab(inviteTab, 'tab-invite');
+                // Scroll to messages section
+                document.getElementById('page-messages').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function selectSupplierForInvite() {
+            const select = document.getElementById('inviteSupplierSelect');
+            const selectedValue = select.value;
+
+            if (!selectedValue) {
+                document.getElementById('inviteSupplierID').value = '';
+                currentInviteSupplierName = null;
+                return;
+            }
+
+            const supplier = inviteSuppliersList.find(s => s.id == selectedValue);
+            if (supplier) {
+                document.getElementById('inviteSupplierID').value = supplier.id;
+                document.getElementById('inviteEmail').value = supplier.email || '';
+                document.getElementById('invitePhone').value = supplier.phone || '';
+                currentInviteSupplierName = supplier.name;
+            }
+        }
+
+        let inviteSuppliersList = [];
+
+        async function loadInviteSuppliersList() {
+            try {
+                inviteSuppliersList = await api.farmer.getAllSuppliers() || [];
+                const select = document.getElementById('inviteSupplierSelect');
+
+                if (!select) return;
+
+                // Clear existing options except the placeholder
+                select.innerHTML = '<option value="">Select a supplier...</option>';
+
+                if (inviteSuppliersList.length === 0) {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.disabled = true;
+                    option.textContent = 'No suppliers available';
+                    select.appendChild(option);
+                    return;
+                }
+
+                // Add supplier options
+                inviteSuppliersList.forEach(supplier => {
+                    const option = document.createElement('option');
+                    option.value = supplier.id;
+                    option.textContent = `${supplier.name} - ${supplier.email}`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                showToast(`❌ Failed to load suppliers: ${error.message}`);
+            }
+        }
+
+        async function submitSupplierInvitation() {
+            const supplierId = document.getElementById('inviteSupplierID').value;
+            const email = document.getElementById('inviteEmail').value?.trim() || '';
+            const phone = document.getElementById('invitePhone').value?.trim() || '';
+            const message = document.getElementById('inviteMessage').value?.trim() || '';
+
+            // Validation
+            if (!supplierId) {
+                showToast('⚠️ Supplier not selected');
+                return;
+            }
+            if (!email) {
+                showToast('⚠️ Email Address is required');
+                return;
+            }
+            if (!email.includes('@')) {
+                showToast('⚠️ Please enter a valid email address');
+                return;
+            }
+
+            try {
+                // Load user and farm data
+                const user = JSON.parse(localStorage.getItem('user')) || {};
+                const farmerName = user.name || 'Unknown';
+
+                // Load farm profile for farm details
+                let farmName = '';
+                let farmLocation = '';
+                let farmType = '';
+
+                try {
+                    const farm = await api.farmer.getFarmProfile();
+                    farmName = farm.farm_name || '';
+                    farmLocation = farm.location || '';
+                    farmType = farm.description || '';
+                } catch (error) {
+                    // Farm profile might not exist, use defaults
+                    console.warn('Farm profile not available, using defaults');
+                }
+
+                // Validate required fields
+                if (!farmName) {
+                    showToast('⚠️ Please set up your farm profile first (Farm Name required)');
+                    return;
+                }
+
+                // Send invitation with all required fields
+                await api.farmer.requestSupplierConnection(supplierId, {
+                    farm_name: farmName,
+                    farmer_name: farmerName,
+                    email: email,
+                    phone: phone || null,
+                    farm_location: farmLocation || null,
+                    farm_type: farmType || null,
+                    message: message || null,
+                });
+
+                showToast(`✅ Invitation sent to ${currentInviteSupplierName}!`);
+                resetInviteForm();
+                await loadInviteSuppliersList();
+                await loadAllSuppliers();
+                await loadPendingInvitations();
+            } catch (error) {
+                showToast(`❌ Failed to send invitation: ${error.message}`);
+            }
+        }
+
+        function resetInviteForm() {
+            document.getElementById('inviteSupplierSelect').value = '';
+            document.getElementById('inviteEmail').value = '';
+            document.getElementById('invitePhone').value = '';
+            document.getElementById('inviteMessage').value = '';
+            document.getElementById('inviteSupplierID').value = '';
+            currentInviteSupplierName = null;
+        }
+
+        // Add search listener
+        document.getElementById('supplierSearchInput')?.addEventListener('input', filterSuppliers);
+
+        const pageNames = { dashboard: 'Dashboard', flock: 'Flock Inventory', orders: 'Buyer Orders', market: 'Marketplace', products: 'My Products', messages: 'Messages & Invitations', analytics: 'Analytics', settings: 'Account Settings' };
 
         function showPage(id, navEl) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            const page = document.getElementById('page-' + id);
-            if (page) page.classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            if (navEl) navEl.classList.add('active');
-            const bc = document.getElementById('bc');
-            if (bc) bc.textContent = pageNames[id] || id;
-            closeSidebar();
-            window.scrollTo(0, 0);
+            try {
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
 
-            if (id === 'flock') {
-                loadFarmerFlocks();
-            }
+                const page = document.getElementById('page-' + id);
+                if (!page) {
+                    console.error(`Page not found: page-${id}`);
+                    return;
+                }
+                page.classList.add('active');
 
-            if (id === 'orders') {
-                loadBuyerOrders();
-            }
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                if (navEl) navEl.classList.add('active');
 
-            if (id === 'market') {
-                loadMarketplaceProducts();
-                loadFarmerOrders();
+                const bc = document.getElementById('bc');
+                if (bc) bc.textContent = pageNames[id] || id;
+
+                closeSidebar();
+                window.scrollTo(0, 0);
+
+                if (id === 'dashboard') {
+                    loadDashboardKPIs();
+                    loadBuyerOrders();
+                } else {
+                    autoRefresh.unregister('dashboardKPIs');
+                }
+
+                if (id === 'flock') {
+                    loadFarmerFlocks();
+                } else {
+                    autoRefresh.unregister('farmerFlocks');
+                }
+
+                if (id === 'orders') {
+                    loadBuyerOrders();
+                } else {
+                    autoRefresh.unregister('farmerOrders');
+                }
+
+                if (id === 'market') {
+                    loadMarketplaceProducts();
+                    loadFarmerOrders();
+                } else {
+                    autoRefresh.unregister('farmerMarketplace');
+                }
+
+                if (id === 'products') {
+                    loadFarmerProducts();
+                } else {
+                    autoRefresh.unregister('farmerProducts');
+                }
+
+                if (id === 'messages') {
+                    loadPendingInvitations();
+                    loadConnectedSuppliers();
+                    loadAllSuppliers();
+                } else {
+                    autoRefresh.unregister('farmerMessages');
+                }
+
+                if (id === 'analytics') {
+                    loadAnalyticsMetrics();
+                } else {
+                    autoRefresh.unregister('farmerAnalytics');
+                }
+
+                console.log(`✅ Navigated to page: ${id}`);
+            } catch (error) {
+                console.error(`Error navigating to page ${id}:`, error);
             }
         }
 
@@ -1450,6 +2766,583 @@
                 setTimeout(() => t.remove(), 300);
             }, 2800);
         }
+
+        /* ── TIME-BASED GREETING ── */
+        function getTimeBasedGreeting(firstName) {
+            const hour = new Date().getHours();
+            let greeting = '';
+            let emoji = '';
+
+            if (hour >= 5 && hour < 12) {
+                greeting = 'Good morning';
+                emoji = '🌅';
+            } else if (hour >= 12 && hour < 17) {
+                greeting = 'Good afternoon';
+                emoji = '☀️';
+            } else if (hour >= 17 && hour < 21) {
+                greeting = 'Good evening';
+                emoji = '🌆';
+            } else {
+                greeting = 'Good night';
+                emoji = '🌙';
+            }
+
+            return `${greeting}, ${firstName}! ${emoji}`;
+        }
+
+        /* ── LOAD USER PROFILE ── */
+        function loadUserProfile() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                if (!user) {
+                    console.warn('No user data in localStorage');
+                    return;
+                }
+
+                // Parse name into first and last names
+                const nameParts = (user.name || '').split(' ');
+                const firstName = nameParts[0] || '';
+                const lastName = nameParts.slice(1).join(' ') || '';
+
+                // Generate initials from first and last name
+                const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+
+                // Update sidebar avatar and name
+                const sbAvatar = document.getElementById('sb-avatar');
+                const sbName = document.getElementById('sb-name');
+                if (sbAvatar) sbAvatar.textContent = initials || 'U';
+                if (sbName) sbName.textContent = user.name || 'User';
+
+                // Update topbar avatar and name
+                const tbAvatar = document.getElementById('tb-avatar');
+                const tbName = document.getElementById('tb-name');
+                if (tbAvatar) tbAvatar.textContent = initials || 'U';
+                if (tbName) tbName.textContent = user.name || 'User';
+
+                // Update greeting message with first name
+                const greetingMsg = document.getElementById('greeting-msg');
+                if (greetingMsg) {
+                    greetingMsg.textContent = getTimeBasedGreeting(firstName);
+                }
+
+                // Update card holder name
+                const cardHolder = document.getElementById('card-holder-name');
+                if (cardHolder) {
+                    cardHolder.textContent = user.name || 'User';
+                }
+
+                // Update avatar in profile tab - find within tab-profile section
+                const tabProfile = document.getElementById('tab-profile');
+                if (tabProfile) {
+                    // Find avatar element by looking for the div with 64px dimensions
+                    const avatarEl = tabProfile.querySelector('div[style*="width:64px"]');
+                    if (avatarEl) {
+                        avatarEl.textContent = initials || 'U';
+                        console.log('Avatar updated to:', initials);
+                    }
+                }
+
+                // Update form fields with user data using form-grp structure
+                const formGroups = document.querySelectorAll('#tab-profile .form-grp');
+                formGroups.forEach(grp => {
+                    const label = grp.querySelector('.form-label');
+                    const input = grp.querySelector('input, textarea');
+
+                    if (!label || !input) return;
+
+                    const labelText = label.textContent;
+                    if (labelText.includes('Full Name')) {
+                        input.value = user.name || '';
+                    } else if (labelText.includes('Email')) {
+                        input.value = user.email || '';
+                    } else if (labelText.includes('Phone')) {
+                        input.value = user.phone || '';
+                    }
+                });
+
+                // Update name display in card header (within tab-profile)
+                const cardHd = tabProfile?.querySelector('div[style*="font-weight:700"][style*="font-size:15px"]');
+                if (cardHd) {
+                    cardHd.textContent = user.name || 'User';
+                    console.log('Name display updated to:', user.name);
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+            }
+        }
+
+        /* ── SAVE PROFILE CHANGES ── */
+        async function saveProfileChanges() {
+            try {
+                const button = event.target;
+                button.disabled = true;
+                button.textContent = '💾 Saving...';
+
+                // Get profile data from form inputs
+                const fullName = document.getElementById('profileFullName')?.value?.trim() || '';
+                const farmName = document.getElementById('profileFarmName')?.value?.trim() || '';
+                const location = document.getElementById('profileLocation')?.value?.trim() || '';
+                const phone = document.getElementById('profilePhone')?.value?.trim() || '';
+                const farmSize = document.getElementById('profileFarmSize')?.value?.trim() || '';
+                const description = document.getElementById('profileDescription')?.value?.trim() || '';
+
+                // Validate required fields
+                if (!farmName || !location) {
+                    showToast('⚠️ Please fill in Farm Name and Location');
+                    button.disabled = false;
+                    button.textContent = 'Save Changes';
+                    return;
+                }
+
+                // Validate farm size if provided
+                let size = null;
+                if (farmSize) {
+                    size = Number(farmSize);
+                    if (!Number.isFinite(size) || size <= 0) {
+                        showToast('⚠️ Farm Size must be a positive number');
+                        button.disabled = false;
+                        button.textContent = 'Save Changes';
+                        return;
+                    }
+                }
+
+                // Prepare farm profile data
+                const farmData = {
+                    farm_name: farmName,
+                    location: location,
+                    size: size || 0,
+                    phone: phone || null,
+                    description: description || null,
+                };
+
+                // Try to update existing farm profile, if it fails, create a new one
+                try {
+                    await api.farmer.updateFarmProfile(farmData);
+                    showToast('✅ Farm profile updated successfully!');
+                } catch (error) {
+                    // If farm profile doesn't exist, create it
+                    if (error.status === 404) {
+                        await api.farmer.createFarmProfile(farmData);
+                        showToast('✅ Farm profile created successfully!');
+                    } else {
+                        throw error;
+                    }
+                }
+
+                // Update sidebar and navbar with new name if it changed
+                if (fullName) {
+                    // Update localStorage
+                    const user = JSON.parse(localStorage.getItem('user') || '{}');
+                    user.name = fullName;
+                    localStorage.setItem('user', JSON.stringify(user));
+
+                    // Update sidebar display
+                    const nameParts = fullName.split(' ');
+                    const firstName = nameParts[0] || '';
+                    const lastName = nameParts.slice(1).join(' ') || '';
+                    const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+
+                    const sbAvatar = document.getElementById('sb-avatar');
+                    const sbName = document.getElementById('sb-name');
+                    if (sbAvatar) sbAvatar.textContent = initials || 'U';
+                    if (sbName) sbName.textContent = fullName;
+
+                    // Update navbar display
+                    const tbAvatar = document.getElementById('tb-avatar');
+                    const tbName = document.getElementById('tb-name');
+                    if (tbAvatar) tbAvatar.textContent = initials || 'U';
+                    if (tbName) tbName.textContent = fullName;
+
+                    // Update greeting message
+                    const greetingMsg = document.getElementById('greeting-msg');
+                    if (greetingMsg) {
+                        greetingMsg.textContent = getTimeBasedGreeting(firstName);
+                    }
+
+                    // Update card holder name
+                    const cardHolder = document.getElementById('card-holder-name');
+                    if (cardHolder) {
+                        cardHolder.textContent = fullName;
+                    }
+
+                    // Update avatar in profile tab
+                    const tabProfile = document.getElementById('tab-profile');
+                    if (tabProfile) {
+                        const avatarEl = tabProfile.querySelector('div[style*="width:64px"]');
+                        if (avatarEl) {
+                            avatarEl.textContent = initials || 'U';
+                        }
+                    }
+                }
+
+                // Update sidebar role/location text with farm location
+                if (location) {
+                    const sbRole = document.getElementById('sb-role');
+                    if (sbRole) {
+                        sbRole.textContent = `Farm Manager · ${location}`;
+                    }
+                }
+
+                button.disabled = false;
+                button.textContent = 'Save Changes';
+
+            } catch (error) {
+                console.error('Error saving profile:', error);
+                showToast('❌ ' + (error.message || 'Failed to save farm profile'));
+                const button = event.target;
+                button.disabled = false;
+                button.textContent = 'Save Changes';
+            }
+        }
+
+        /* ── LOAD FARM PROFILE ── */
+        async function loadFarmProfile() {
+            try {
+                // Load user's full name from localStorage
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                if (document.getElementById('profileFullName')) {
+                    document.getElementById('profileFullName').value = user.name || '';
+                }
+
+                const farm = await api.farmer.getFarmProfile();
+
+                // Populate form fields with farm data
+                if (document.getElementById('profileFarmName')) {
+                    document.getElementById('profileFarmName').value = farm.farm_name || '';
+                }
+                if (document.getElementById('profileLocation')) {
+                    document.getElementById('profileLocation').value = farm.location || '';
+                }
+                if (document.getElementById('profilePhone')) {
+                    document.getElementById('profilePhone').value = farm.phone || '';
+                }
+                if (document.getElementById('profileFarmSize')) {
+                    document.getElementById('profileFarmSize').value = farm.size || '';
+                }
+                if (document.getElementById('profileDescription')) {
+                    document.getElementById('profileDescription').value = farm.description || '';
+                }
+
+                // Update sidebar role/location with farm location
+                if (farm.location) {
+                    const sbRole = document.getElementById('sb-role');
+                    if (sbRole) {
+                        sbRole.textContent = `Farm Manager · ${farm.location}`;
+                    }
+                }
+            } catch (error) {
+                // Farm profile might not exist yet, which is fine
+                if (error.status !== 404) {
+                    console.error('Error loading farm profile:', error);
+                }
+            }
+        }
+
+        // Load dashboard metrics/KPIs
+        async function loadDashboardKPIs() {
+            try {
+                // 1. Total Birds - sum of all flock quantities
+                try {
+                    const flocks = await api.farmer.getFlocks();
+                    const totalBirds = flocks.reduce((sum, f) => sum + (f.quantity || 0), 0);
+                    document.getElementById('dashKpi1').textContent = totalBirds.toLocaleString();
+                    document.getElementById('dashKpiSub1').textContent = `${flocks.length} active flock(s)`;
+                } catch (e) {
+                    console.error('Error loading flocks for KPI:', e);
+                    document.getElementById('dashKpiSub1').textContent = 'Error loading data';
+                }
+
+                // 2. & 3. Pending & Completed Orders
+                try {
+                    const orders = await api.farmer.getOrders();
+                    const pendingOrders = orders.filter(o => o.order_status === 'pending' || o.order_status === 'processing').length;
+                    const completedOrders = orders.filter(o => o.order_status === 'completed' || o.order_status === 'delivered').length;
+
+                    document.getElementById('dashKpi2').textContent = pendingOrders;
+                    document.getElementById('dashKpiSub2').textContent = `From ${orders.length} total order(s)`;
+
+                    document.getElementById('dashKpi3').textContent = completedOrders;
+                    document.getElementById('dashKpiSub3').textContent = completedOrders > 0 ? `↑ All successful` : 'None yet';
+                } catch (e) {
+                    console.error('Error loading orders for KPI:', e);
+                    document.getElementById('dashKpiSub2').textContent = 'Error loading data';
+                    document.getElementById('dashKpiSub3').textContent = 'Error loading data';
+                }
+
+                // 4. Feed Stock & 5. Revenue
+                try {
+                    const products = await api.farmer.getProducts();
+
+                    // Feed stock (sum of feed-related product quantities)
+                    const feedProducts = products.filter(p =>
+                        p.category && (
+                            p.category.toLowerCase().includes('feed') ||
+                            p.category.toLowerCase().includes('supplies') ||
+                            p.category.toLowerCase().includes('medicine') ||
+                            p.category.toLowerCase().includes('vaccine')
+                        )
+                    );
+                    const feedStock = feedProducts.reduce((sum, p) => sum + (p.stock_quantity || 0), 0);
+                    document.getElementById('dashKpi4').textContent = feedStock;
+                    document.getElementById('dashKpiSub4').textContent = `${feedProducts.length} product(s) in stock`;
+
+                    // Revenue (sum of all product prices * stock - rough estimate)
+                    const totalRevenuePotential = products.reduce((sum, p) =>
+                        sum + ((p.unit_price || 0) * (p.stock_quantity || 0)), 0
+                    );
+                    document.getElementById('dashKpi5').textContent = `KES ${Math.floor(totalRevenuePotential).toLocaleString()}`;
+                    document.getElementById('dashKpiSub5').textContent = `From ${products.length} product(s)`;
+                } catch (e) {
+                    console.error('Error loading products for KPI:', e);
+                    document.getElementById('dashKpiSub4').textContent = 'Error loading data';
+                    document.getElementById('dashKpiSub5').textContent = 'Error loading data';
+                }
+            } catch (error) {
+                console.error('Error loading dashboard KPIs:', error);
+            }
+        }
+
+        // Load analytics metrics and data
+        async function loadAnalyticsMetrics() {
+            try {
+                // Fetch required data
+                let flocks = [];
+                let products = [];
+                let orders = [];
+
+                try {
+                    flocks = await api.farmer.getFlocks();
+                } catch (e) {
+                    console.error('Error loading flocks for analytics:', e);
+                }
+
+                try {
+                    products = await api.farmer.getProducts();
+                } catch (e) {
+                    console.error('Error loading products for analytics:', e);
+                }
+
+                try {
+                    orders = await api.farmer.getOrders();
+                } catch (e) {
+                    console.error('Error loading orders for analytics:', e);
+                }
+
+                // 1. FCR (Feed Conversion Ratio) = Total Feed / Total Weight Gained
+                try {
+                    const feedProducts = products.filter(p =>
+                        p.category && p.category.toLowerCase().includes('feed')
+                    );
+                    const totalFeed = feedProducts.reduce((sum, p) => sum + (p.stock_quantity || 0), 0);
+
+                    // Estimate total weight from completed flocks
+                    const totalBirdsSold = orders
+                        .filter(o => o.order_status === 'completed' || o.order_status === 'delivered')
+                        .reduce((sum, o) => sum + (o.quantity || 0), 0);
+
+                    const fcr = totalBirdsSold > 0 ? (totalFeed / totalBirdsSold).toFixed(2) : '--';
+                    document.getElementById('analyticsKpi1').textContent = fcr;
+                    document.getElementById('analyticsKpiSub1').textContent = `Based on ${totalBirdsSold} birds sold`;
+                } catch (e) {
+                    console.error('Error calculating FCR:', e);
+                    document.getElementById('analyticsKpiSub1').textContent = 'Error calculating';
+                }
+
+                // 2. Avg Mortality Rate (estimate from live vs total)
+                try {
+                    const totalBirds = flocks.reduce((sum, f) => sum + (f.quantity || 0), 0);
+                    const completedFlocks = flocks.filter(f => f.status === 'completed' || f.status === 'closed');
+                    const avgMortalityRate = completedFlocks.length > 0
+                        ? (100 / completedFlocks.length).toFixed(1)
+                        : '--';
+
+                    document.getElementById('analyticsKpi2').textContent = avgMortalityRate + '%';
+                    document.getElementById('analyticsKpiSub2').textContent = `From ${completedFlocks.length} completed flock(s)`;
+                } catch (e) {
+                    console.error('Error calculating mortality rate:', e);
+                    document.getElementById('analyticsKpiSub2').textContent = 'Error calculating';
+                }
+
+                // 3. Avg Weight (Broiler)
+                try {
+                    const broilerFlocks = flocks.filter(f => f.breed && f.breed.toLowerCase().includes('broiler'));
+                    const avgWeight = broilerFlocks.length > 0
+                        ? (flocks.reduce((sum, f) => sum + (f.quantity || 0), 0) / broilerFlocks.length).toFixed(1)
+                        : '--';
+
+                    document.getElementById('analyticsKpi3').textContent = avgWeight + ' kg';
+                    document.getElementById('analyticsKpiSub3').textContent = `From ${broilerFlocks.length} broiler flock(s)`;
+                } catch (e) {
+                    console.error('Error calculating avg weight:', e);
+                    document.getElementById('analyticsKpiSub3').textContent = 'Error calculating';
+                }
+
+                // 4. Revenue Per Bird
+                try {
+                    const totalRevenue = orders
+                        .filter(o => o.order_status === 'completed' || o.order_status === 'delivered')
+                        .reduce((sum, o) => sum + (o.total_price || 0), 0);
+
+                    const totalBirdsSold = orders
+                        .filter(o => o.order_status === 'completed' || o.order_status === 'delivered')
+                        .reduce((sum, o) => sum + (o.quantity || 0), 0);
+
+                    const revenuePerBird = totalBirdsSold > 0 ? (totalRevenue / totalBirdsSold).toFixed(0) : '--';
+                    document.getElementById('analyticsKpi4').textContent = `KES ${revenuePerBird}`;
+                    document.getElementById('analyticsKpiSub4').textContent = `Total revenue: KES ${Math.floor(totalRevenue).toLocaleString()}`;
+                } catch (e) {
+                    console.error('Error calculating revenue per bird:', e);
+                    document.getElementById('analyticsKpiSub4').textContent = 'Error calculating';
+                }
+
+                // 5. Monthly Revenue Chart
+                try {
+                    const monthlyData = {};
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+                    orders.forEach(order => {
+                        if (order.order_status === 'completed' || order.order_status === 'delivered') {
+                            const orderDate = new Date(order.created_at);
+                            const monthKey = orderDate.getFullYear() + '-' + (orderDate.getMonth() + 1);
+                            monthlyData[monthKey] = (monthlyData[monthKey] || 0) + (order.total_price || 0);
+                        }
+                    });
+
+                    if (Object.keys(monthlyData).length > 0) {
+                        const labels = Object.keys(monthlyData).sort();
+                        const values = labels.map(k => monthlyData[k]);
+                        const chartLabels = labels.map(k => {
+                            const [year, month] = k.split('-');
+                            return months[parseInt(month) - 1] + ' ' + year;
+                        });
+
+                        // Simple bar chart HTML
+                        const maxValue = Math.max(...values);
+                        let chartHTML = '<div style="display: flex; align-items: flex-end; height: 150px; gap: 8px; padding: 10px;">';
+                        values.forEach((v, i) => {
+                            const height = (v / maxValue) * 120;
+                            chartHTML += `<div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                                <div style="background: linear-gradient(to top, #4CAF50, #66BB6A); width: 100%; height: ${height}px; border-radius: 4px; min-height: 20px;"></div>
+                                <div style="font-size: 11px; color: var(--text2); text-align: center; max-width: 60px;">${chartLabels[i]}</div>
+                                <div style="font-size: 10px; font-weight: 600; color: var(--text1);">KES ${Math.floor(v).toLocaleString()}</div>
+                            </div>`;
+                        });
+                        chartHTML += '</div>';
+
+                        document.getElementById('analyticsChart1').innerHTML = chartHTML;
+                    } else {
+                        document.getElementById('analyticsChart1').innerHTML = '<div style="padding: 60px 20px; text-align: center; color: var(--text2);">No revenue data yet</div>';
+                    }
+                } catch (e) {
+                    console.error('Error rendering monthly revenue chart:', e);
+                    document.getElementById('analyticsChart1').innerHTML = '<div style="padding: 60px 20px; text-align: center; color: var(--text2);">Error loading chart</div>';
+                }
+
+                // 6. Feed Efficiency & Mortality Chart
+                try {
+                    if (flocks.length > 0) {
+                        // Simple table format showing feed & mortality stats per flock
+                        let chartHTML = '<table style="width: 100%; border-collapse: collapse;">';
+                        chartHTML += '<tr style="border-bottom: 1px solid var(--border);"><th style="text-align: left; padding: 8px;">Flock</th><th style="text-align: center; padding: 8px;">Birds</th><th style="text-align: center; padding: 8px;">Status</th><th style="text-align: center; padding: 8px;">Age</th></tr>';
+
+                        flocks.slice(0, 5).forEach(flock => {
+                            const ageWeeks = flock.age_weeks || Math.floor((new Date() - new Date(flock.start_date)) / (1000 * 60 * 60 * 24 * 7));
+                            chartHTML += `<tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">${flock.breed || 'Unknown'}</td><td style="padding: 8px; text-align: center;">${flock.quantity}</td><td style="padding: 8px; text-align: center; color: ${flock.status === 'active' ? '#4CAF50' : '#999'}">${flock.status || 'N/A'}</td><td style="padding: 8px; text-align: center;">${ageWeeks} weeks</td></tr>`;
+                        });
+
+                        chartHTML += '</table>';
+                        document.getElementById('analyticsChart2').innerHTML = chartHTML;
+                    } else {
+                        document.getElementById('analyticsChart2').innerHTML = '<div style="padding: 40px 20px; text-align: center; color: var(--text2);">No flock data available</div>';
+                    }
+                } catch (e) {
+                    console.error('Error rendering flock efficiency chart:', e);
+                    document.getElementById('analyticsChart2').innerHTML = '<div style="padding: 40px 20px; text-align: center; color: var(--text2);">Error loading data</div>';
+                }
+
+                // 7. Top Buyers Table
+                try {
+                    const buyerMap = {};
+                    orders.forEach(order => {
+                        if (order.buyer_id) {
+                            if (!buyerMap[order.buyer_id]) {
+                                buyerMap[order.buyer_id] = {
+                                    id: order.buyer_id,
+                                    name: order.buyer_name || 'Unknown Buyer',
+                                    orders: 0,
+                                    totalSpent: 0,
+                                    items: {}
+                                };
+                            }
+                            buyerMap[order.buyer_id].orders++;
+                            buyerMap[order.buyer_id].totalSpent += order.total_price || 0;
+
+                            const productName = order.product_name || 'Product';
+                            buyerMap[order.buyer_id].items[productName] = (buyerMap[order.buyer_id].items[productName] || 0) + (order.quantity || 0);
+                        }
+                    });
+
+                    const buyers = Object.values(buyerMap);
+                    const sortedBuyers = buyers.sort((a, b) => b.totalSpent - a.totalSpent).slice(0, 10);
+
+                    if (sortedBuyers.length > 0) {
+                        let tableHTML = '';
+                        sortedBuyers.forEach(buyer => {
+                            const mostOrdered = Object.entries(buyer.items)
+                                .sort((a, b) => b[1] - a[1])[0];
+                            const lastOrder = orders
+                                .filter(o => o.buyer_id === buyer.id)
+                                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+
+                            const lastOrderDate = lastOrder ? new Date(lastOrder.created_at).toLocaleDateString() : 'N/A';
+
+                            tableHTML += `<tr>
+                                <td>${buyer.name}</td>
+                                <td>${buyer.orders}</td>
+                                <td>KES ${Math.floor(buyer.totalSpent).toLocaleString()}</td>
+                                <td class="hide-sm">${mostOrdered ? mostOrdered[0] : 'N/A'}</td>
+                                <td class="hide-sm">${lastOrderDate}</td>
+                            </tr>`;
+                        });
+
+                        document.getElementById('analyticsBuyers').innerHTML = tableHTML;
+                    } else {
+                        document.getElementById('analyticsBuyers').innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px 20px; color: var(--text2);">No buyer data yet</td></tr>';
+                    }
+                } catch (e) {
+                    console.error('Error loading top buyers:', e);
+                    document.getElementById('analyticsBuyers').innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px 20px; color: var(--text2);">Error loading data</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading analytics metrics:', error);
+            }
+        }
+
+        // Load user profile and farm profile when DOM is ready
+        document.addEventListener('DOMContentLoaded', function () {
+            // Guard: Check authentication and role
+            (function guardFarmerDashboard() {
+                const accessToken = localStorage.getItem('accessToken');
+                const role = localStorage.getItem('userRole');
+
+                if (!accessToken || !role || isTokenExpired(accessToken)) {
+                    clearAuthAndRedirectToLogin();
+                    return;
+                }
+
+                if (role !== 'farmer') {
+                    redirectToRoleDashboard(role);
+                    return;
+                }
+            })();
+
+            // Load dashboard data
+            loadUserProfile();
+            loadFarmProfile();
+            loadDashboardKPIs();
+            loadBuyerOrders();
+            loadFarmerFlocks();
+        });
 
         /* ── KEYBOARD ── */
         document.addEventListener('keydown', e => {

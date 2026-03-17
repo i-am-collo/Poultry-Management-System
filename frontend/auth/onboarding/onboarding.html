@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoultryHub - Profile Setup</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Serif+Display:wght@400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="onboarding.css">
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="logo">🐓</div>
+            <div class="logo-text">PoultryHub</div>
+        </div>
+        <div class="topbar-right">
+            <div class="role-badge"><span id="topAv">?</span></div>
+            <div id="topRoleLbl" class="role-lbl">—</div>
+        </div>
+    </div>
+
+    <!-- ROLE PICKER -->
+    <div id="rolePicker" class="container">
+        <div style="max-width:720px;margin:0 auto;margin-top:40px">
+            <div style="text-align:center;margin-bottom:48px">
+                <h1 style="font-size:48px;font-weight:700;margin:0 0 12px 0;color:var(--text1)">Welcome! 👋</h1>
+                <p style="font-size:16px;color:var(--text2);margin:0">Choose your role and let's set up your profile on
+                    PoultryHub</p>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:32px">
+                <div id="rc-farmer" class="role-card" onclick="selectRole('farmer')">
+                    <div style="font-size:56px;margin-bottom:12px">🌱</div>
+                    <div style="font-weight:700;font-size:18px;margin-bottom:6px;color:var(--text1)">Farmer</div>
+                    <div style="font-size:13px;color:var(--text2);line-height:1.5">Manage flocks, feed, and production
+                        logs</div>
+                </div>
+
+                <div id="rc-supplier" class="role-card" onclick="selectRole('supplier')">
+                    <div style="font-size:56px;margin-bottom:12px">🏪</div>
+                    <div style="font-weight:700;font-size:18px;margin-bottom:6px;color:var(--text1)">Supplier</div>
+                    <div style="font-size:13px;color:var(--text2);line-height:1.5">Supply poultry products to farmers &
+                        buyers</div>
+                </div>
+
+                <div id="rc-buyer" class="role-card" onclick="selectRole('buyer')">
+                    <div style="font-size:56px;margin-bottom:12px">🛒</div>
+                    <div style="font-weight:700;font-size:18px;margin-bottom:6px;color:var(--text1)">Buyer</div>
+                    <div style="font-size:13px;color:var(--text2);line-height:1.5">Source quality poultry products</div>
+                </div>
+            </div>
+
+            <button id="startBtn" class="btn btn-lg" onclick="launchForm()" style="width:100%;margin-bottom:32px">Get
+                Started</button>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+     FARMER FORM SHELL
+     ════════════════════════════════════ -->
+    <div id="shell-farmer" class="form-shell">
+        <div class="container">
+            <div class="form-header">
+                <button class="chg-role-btn" onclick="changeRole()">← Change Role</button>
+                <h2 style="text-align:center;margin:0;font-size:24px;color:var(--text1)">Farmer Setup</h2>
+                <div style="width:40px"></div>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-bar">
+                <div id="f-si-1" class="si">
+                    <div class="si-circle">1</div>
+                    <div class="si-lbl">Farm Info</div>
+                </div>
+                <div class="si-line"></div>
+                <div id="f-si-2" class="si">
+                    <div class="si-circle">2</div>
+                    <div class="si-lbl">Flocks</div>
+                </div>
+                <div class="si-line"></div>
+                <div id="f-si-3" class="si">
+                    <div class="si-circle">3</div>
+                    <div class="si-lbl">Review</div>
+                </div>
+            </div>
+
+            <!-- STEP 1: Farm Info -->
+            <div id="f-step-1" class="step active">
+                <div class="step-head">
+                    <h3>Tell us about your farm</h3>
+                    <p>We'll help you manage your flocks and track production</p>
+                </div>
+                <div class="g3">
+                    <div class="fg"><label class="fl req">Full Name</label><input id="f-name" class="fi"
+                            placeholder="Your name"></div>
+                    <div class="fg"><label class="fl req">Farm Name</label><input id="f-farm" class="fi"
+                            placeholder="e.g. Greenfield Poultry"></div>
+                    <div class="fg"><label class="fl req">County</label>
+                        <select id="f-county" class="fs">
+                            <option value="">Select county</option>
+                            <option>Nairobi</option>
+                            <option>Mombasa</option>
+                            <option>Kisumu</option>
+                            <option>Nakuru</option>
+                            <option>Nyeri</option>
+                            <option>Uasin Gishu</option>
+                            <option>Kiambu</option>
+                            <option>Machakos</option>
+                            <option>Kajiado</option>
+                            <option>Kericho</option>
+                            <option>Nandi</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="fg"><label class="fl req">Phone Number</label><input id="f-phone" class="fi"
+                            placeholder="07XX XXX XXX"></div>
+                </div>
+                <div style="display:flex;gap:12px;margin-top:32px">
+                    <button class="btn" onclick="fGoStep(2)" style="flex:1">Continue → </button>
+                </div>
+            </div>
+
+            <!-- STEP 2: Flocks -->
+            <div id="f-step-2" class="step">
+                <div class="step-head">
+                    <h3>Add your bird flocks</h3>
+                    <p>You can add or edit flocks anytime from your dashboard</p>
+                </div>
+                <div id="f-flock-list" class="entries-list"></div>
+                <div style="display:flex;gap:12px;margin-top:24px">
+                    <button class="btn btn-secondary" onclick="addFlock()" style="flex:1">+ Add Flock</button>
+                </div>
+                <div style="display:flex;gap:12px;margin-top:32px">
+                    <button class="btn" onclick="fGoStep(1)">← Back</button>
+                    <button class="btn" onclick="fGoStep(3)" style="flex:1">Review → </button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Review -->
+            <div id="f-step-3" class="step">
+                <div class="step-head">
+                    <h3>Review your information</h3>
+                    <p>Check details before completing setup</p>
+                </div>
+                <div id="f-rev-card" class="rev-card">
+                    <div id="f-rev-body"></div>
+                </div>
+                <div id="f-rev-nf" style="display:none"></div>
+                <div id="f-success" class="success-screen">
+                    <div class="success-icon">✅</div>
+                    <h3>Setup Complete!</h3>
+                    <p>Welcome to PoultryHub, farmer! 🌾</p>
+                    <p style="font-size:13px;color:var(--text2);margin-top:16px">Redirecting to dashboard in 3 seconds…
+                    </p>
+                </div>
+                <div style="display:flex;gap:12px;margin-top:32px">
+                    <button class="btn" onclick="fGoStep(2)">← Back</button>
+                    <button id="f-submit" class="btn" onclick="submitForm('f')" style="flex:1">🚀 Complete
+                        Setup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════
+     SUPPLIER FORM SHELL
+     ════════════════════════════════════ -->
+    <div id="shell-supplier" class="form-shell">
+        <div class="container">
+            <div class="form-header">
+                <button class="chg-role-btn" onclick="changeRole()">← Change Role</button>
+                <h2 style="text-align:center;margin:0;font-size:24px;color:var(--text1)">Supplier Setup</h2>
+                <div style="width:40px"></div>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-bar">
+                <div id="s-si-1" class="si">
+                    <div class="si-circle">1</div>
+                    <div class="si-lbl">Review</div>
+                </div>
+            </div>
+
+            <!-- STEP 1: Business Info -->
+            <div id="s-step-1" class="step active">
+                <div class="step-head">
+                    <h3>Tell us about your business</h3>
+                    <p>We'll help you connect with farmers and buyers across Kenya</p>
+                </div>
+                <div class="g2">
+                    <div class="fg"><label class="fl req">Business Name</label><input id="s-bname" class="fi"
+                            placeholder="e.g. Kuku Feeds Limited"></div>
+                    <div class="fg"><label class="fl req">Contact Person</label><input id="s-cname" class="fi"
+                            placeholder="Your name"></div>
+                    <div class="fg"><label class="fl req">KRA PIN</label><input id="s-kra" class="fi"
+                            placeholder="KRA PIN number"></div>
+                    <div class="fg"><label class="fl req">County</label>
+                        <select id="s-county" class="fs">
+                            <option value="">Select county</option>
+                            <option>Nairobi</option>
+                            <option>Mombasa</option>
+                            <option>Kisumu</option>
+                            <option>Nakuru</option>
+                            <option>Nyeri</option>
+                            <option>Uasin Gishu</option>
+                            <option>Kiambu</option>
+                            <option>Machakos</option>
+                            <option>Kajiado</option>
+                            <option>Kericho</option>
+                            <option>Nandi</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="fg"><label class="fl req">Phone</label><input id="s-phone" class="fi"
+                            placeholder="07XX XXX XXX"></div>
+                    <div class="fg"><label class="fl req">Email</label><input id="s-email" class="fi"
+                            placeholder="contact@business.com"></div>
+                </div>
+
+                <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:24px">
+                    <h4 style="margin:0 0 16px 0;color:var(--text1);font-size:14px;font-weight:700">What do you supply?
+                    </h4>
+                    <div id="chips-scat" class="chip-row">
+                        <span class="chip" onclick="toggleChip(this)">🌾 Feed</span>
+                        <span class="chip" onclick="toggleChip(this)">💊 Medicines</span>
+                        <span class="chip" onclick="toggleChip(this)">💉 Vaccines</span>
+                        <span class="chip" onclick="toggleChip(this)">🔧 Equipment</span>
+                        <span class="chip" onclick="toggleChip(this)">💡 Lighting</span>
+                        <span class="chip" onclick="toggleChip(this)">🏠 Housing</span>
+                    </div>
+                </div>
+
+                <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:24px">
+                    <h4 style="margin:0 0 16px 0;color:var(--text1);font-size:14px;font-weight:700">Payment Details</h4>
+                    <div class="g2">
+                        <div class="fg"><label class="fl req">M-Pesa Till / Paybill</label><input id="s-till" class="fi"
+                                placeholder="Till number"></div>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:12px;margin-top:32px;margin-bottom:24px">
+                    <button class="btn" onclick="sGoStep(2)" style="flex:1">Review → </button>
+                </div>
+
+                <!-- STEP 2: Review -->
+                <div id="s-step-2" class="step">
+                    <div class="step-head">
+                        <h3>Review your information</h3>
+                        <p>Check all details before finishing setup</p>
+                    </div>
+                    <div id="s-rev-card" class="rev-card">
+                        <div id="s-rev-body"></div>
+                    </div>
+                    <div id="s-success" class="success-screen">
+                        <div class="success-icon">✅</div>
+                        <h3>Setup Complete!</h3>
+                        <p>Welcome to PoultryHub, supplier! 🏪</p>
+                        <p style="font-size:13px;color:var(--text2);margin-top:16px">Redirecting to dashboard in 3
+                            seconds…
+                        </p>
+                    </div>
+                    <div style="display:flex;gap:12px;margin-top:32px">
+                        <button class="btn" onclick="sGoStep(1)">← Back</button>
+                        <button id="s-submit" class="btn" onclick="submitForm('s')" style="flex:1">🚀 Complete
+                            Setup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════
+     BUYER FORM SHELL
+     ════════════════════════════════════ -->
+        <div id="shell-buyer" class="form-shell">
+            <div class="container">
+                <div class="form-header">
+                    <button class="chg-role-btn" onclick="changeRole()">← Change Role</button>
+                    <h2 style="text-align:center;margin:0;font-size:24px;color:var(--text1)">Buyer Setup</h2>
+                    <div style="width:40px"></div>
+                </div>
+
+                <!-- Progress -->
+                <div class="progress-bar">
+                    <div id="b-si-1" class="si">
+                        <div class="si-circle">1</div>
+                        <div class="si-lbl">Profile</div>
+                    </div>
+                    <div class="si-line"></div>
+                    <div id="b-si-2" class="si">
+                        <div class="si-circle">2</div>
+                        <div class="si-lbl">Review</div>
+                    </div>
+                </div>
+
+                <!-- STEP 1: Profile -->
+                <div id="b-step-1" class="step active">
+                    <div class="step-head">
+                        <h3>Create your buyer profile</h3>
+                        <p>Help suppliers find you and understand your needs</p>
+                    </div>
+                    <div class="g2">
+                        <div class="fg"><label class="fl req">Full Name</label><input id="b-name" class="fi"
+                                placeholder="Your name"></div>
+                        <div class="fg"><label class="fl req">Business / Organization</label><input id="b-biz"
+                                class="fi" placeholder="e.g. ABC Restaurant, XYZ Farm"></div>
+                        <div class="fg"><label class="fl req">County</label>
+                            <select id="b-county" class="fs">
+                                <option value="">Select county</option>
+                                <option>Nairobi</option>
+                                <option>Mombasa</option>
+                                <option>Kisumu</option>
+                                <option>Nakuru</option>
+                                <option>Nyeri</option>
+                                <option>Uasin Gishu</option>
+                                <option>Kiambu</option>
+                                <option>Machakos</option>
+                                <option>Kajiado</option>
+                                <option>Kericho</option>
+                                <option>Nandi</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="fg"><label class="fl req">Phone</label><input id="b-phone" class="fi"
+                                placeholder="07XX XXX XXX"></div>
+                        <div class="fg"><label class="fl req">Email</label><input id="b-email" class="fi"
+                                placeholder="contact@business.com"></div>
+                        <div class="fg"><label class="fl req">Buyer Type</label>
+                            <div id="chips-btype" class="chip-row">
+                                <span class="chip" onclick="toggleChip(this)">🍽️ Restaurant</span>
+                                <span class="chip" onclick="toggleChip(this)">🏬 Retail</span>
+                                <span class="chip" onclick="toggleChip(this)">🏭 Processor</span>
+                                <span class="chip" onclick="toggleChip(this)">🏪 Wholesaler</span>
+                            </div>
+                        </div>
+                        <div class="fg"><label class="fl req">Preferred Payment</label>
+                            <select id="b-pay" class="fs">
+                                <option value="">Select method</option>
+                                <option>Cash on delivery</option>
+                                <option>M-Pesa</option>
+                                <option>Bank transfer</option>
+                                <option>Credit terms</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:12px;margin-top:32px">
+                        <button class="btn" onclick="bGoStep(2)" style="flex:1">Review → </button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Review -->
+                <div id="b-step-2" class="step">
+                    <div class="step-head">
+                        <h3>Review your profile</h3>
+                        <p>Make sure everything looks good</p>
+                    </div>
+                    <div id="b-rev-card" class="rev-card">
+                        <div id="b-rev-body"></div>
+                    </div>
+                    <div id="b-success" class="success-screen">
+                        <div class="success-icon">✅</div>
+                        <h3>Setup Complete!</h3>
+                        <p>Welcome to PoultryHub, buyer! 🛒</p>
+                        <p style="font-size:13px;color:var(--text2);margin-top:16px">Redirecting to dashboard in 3
+                            seconds…
+                        </p>
+                    </div>
+                    <div style="display:flex;gap:12px;margin-top:32px">
+                        <button class="btn" onclick="bGoStep(1)">← Back</button>
+                        <button id="b-submit" class="btn" onclick="submitForm('b')" style="flex:1">🚀 Complete
+                            Setup</button>
+                    </div>
+                </div>
+
+                <div id="toastWrap" class="toast-wrap"></div>
+
+                <script src="onboarding.js"></script>
+                <script>
+                    // Initialize on page load
+                    document.addEventListener('DOMContentLoaded', () => {
+                        selectRole('farmer');
+                        renderFlocks();
+                        renderProducts();
+                        setProgress('f', 1, 3);
+                        setProgress('s', 1, 2);
+                        setProgress('b', 1, 2);
+                    });
+
+                    // Build review when appropriate step is entered
+                    const observer = new MutationObserver((mutations) => {
+                        mutations.forEach((m) => {
+                            if (m.target.id === 'f-step-3' && m.target.classList.contains('active')) buildFarmerReview();
+                            if (m.target.id === 's-step-2' && m.target.classList.contains('active')) buildSupplierReview();
+                            if (m.target.id === 'b-step-2' && m.target.classList.contains('active')) buildBuyerReview();
+                        });
+                    });
+                    document.querySelectorAll('.step').forEach(s => {
+                        observer.observe(s, { attributes: true, attributeFilter: ['class'] });
+                    });
+                </script>
+</body>
+
+</html>

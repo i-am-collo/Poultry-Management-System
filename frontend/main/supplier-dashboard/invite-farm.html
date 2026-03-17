@@ -22,16 +22,18 @@
                 <p>Invite poultry farmers to your supplier network and grow your business</p>
             </div>
 
-            <form id="inviteForm">
+            <form id="inviteForm" novalidate>
                 <div class="form-group">
                     <label class="form-label" for="farmName">Farm Name *</label>
-                    <input type="text" id="farmName" class="form-input" placeholder="e.g., SunRise Farm" required>
+                    <input type="text" id="farmName" class="form-input" placeholder="e.g., SunRise Farm" required
+                        minlength="1">
                     <div class="help-text">Legal name of the farm or business</div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="farmerName">Farmer Name *</label>
-                    <input type="text" id="farmerName" class="form-input" placeholder="e.g., Amara Osei" required>
+                    <input type="text" id="farmerName" class="form-input" placeholder="e.g., Amara Osei" required
+                        minlength="1">
                     <div class="help-text">Primary contact person</div>
                 </div>
 
@@ -137,59 +139,90 @@
 
         const form = document.getElementById('inviteForm');
 
+        // Load supplier profile to pre-fill default values
+        async function loadSupplierInfoAndPreFill() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user')) || {};
+                // Supplier name can be used as a reference context
+                // but farm fields should remain empty for user to fill in
+            } catch (error) {
+                console.error('Error loading supplier info:', error);
+            }
+        }
+
+        // Load supplier info on page load
+        document.addEventListener('DOMContentLoaded', loadSupplierInfoAndPreFill);
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const farmName = document.getElementById('farmName').value.trim();
-            const farmerName = document.getElementById('farmerName').value.trim();
-            const farmerEmail = document.getElementById('farmerEmail').value.trim();
-            const farmerPhone = document.getElementById('farmerPhone').value.trim();
-            const farmLocation = document.getElementById('farmLocation').value.trim();
-            const farmType = document.getElementById('farmType').value;
-            const message = document.getElementById('message').value.trim();
-
-            if (!farmName || !farmerName || !farmerEmail) {
-                showMessage('Please fill in required fields (Farm Name, Farmer Name, Email)', 'error');
-                return;
-            }
-
-            // Simple email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(farmerEmail)) {
-                showMessage('Please enter a valid email address', 'error');
-                return;
-            }
-
             try {
-                // Disable submit button
+                // Collect form values
+                const farmName = document.getElementById('farmName').value;
+                const farmerName = document.getElementById('farmerName').value;
+                const farmerEmail = document.getElementById('farmerEmail').value;
+                const farmerPhone = document.getElementById('farmerPhone').value;
+                const farmLocation = document.getElementById('farmLocation').value;
+                const farmType = document.getElementById('farmType').value;
+                const message = document.getElementById('message').value;
+
+                // Trim values
+                const trimmedFarmName = farmName.trim();
+                const trimmedFarmerName = farmerName.trim();
+                const trimmedFarmerEmail = farmerEmail.trim();
+                const trimmedFarmerPhone = farmerPhone.trim();
+                const trimmedFarmLocation = farmLocation.trim();
+                const trimmedMessage = message.trim();
+
+                // Validate required fields
+                if (!trimmedFarmName) {
+                    showMessage('Farm Name is required', 'error');
+                    return;
+                }
+                if (!trimmedFarmerName) {
+                    showMessage('Farmer Name is required', 'error');
+                    return;
+                }
+                if (!trimmedFarmerEmail) {
+                    showMessage('Email Address is required', 'error');
+                    return;
+                }
+
+                // Validate email format
+                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                if (!emailRegex.test(trimmedFarmerEmail)) {
+                    showMessage('Invalid email address format', 'error');
+                    return;
+                }
+
+                // Build payload with exact field names
+                const payload = {
+                    farmName: trimmedFarmName,
+                    farmerName: trimmedFarmerName,
+                    farmerEmail: trimmedFarmerEmail,
+                    farmerPhone: trimmedFarmerPhone || null,
+                    farmLocation: trimmedFarmLocation || null,
+                    farmType: farmType || null,
+                    message: trimmedMessage || null
+                };
+
+                // Disable button
                 const submitBtn = form.querySelector('.btn-invite');
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Sending...';
 
-                const inviteData = {
-                    farmName: farmName,
-                    farmerName: farmerName,
-                    farmerEmail: farmerEmail,
-                    farmerPhone: farmerPhone || null,
-                    farmLocation: farmLocation || null,
-                    farmType: farmType,
-                    message: message || null,
-                };
+                // Send request
+                await api.supplier.inviteFarm(payload);
 
-                await api.supplier.inviteFarm(inviteData);
-
-                showMessage('Invitation sent successfully! The farmer will receive an email to join your network.', 'success');
-
-                // Reset form
+                showMessage('✅ Invitation sent successfully!', 'success');
                 form.reset();
 
-                // Redirect back after 2 seconds
                 setTimeout(() => {
                     window.location.href = 'supplier.html?tab=clients';
                 }, 2000);
 
             } catch (error) {
-                showMessage(`Failed to send invitation: ${error.message}`, 'error');
+                showMessage(`Error: ${error.message}`, 'error');
                 const submitBtn = form.querySelector('.btn-invite');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Send Invitation';

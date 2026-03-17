@@ -40,7 +40,7 @@
                     <polyline points="9 12 11 14 15 10" />
                 </svg>
                 Manage Orders
-                <span class="badge">9</span>
+                <span class="badge" id="ordersBadge">0</span>
             </div>
             <div class="nav-item" onclick="goToCatalog()">
                 <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -53,9 +53,9 @@
 
         <div class="sidebar-footer">
             <div class="supplier-card">
-                <div class="avatar">P</div>
+                <div class="avatar" id="userAvatar">?</div>
                 <div>
-                    <div class="supplier-name">PrimeFlock Supplies</div>
+                    <div class="supplier-name" id="userFullName">Loading...</div>
                     <div class="supplier-role">Verified Poultry Supplier</div>
                 </div>
             </div>
@@ -196,6 +196,50 @@
     <script>
         let currentProductId = null;
         let currentProduct = null;
+
+        // Load user data on page initialization
+        function loadUserData() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const userFullName = document.getElementById('userFullName');
+                const userAvatar = document.getElementById('userAvatar');
+
+                if (user.first_name && user.last_name) {
+                    userFullName.textContent = `${user.first_name} ${user.last_name}`;
+                    // Set avatar to first letter of first name
+                    const firstLetter = user.first_name.charAt(0).toUpperCase();
+                    userAvatar.textContent = firstLetter;
+                } else {
+                    userFullName.textContent = 'Supplier';
+                    userAvatar.textContent = 'S';
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                document.getElementById('userFullName').textContent = 'Supplier';
+                document.getElementById('userAvatar').textContent = 'S';
+            }
+        }
+
+        // Load order count for badge
+        async function loadOrderCount() {
+            try {
+                const orders = await api.supplier.getOrders();
+                const pendingOrders = orders ? orders.filter(o => o.status === 'pending').length : 0;
+                const badge = document.getElementById('ordersBadge');
+                if (badge) {
+                    badge.textContent = pendingOrders;
+                }
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                document.getElementById('ordersBadge').textContent = '0';
+            }
+        }
+
+        // Initialize user data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserData();
+            loadOrderCount();
+        });
 
         // Auth guard
         (function guardProductView() {

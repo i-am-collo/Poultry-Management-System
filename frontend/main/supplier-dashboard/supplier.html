@@ -16,8 +16,8 @@
     <!-- ── SIDEBAR ── -->
     <aside>
         <div class="logo">
-            <div class="logo-mark">🐔 PoultryPro</div>
-            <div class="logo-sub">Supplier Portal</div>
+            <div class="logo-mark">🐔 PoultryHub</div>
+            <div class="logo-sub">Supplier Dashboard</div>
         </div>
 
         <nav>
@@ -77,13 +77,21 @@
                 </svg>
                 Business Settings
             </div>
+            <div class="nav-item danger" onclick="logout()">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Logout
+            </div>
         </nav>
 
         <div class="sidebar-footer">
-            <div class="supplier-card">
-                <div class="avatar">P</div>
+            <div class="supplier-card" style="cursor: pointer;">
+                <div class="avatar" id="userAvatar">?</div>
                 <div>
-                    <div class="supplier-name">PrimeFlock Supplies</div>
+                    <div class="supplier-name" id="userFullName">Loading...</div>
                     <div class="supplier-role">Verified Poultry Supplier</div>
                 </div>
             </div>
@@ -99,7 +107,6 @@
                     offerings. Update pricing and availability.</div>
             </div>
             <div class="header-actions">
-                <button class="btn btn-ghost">Export</button>
                 <button class="btn btn-primary" id="primary-btn">+ Add Product</button>
             </div>
         </header>
@@ -222,37 +229,124 @@
 
             <!-- ══ CLIENTS ══ -->
             <section class="section" id="sec-clients">
-                <div class="kpi-row">
-                    <div class="kpi-card">
-                        <div class="kpi-accent-bar kpi-accent-bar-tertiary"></div>
-                        <div class="kpi-label">Registered Farms</div>
-                        <div class="kpi-value" id="registeredFarmsCount">0</div>
-                        <div class="kpi-change up" id="registeredFarmsDesc">Loading...</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-accent-bar kpi-accent-bar-primary"></div>
-                        <div class="kpi-label">Active Farmers</div>
-                        <div class="kpi-value" id="activeFarmersCount">0</div>
-                        <div class="kpi-change"><span class="kpi-change-muted" id="activeFarmersDesc">Loading...</span>
+                <div class="stabs" style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
+                    <div class="stab active" onclick="switchClientsTab(this, 'tab-registered-farms')">📋 Registered
+                        Farms</div>
+                    <div class="stab" onclick="switchClientsTab(this, 'tab-browse-farms')">🔍 Browse Farms</div>
+                    <div class="stab" onclick="switchClientsTab(this, 'tab-invite-farm')">📤 Invite Farm</div>
+                </div>
+
+                <!-- TAB 1: REGISTERED FARMS -->
+                <div class="spanel active" id="tab-registered-farms" style="display: block;">
+                    <div class="kpi-row">
+                        <div class="kpi-card">
+                            <div class="kpi-accent-bar kpi-accent-bar-tertiary"></div>
+                            <div class="kpi-label">Registered Farms</div>
+                            <div class="kpi-value" id="registeredFarmsCount">0</div>
+                            <div class="kpi-change up" id="registeredFarmsDesc">Loading...</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-accent-bar kpi-accent-bar-primary"></div>
+                            <div class="kpi-label">Active Farmers</div>
+                            <div class="kpi-value" id="activeFarmersCount">0</div>
+                            <div class="kpi-change"><span class="kpi-change-muted"
+                                    id="activeFarmersDesc">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-accent-bar kpi-accent-bar-secondary"></div>
+                            <div class="kpi-label">Avg. Order Value</div>
+                            <div class="kpi-value" id="avgOrderValueAmount">KES 0</div>
+                            <div class="kpi-change up" id="avgOrderValueDesc">Loading...</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-accent-bar kpi-accent-bar-muted"></div>
+                            <div class="kpi-label">Retention Rate</div>
+                            <div class="kpi-value" id="retentionRateValue">0%</div>
+                            <div class="kpi-change up" id="retentionRateDesc">Loading...</div>
                         </div>
                     </div>
-                    <div class="kpi-card">
-                        <div class="kpi-accent-bar kpi-accent-bar-secondary"></div>
-                        <div class="kpi-label">Avg. Order Value</div>
-                        <div class="kpi-value" id="avgOrderValueAmount">KES 0</div>
-                        <div class="kpi-change up" id="avgOrderValueDesc">Loading...</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-accent-bar kpi-accent-bar-muted"></div>
-                        <div class="kpi-label">Retention Rate</div>
-                        <div class="kpi-value" id="retentionRateValue">0%</div>
-                        <div class="kpi-change up" id="retentionRateDesc">Loading...</div>
+
+                    <div class="grid-3" id="clients-grid">
+                        <div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--text2);">
+                            Loading farm connections...
+                        </div>
                     </div>
                 </div>
 
-                <div class="grid-3" id="clients-grid">
-                    <div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--text2);">
-                        Loading farm connections...
+                <!-- TAB 2: BROWSE FARMS -->
+                <div class="spanel" id="tab-browse-farms" style="display: none;">
+                    <div style="padding: 20px 0;">
+                        <div class="form-group" style="max-width: 400px;">
+                            <input class="form-input" type="text" id="browseFarmsSearchInput"
+                                placeholder="🔍 Search farms by name or location..." style="width: 100%;">
+                        </div>
+                    </div>
+
+                    <div class="grid-3" id="browse-farms-grid">
+                        <div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--text2);">
+                            Loading available farms...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: INVITE FARM -->
+                <div class="spanel" id="tab-invite-farm" style="display: none;">
+                    <div style="max-width: 600px; padding: 20px 0;">
+                        <div
+                            style="background: var(--surface2); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                            <div style="font-size: 14px; color: var(--text);">Invite a farm to your supplier network
+                            </div>
+                        </div>
+
+                        <form id="clientInviteForm" style="display: flex; flex-direction: column; gap: 16px;">
+                            <div class="form-group">
+                                <label class="form-label" for="inviteFarmName">Farm Name</label>
+                                <input id="inviteFarmName" class="form-input" type="text" placeholder="Farm name"
+                                    required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="inviteFarmerName">Farmer Name</label>
+                                <input id="inviteFarmerName" class="form-input" type="text"
+                                    placeholder="Farmer full name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="inviteFarmerEmail">Email Address</label>
+                                <input id="inviteFarmerEmail" class="form-input" type="email"
+                                    placeholder="farmer@example.com" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="inviteFarmLocation">Farm Location</label>
+                                <input id="inviteFarmLocation" class="form-input" type="text"
+                                    placeholder="County or region">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="inviteFarmPhone">Phone Number</label>
+                                <input id="inviteFarmPhone" class="form-input" type="tel"
+                                    placeholder="+254 7XX XXX XXX">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="inviteMessage">Personal Message</label>
+                                <textarea id="inviteMessage" class="form-input"
+                                    placeholder="Tell them why you'd like to partner..."
+                                    style="resize: vertical; min-height: 80px;"></textarea>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; margin-top: 8px;">
+                                <button type="submit" class="btn btn-primary" style="flex: 1;">Send Invitation</button>
+                                <button type="reset" class="btn btn-ghost" style="flex: 1;"
+                                    onclick="resetClientInviteForm()">Clear</button>
+                            </div>
+
+                            <div id="inviteFormMessage"
+                                style="padding: 12px; border-radius: 6px; font-size: 13px; display: none; text-align: center;">
+                            </div>
+                        </form>
                     </div>
                 </div>
             </section>
@@ -558,6 +652,34 @@
 
         let currentSectionKey = 'catalog';
 
+        // Load user data on page initialization
+        function loadUserData() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const userFullName = document.getElementById('userFullName');
+                const userAvatar = document.getElementById('userAvatar');
+
+                if (user.first_name && user.last_name) {
+                    userFullName.textContent = `${user.first_name} ${user.last_name}`;
+                    // Set avatar to first letter of first name
+                    const firstLetter = user.first_name.charAt(0).toUpperCase();
+                    userAvatar.textContent = firstLetter;
+                } else {
+                    userFullName.textContent = 'Supplier';
+                    userAvatar.textContent = 'S';
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                document.getElementById('userFullName').textContent = 'Supplier';
+                document.getElementById('userAvatar').textContent = 'S';
+            }
+        }
+
+        // Initialize user data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserData();
+        });
+
         async function loadSupplierProducts() {
             const grid = document.querySelector('.catalog-grid');
             const message = document.getElementById('liveSupplierMessage');
@@ -594,6 +716,33 @@
                         </div>
                     </div>
                 `).join('');
+
+                // Update catalog KPI metrics
+                const totalProducts = products.length;
+                const activeListings = products.filter(p => p.is_active).length;
+                const avgPrice = totalProducts > 0 ? (products.reduce((sum, p) => sum + (Number(p.unit_price) || 0), 0) / totalProducts).toFixed(2) : 0;
+
+                // Calculate top category
+                const categoryCount = {};
+                products.forEach(p => {
+                    categoryCount[p.category] = (categoryCount[p.category] || 0) + 1;
+                });
+                const topCategory = Object.keys(categoryCount).length > 0
+                    ? Object.entries(categoryCount).sort((a, b) => b[1] - a[1])[0][0]
+                    : 'N/A';
+
+                // Update KPI elements
+                document.getElementById('catalogTotalProducts').textContent = totalProducts;
+                document.getElementById('catalogTotalChange').innerHTML = `<span class="kpi-change-muted">${totalProducts} items</span>`;
+
+                document.getElementById('catalogActiveListings').textContent = activeListings;
+                document.getElementById('catalogActiveChange').innerHTML = `<span class="kpi-change-accent2">${activeListings} active</span>`;
+
+                document.getElementById('catalogAvgPrice').textContent = `KES ${avgPrice}`;
+                document.getElementById('catalogAvgPriceChange').innerHTML = `<span class="kpi-change-muted">Average price</span>`;
+
+                document.getElementById('catalogTopCategory').textContent = topCategory;
+                document.getElementById('catalogTopCategoryChange').innerHTML = `<span class="kpi-change-muted">${categoryCount[topCategory] || 0} products</span>`;
             } catch (error) {
                 grid.innerHTML = `<div style="grid-column: 1/-1; padding: 20px; text-align: center; color: var(--color-error);">Failed to load products: ${error.message}</div>`;
             }
@@ -613,7 +762,7 @@
             }
 
             try {
-                await api.supplier.addProduct({
+                const response = await api.supplier.addProduct({
                     name,
                     category,
                     description: description || null,
@@ -624,8 +773,27 @@
                 });
 
                 clearSupplierForm();
-                showSupplierMessage('Product added successfully.');
-                await loadSupplierProducts();
+                showSupplierMessage('Product added successfully. Redirecting to product view...');
+
+                // Trigger immediate refresh if catalog polling is active
+                await autoRefresh.trigger('supplierProducts');
+
+                // Redirect to the newly created product's view page
+                if (response && response.id) {
+                    setTimeout(() => {
+                        window.location.href = `product-view.html?id=${response.id}`;
+                    }, 1500);
+                } else {
+                    // Fallback: get the latest product
+                    setTimeout(async () => {
+                        const products = await api.supplier.getProducts();
+                        if (products && products.length > 0) {
+                            window.location.href = `product-view.html?id=${products[0].id}`;
+                        } else {
+                            await loadSupplierProducts();
+                        }
+                    }, 1500);
+                }
             } catch (error) {
                 showSupplierMessage(`Failed to add product: ${error.message}`, true);
             }
@@ -663,6 +831,9 @@
                 });
                 showSupplierMessage('Product updated.');
                 await loadSupplierProducts();
+                // Trigger immediate refresh if polling is active
+                await autoRefresh.trigger('supplierProducts');
+                await autoRefresh.trigger('supplierInventory');
             } catch (error) {
                 showSupplierMessage(`Failed to update product: ${error.message}`, true);
             }
@@ -677,6 +848,9 @@
                 await api.supplier.deleteProduct(productId);
                 showSupplierMessage('Product deleted.');
                 await loadSupplierProducts();
+                // Trigger immediate refresh if polling is active
+                await autoRefresh.trigger('supplierProducts');
+                await autoRefresh.trigger('supplierInventory');
             } catch (error) {
                 showSupplierMessage(`Failed to delete product: ${error.message}`, true);
             }
@@ -733,34 +907,77 @@
         const pages = {
             catalog: { title: 'Manage Catalog', subtitle: 'Manage your poultry feed, supplements, and equipment offerings. Update pricing and availability.', btn: '+ Add Product' },
             orders: { title: 'Manage Orders', subtitle: 'View incoming farm orders, process requests, and track deliveries to poultry farmers.', btn: 'Export Orders' },
-            clients: { title: 'Client Network', subtitle: 'Connect with poultry farmers, view your client base, and build lasting farm partnerships.', btn: '+ Invite Farm' },
-            inventory: { title: 'Inventory Tracking', subtitle: 'Monitor feed and vaccine stock levels, set reorder points, and manage your storage locations.', btn: '+ Add Stock' },
+            clients: { title: 'Client Network', subtitle: 'Connect with poultry farmers, view your client base, and build lasting farm partnerships.' },
+            inventory: { title: 'Inventory Tracking', subtitle: 'Monitor feed and vaccine stock levels, set reorder points, and manage your storage locations.' },
             reports: { title: 'Sales Reports', subtitle: 'Analyze sales performance, revenue trends, and identify growth opportunities across product lines.', btn: 'Export Report' },
             settings: { title: 'Business Settings', subtitle: 'Update company profile, delivery zones, payment methods, and poultry supplier preferences.', btn: 'Save All' },
         };
 
         function show(key, el) {
-            currentSectionKey = key;
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById('sec-' + key).classList.add('active');
-            const p = pages[key];
-            document.getElementById('page-title').textContent = p.title;
-            document.getElementById('page-subtitle').textContent = p.subtitle;
-            document.getElementById('primary-btn').textContent = p.btn;
+            try {
+                currentSectionKey = key;
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                if (el) el.classList.add('active');
 
-            if (key === 'catalog') {
-                loadSupplierProducts();
-            }
-            if (key === 'inventory') {
-                loadInventory();
-            }
-            if (key === 'orders') {
-                loadOrders();
-            }
-            if (key === 'clients') {
-                loadClients();
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                const section = document.getElementById('sec-' + key);
+                if (!section) {
+                    console.error(`Section not found: sec-${key}`);
+                    return;
+                }
+                section.classList.add('active');
+
+                const p = pages[key];
+                if (p) {
+                    const pageTitle = document.getElementById('page-title');
+                    const pageSubtitle = document.getElementById('page-subtitle');
+                    const primaryBtn = document.getElementById('primary-btn');
+                    if (pageTitle) pageTitle.textContent = p.title;
+                    if (pageSubtitle) pageSubtitle.textContent = p.subtitle;
+                    if (primaryBtn) {
+                        if (p.btn) {
+                            primaryBtn.textContent = p.btn;
+                            primaryBtn.style.display = 'block';
+                        } else {
+                            primaryBtn.style.display = 'none';
+                        }
+                    }
+                }
+
+                if (key === 'catalog') {
+                    loadSupplierProducts();
+                } else {
+                    autoRefresh.unregister('supplierProducts');
+                }
+
+                if (key === 'inventory') {
+                    loadInventory();
+                } else {
+                    autoRefresh.unregister('supplierInventory');
+                }
+
+                if (key === 'orders') {
+                    loadOrders();
+                } else {
+                    autoRefresh.unregister('supplierOrders');
+                }
+
+                if (key === 'reports') {
+                    loadReports();
+                } else {
+                    autoRefresh.unregister('supplierReports');
+                }
+
+                if (key === 'clients') {
+                    loadClients();
+                    autoRefresh.register('supplierClients', loadClients, 15000);
+                } else {
+                    autoRefresh.unregister('supplierClients');
+                }
+
+                console.log(`✅ Navigated to section: ${key}`);
+            } catch (error) {
+                console.error(`Error navigating to section ${key}:`, error);
             }
         }
 
@@ -839,7 +1056,9 @@
             tbody.innerHTML = '<tr><td colspan="7" style="padding: 20px; text-align: center; color: var(--text2);">Loading orders...</td></tr>';
 
             try {
+                console.log('🔄 Fetching orders from /suppliers/orders...');
                 const orders = await api.supplier.getOrders();
+                console.log('✅ Orders loaded:', orders);
 
                 if (!orders || !Array.isArray(orders) || orders.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="7" style="padding: 20px; text-align: center; color: var(--text2);">No orders yet. Farmers will see your products and place orders.</td></tr>';
@@ -855,11 +1074,11 @@
                     return;
                 }
 
-                // Count orders by status
-                const pending = orders.filter(o => o.status === 'pending').length;
-                const inTransit = orders.filter(o => o.status === 'in_transit' || o.status === 'processing').length;
-                const delivered = orders.filter(o => o.status === 'delivered').length;
-                const issues = orders.filter(o => o.status === 'cancelled' || o.status === 'returned').length;
+                // Count orders by status (using order_status field from API)
+                const pending = orders.filter(o => o.order_status === 'pending').length;
+                const inTransit = orders.filter(o => o.order_status === 'shipped' || o.order_status === 'approved').length;
+                const delivered = orders.filter(o => o.order_status === 'delivered').length;
+                const issues = orders.filter(o => o.order_status === 'cancelled').length;
 
                 // Update badge with pending orders count
                 const badge = document.getElementById('pendingOrdersBadge');
@@ -888,10 +1107,9 @@
                 const getStatusChip = (status) => {
                     const statusMap = {
                         'pending': 'chip-amber',
-                        'processing': 'chip-blue',
-                        'in_transit': 'chip-blue',
+                        'approved': 'chip-blue',
+                        'shipped': 'chip-blue',
                         'delivered': 'chip-green',
-                        'returned': 'chip-red',
                         'cancelled': 'chip-red',
                     };
                     return statusMap[status] || 'chip-muted';
@@ -901,10 +1119,9 @@
                 const getStatusLabel = (status) => {
                     const statusMap = {
                         'pending': 'Pending',
-                        'processing': 'Processing',
-                        'in_transit': 'In Transit',
+                        'approved': 'Approved',
+                        'shipped': 'Shipped',
                         'delivered': 'Delivered',
-                        'returned': 'Returned',
                         'cancelled': 'Cancelled',
                     };
                     return statusMap[status] || status;
@@ -913,10 +1130,10 @@
                 // Get button action
                 const getButtonAction = (status) => {
                     if (status === 'pending') return 'Process';
-                    if (status === 'processing') return 'Track';
-                    if (status === 'in_transit') return 'Track';
-                    if (status === 'delivered') return 'Invoice';
-                    if (status === 'returned' || status === 'cancelled') return 'Resolve';
+                    if (status === 'approved') return 'Dispatch';
+                    if (status === 'shipped') return 'Track';
+                    if (status === 'delivered') return 'Receipt';
+                    if (status === 'cancelled') return 'Resolve';
                     return 'View';
                 };
 
@@ -932,22 +1149,82 @@
                         : 'No items';
 
                     const total = order.total_amount ? `KES ${Number(order.total_amount).toFixed(2)}` : 'KES 0.00';
+                    const farmerName = order.buyer_farm_name || order.buyer_email || 'Unknown';
+                    const status = order.order_status || 'pending';
 
                     return `
                         <tr>
                             <td><span class="order-id-cell">#ORD-${order.id}</span></td>
-                            <td>${order.farmer_name || 'Unknown'} — ${order.farm_name || 'N/A'}</td>
+                            <td>${farmerName}</td>
                             <td>${itemsText}</td>
                             <td class="order-amount">${total}</td>
                             <td class="order-date">${formatDate(order.created_at)}</td>
-                            <td><span class="chip ${getStatusChip(order.status)}">${getStatusLabel(order.status)}</span></td>
-                            <td><button class="btn ${getButtonVariant(order.status)} order-button-cell" onclick="alert('Order management feature coming soon')">${getButtonAction(order.status)}</button></td>
+                            <td><span class="chip ${getStatusChip(status)}">${getStatusLabel(status)}</span></td>
+                            <td><button class="btn ${getButtonVariant(status)} order-button-cell" onclick="showOrderDetails(${JSON.stringify(order).replace(/"/g, '&quot;')})">${getButtonAction(status)}</button></td>
                         </tr>
                     `;
                 }).join('');
 
             } catch (error) {
+                console.error('❌ Error loading orders:', error);
+                console.error('Error details:', error.message, error.status, error.data);
                 tbody.innerHTML = `<tr><td colspan="7" style="padding: 20px; text-align: center; color: var(--color-error);">Failed to load orders: ${error.message}</td></tr>`;
+            }
+        }
+
+        async function loadReports() {
+            try {
+                // Fetch orders to calculate analytics
+                const orders = await api.supplier.getOrders();
+
+                if (!orders || !Array.isArray(orders) || orders.length === 0) {
+                    // Set all metrics to 0
+                    document.getElementById('revenueValue').textContent = 'KES 0.00';
+                    document.getElementById('revenueChange').innerHTML = '<span class="kpi-change-muted">This month</span>';
+                    document.getElementById('ordersCompletedValue').textContent = '0';
+                    document.getElementById('ordersCompletedChange').innerHTML = '<span class="kpi-change-muted">No orders</span>';
+                    document.getElementById('grossMarginValue').textContent = '0%';
+                    document.getElementById('grossMarginChange').innerHTML = '<span class="kpi-change-muted">Gross margin</span>';
+                    document.getElementById('ytdRevenueValue').textContent = 'KES 0.00';
+                    document.getElementById('ytdRevenueChange').innerHTML = '<span class="kpi-change-muted">Year to date</span>';
+                    return;
+                }
+
+                // Calculate metrics
+                const now = new Date();
+                const currentMonth = now.getMonth();
+                const currentYear = now.getFullYear();
+
+                const thisMonthOrders = orders.filter(o => {
+                    const orderDate = new Date(o.created_at);
+                    return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
+                });
+
+                const deliveredOrders = orders.filter(o => o.order_status === 'delivered');
+                const thisMonthDelivered = thisMonthOrders.filter(o => o.order_status === 'delivered');
+
+                // Calculate revenue
+                const thisMonthRevenue = thisMonthDelivered.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+                const ytdRevenue = deliveredOrders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+
+                // Calculate gross margin (estimate: 25% default margin)
+                const grossMargin = 25;
+
+                // Update KPI values
+                document.getElementById('revenueValue').textContent = `KES ${thisMonthRevenue.toFixed(2)}`;
+                document.getElementById('revenueChange').innerHTML = `<span class="kpi-change-accent2">${thisMonthDelivered.length} delivered</span>`;
+
+                document.getElementById('ordersCompletedValue').textContent = deliveredOrders.length;
+                document.getElementById('ordersCompletedChange').innerHTML = `<span class="kpi-change-accent2">${deliveredOrders.length} orders completed</span>`;
+
+                document.getElementById('grossMarginValue').textContent = `${grossMargin}%`;
+                document.getElementById('grossMarginChange').innerHTML = '<span class="kpi-change-muted">Estimated</span>';
+
+                document.getElementById('ytdRevenueValue').textContent = `KES ${ytdRevenue.toFixed(2)}`;
+                document.getElementById('ytdRevenueChange').innerHTML = `<span class="kpi-change-muted">Year to date</span>`;
+
+            } catch (error) {
+                console.error('❌ Error loading reports:', error);
             }
         }
 
@@ -969,28 +1246,28 @@
                 if (hasCustomers) {
                     // Calculate metrics
                     const totalFarms = customers.length;
-                    const activeFarmers = customers.filter(c => c.is_active).length;
+                    const activeFarmers = customers.filter(c => (c.order_count || 0) > 0).length;
                     const totalOrders = customers.reduce((sum, c) => sum + (c.order_count || 0), 0);
                     const avgOrderValue = totalOrders > 0
                         ? (customers.reduce((sum, c) => sum + (c.lifetime_value || 0), 0) / totalOrders)
                         : 0;
                     const retentionRate = totalFarms > 0
-                        ? Math.round((customers.filter(c => c.is_active).length / totalFarms) * 100)
+                        ? Math.round((activeFarmers / totalFarms) * 100)
                         : 0;
 
                     // Update KPI values
                     document.getElementById('registeredFarmsCount').textContent = totalFarms;
                     document.getElementById('registeredFarmsDesc').textContent = `${totalFarms} farms connected`;
                     document.getElementById('activeFarmersCount').textContent = activeFarmers;
-                    document.getElementById('activeFarmersDesc').textContent = `Ordered in last 30 days`;
+                    document.getElementById('activeFarmersDesc').textContent = `${activeFarmers > 0 ? 'Have placed orders' : 'No active orders'}`;
                     document.getElementById('avgOrderValueAmount').textContent = `KES ${avgOrderValue.toFixed(0)}`;
-                    document.getElementById('avgOrderValueDesc').textContent = `↑ Average order`;
+                    document.getElementById('avgOrderValueDesc').textContent = `${avgOrderValue > 0 ? '↑' : ''} Average order`;
                     document.getElementById('retentionRateValue').textContent = `${retentionRate}%`;
-                    document.getElementById('retentionRateDesc').textContent = `↑ Engagement rate`;
+                    document.getElementById('retentionRateDesc').textContent = `${retentionRate > 0 ? '↑' : ''} Engagement rate`;
 
-                    // Get status badge
-                    const getStatusBadge = (isActive) => {
-                        return isActive ? { class: 'chip-green', text: 'Active' } : { class: 'chip-amber', text: 'Inactive' };
+                    // Get status badge based on whether farm has orders
+                    const getStatusBadge = (orderCount) => {
+                        return (orderCount || 0) > 0 ? { class: 'chip-green', text: 'Active' } : { class: 'chip-amber', text: 'Inactive' };
                     };
 
                     // Get avatar color
@@ -1001,7 +1278,7 @@
 
                     // Render customer cards
                     clientCards = customers.map((customer, index) => {
-                        const status = getStatusBadge(customer.is_active);
+                        const status = getStatusBadge(customer.order_count);
                         const avatarClass = getAvatarClass(index);
                         const emoji = ['🐔', '🥚', '🍗', '🐓'][index % 4];
 
@@ -1124,7 +1401,497 @@
                 ball.style.right = '2px';
             }
         }
+
+        // Load user info from localStorage and display in sidebar
+        function loadUserInfo() {
+            try {
+                const userJson = localStorage.getItem('user');
+                if (userJson) {
+                    const user = JSON.parse(userJson);
+                    const firstName = user.first_name || user.name || 'User';
+                    const lastName = user.last_name || '';
+                    const fullName = lastName ? `${firstName} ${lastName}` : firstName;
+
+                    document.getElementById('userFullName').textContent = fullName;
+
+                    // Set avatar to first letter of first name
+                    const avatarLetter = firstName.charAt(0).toUpperCase();
+                    document.getElementById('userAvatar').textContent = avatarLetter;
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+            }
+        }
+
+        // Toggle logout menu visibility
+        function toggleLogoutMenu() {
+            const menu = document.getElementById('logoutMenu');
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Handle logout - clear auth and redirect to login
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                localStorage.removeItem('user');
+                localStorage.removeItem('userRole');
+                window.location.href = '../../auth/login/login.html';
+            }
+        }
+
+        function logout() {
+            clearAuthAndRedirectToLogin();
+        }
+
+        function clearAuthAndRedirectToLogin() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userRole');
+            window.location.href = '../../auth/login/login.html';
+        }
+
+        // Close logout menu when clicking elsewhere
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('logoutMenu');
+            const card = document.querySelector('.sidebar-footer .supplier-card');
+            if (menu && card && !card.contains(e.target) && !menu.contains(e.target)) {
+                menu.style.display = 'none';
+            }
+        });
+
+        // ★★ CLIENT NETWORK TAB FUNCTIONS ★★
+
+        function switchClientsTab(tabEl, panelId) {
+            // Deactivate all tabs and panels in Client Network section
+            const section = document.getElementById('sec-clients');
+            section.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+            section.querySelectorAll('.spanel').forEach(p => p.style.display = 'none');
+
+            // Activate selected tab and panel
+            tabEl.classList.add('active');
+            const panel = document.getElementById(panelId);
+            if (panel) {
+                panel.style.display = 'block';
+
+                // Load data based on active tab
+                if (panelId === 'tab-browse-farms') {
+                    loadAllFarmsForBrowse();
+                }
+            }
+        }
+
+        async function loadAllFarmsForBrowse() {
+            const grid = document.getElementById('browse-farms-grid');
+            if (!grid) return;
+
+            grid.innerHTML = '<div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--text2);">Loading available farms...</div>';
+
+            try {
+                // Fetch all farmers/farms that can be invited
+                const response = await api.supplier.getAllAvailableFarms?.();
+
+                if (!response || response.length === 0) {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--text2);">
+                            <div style="font-size: 16px; margin-bottom: 8px;">No farms available to invite</div>
+                            <div style="font-size: 14px; color: var(--text3);">Use the Invite Farm tab to add new farms directly.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Render farm cards with quick invite buttons
+                const farmCards = response.map((farm, index) => {
+                    const avatarEmoji = ['🐔', '🥚', '🍗', '🐓'][index % 4];
+                    return `
+                        <div class="client-card">
+                            <div class="client-head">
+                                <div class="client-avatar client-avatar-accent">${avatarEmoji}</div>
+                                <div>
+                                    <div class="client-name">${farm.farm_name || 'Unnamed Farm'}</div>
+                                    <div class="client-location">📍 ${farm.location || 'Location not provided'}</div>
+                                </div>
+                            </div>
+                            <div class="client-stats">
+                                <div>
+                                    <div class="client-stat-val">${farm.flock_count || 0}</div>
+                                    <div class="client-stat-label">Flocks</div>
+                                </div>
+                                <div>
+                                    <div class="client-stat-val">${farm.size_acres || '—'}</div>
+                                    <div class="client-stat-label">Size (acres)</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" style="width: 100%; margin-top: 12px;" onclick="quickInviteFromBrowse('${farm.farmer_email}', '${farm.farm_name}', '${farm.farmer_name}')">
+                                + Invite
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+
+                grid.innerHTML = farmCards;
+
+            } catch (error) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; color: var(--color-error);">
+                        Failed to load farms: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function quickInviteFromBrowse(farmerEmail, farmName, farmerName) {
+            // Pre-fill the invite form with farm details
+            document.getElementById('inviteFarmName').value = farmName;
+            document.getElementById('inviteFarmerName').value = farmerName;
+            document.getElementById('inviteFarmerEmail').value = farmerEmail;
+
+            // Switch to invite tab
+            const inviteTab = document.querySelector('[onclick*="tab-invite-farm"]');
+            if (inviteTab) {
+                switchClientsTab(inviteTab, 'tab-invite-farm');
+                // Scroll to form
+                document.getElementById('clientInviteForm')?.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function resetClientInviteForm() {
+            document.getElementById('clientInviteForm')?.reset();
+            document.getElementById('inviteFormMessage').style.display = 'none';
+            document.getElementById('inviteFormMessage').textContent = '';
+        }
+
+        // Handle client invite form submission
+        document.addEventListener('DOMContentLoaded', () => {
+            const inviteForm = document.getElementById('clientInviteForm');
+            if (inviteForm) {
+                inviteForm.addEventListener('submit', submitClientInvitation);
+            }
+        });
+
+        async function submitClientInvitation(e) {
+            e.preventDefault();
+
+            const farmName = document.getElementById('inviteFarmName')?.value?.trim() || '';
+            const farmerName = document.getElementById('inviteFarmerName')?.value?.trim() || '';
+            const email = document.getElementById('inviteFarmerEmail')?.value?.trim() || '';
+            const location = document.getElementById('inviteFarmLocation')?.value?.trim() || '';
+            const phone = document.getElementById('inviteFarmPhone')?.value?.trim() || '';
+            const message = document.getElementById('inviteMessage')?.value?.trim() || '';
+
+            const msgEl = document.getElementById('inviteFormMessage');
+
+            // Validate required fields
+            if (!farmName || !farmerName || !email) {
+                msgEl.textContent = '❌ Farm name, farmer name, and email are required';
+                msgEl.style.background = 'rgba(192, 48, 48, 0.1)';
+                msgEl.style.color = '#c03030';
+                msgEl.style.display = 'block';
+                return;
+            }
+
+            // Validate email format
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                msgEl.textContent = '❌ Please enter a valid email address';
+                msgEl.style.background = 'rgba(192, 48, 48, 0.1)';
+                msgEl.style.color = '#c03030';
+                msgEl.style.display = 'block';
+                return;
+            }
+
+            try {
+                msgEl.textContent = '⏳ Sending invitation...';
+                msgEl.style.background = 'rgba(255, 193, 7, 0.1)';
+                msgEl.style.color = '#f59e0b';
+                msgEl.style.display = 'block';
+
+                // Call the invite farm API
+                await api.supplier.inviteFarm({
+                    farmName: farmName,
+                    farmerName: farmerName,
+                    farmerEmail: email,
+                    location: location || null,
+                    phone: phone || null,
+                    message: message || null,
+                });
+
+                msgEl.textContent = '✅ Invitation sent successfully!';
+                msgEl.style.background = 'rgba(79, 172, 254, 0.1)';
+                msgEl.style.color = '#4face';
+                msgEl.style.display = 'block';
+
+                // Reset form after 2 seconds
+                setTimeout(() => {
+                    resetClientInviteForm();
+                    // Reload registered farms to reflect any updates
+                    loadClients();
+                }, 2000);
+
+            } catch (error) {
+                msgEl.textContent = `❌ ${error.message || 'Failed to send invitation'}`;
+                msgEl.style.background = 'rgba(192, 48, 48, 0.1)';
+                msgEl.style.color = '#c03030';
+                msgEl.style.display = 'block';
+            }
+        }
+
+        // ★★ END CLIENT NETWORK TAB FUNCTIONS ★★
+
+        // ★★ ORDER DETAIL MODAL ★★
+        let currentOrderId = null;
+        let currentOrderStatus = null;
+
+        function showOrderDetails(order) {
+            const modal = document.getElementById('orderDetailModal');
+            if (!modal) return;
+
+            // Store current order ID and status for actions
+            currentOrderId = order.id;
+            currentOrderStatus = order.order_status || 'pending';
+
+            // Populate modal with order details
+            document.getElementById('orderDetailId').textContent = `#ORD-${order.id}`;
+            document.getElementById('orderDetailFarmer').textContent = order.buyer_farm_name || order.buyer_email || 'Unknown';
+            document.getElementById('orderDetailEmail').textContent = order.buyer_email || 'N/A';
+            document.getElementById('orderDetailDate').textContent = new Date(order.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+            const status = order.order_status || 'pending';
+            const statusLabel = {
+                'pending': 'Pending',
+                'approved': 'Approved',
+                'shipped': 'Shipped',
+                'delivered': 'Delivered',
+                'cancelled': 'Cancelled'
+            }[status] || status;
+
+            const statusColor = {
+                'pending': '#FF9800',
+                'approved': '#2196F3',
+                'shipped': '#2196F3',
+                'delivered': '#4CAF50',
+                'cancelled': '#F44336'
+            }[status] || '#9E9E9E';
+
+            document.getElementById('orderDetailStatus').innerHTML = `<span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 500;">${statusLabel}</span>`;
+            document.getElementById('orderDetailTotal').textContent = `KES ${Number(order.total_amount || 0).toFixed(2)}`;
+
+            // Populate items
+            const itemsHtml = (order.items || []).map(item => `
+                <tr>
+                    <td>${item.product_name || 'Unknown'}</td>
+                    <td style="text-align: center;">${item.quantity || 0}</td>
+                    <td style="text-align: right;">KES ${Number(item.unit_price || 0).toFixed(2)}</td>
+                    <td style="text-align: right;">KES ${Number(item.total_price || 0).toFixed(2)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('orderDetailsItems').innerHTML = itemsHtml || '<tr><td colspan="4" style="text-align: center; padding: 20px;">No items</td></tr>';
+
+            // Update action buttons based on current status
+            updateOrderActionButtons(status);
+
+            // Show modal
+            modal.style.display = 'flex';
+        }
+
+        function updateOrderActionButtons(status) {
+            const buttonsContainer = document.getElementById('orderDetailActions');
+            if (!buttonsContainer) return;
+
+            const isPending = status === 'pending';
+            const isApproved = status === 'approved';
+            const isShipped = status === 'shipped';
+            const isDelivered = status === 'delivered';
+            const isCancelled = status === 'cancelled';
+
+            if (isPending) {
+                buttonsContainer.innerHTML = `
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="approveOrder()" class="btn btn-primary" style="flex: 1;">✓ Approve</button>
+                        <button onclick="rejectOrder()" class="btn btn-ghost" style="flex: 1; border: 2px solid #F44336; color: #F44336;">✕ Reject</button>
+                    </div>
+                    <button onclick="closeOrderDetailModal()" class="btn btn-ghost" style="width: 100%; margin-top: 8px;">Close</button>
+                `;
+            } else if (isApproved) {
+                buttonsContainer.innerHTML = `
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="shipOrder()" class="btn btn-primary" style="flex: 1;">📦 Mark as Shipped</button>
+                        <button onclick="cancelOrder()" class="btn btn-ghost" style="flex: 1; border: 2px solid #F44336; color: #F44336;">✕ Cancel</button>
+                    </div>
+                    <button onclick="closeOrderDetailModal()" class="btn btn-ghost" style="width: 100%; margin-top: 8px;">Close</button>
+                `;
+            } else if (isShipped) {
+                buttonsContainer.innerHTML = `
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="deliverOrder()" class="btn btn-primary" style="flex: 1;">✓ Mark as Delivered</button>
+                        <button onclick="cancelOrder()" class="btn btn-ghost" style="flex: 1; border: 2px solid #F44336; color: #F44336;">✕ Cancel</button>
+                    </div>
+                    <button onclick="closeOrderDetailModal()" class="btn btn-ghost" style="width: 100%; margin-top: 8px;">Close</button>
+                `;
+            } else {
+                buttonsContainer.innerHTML = `
+                    <button onclick="closeOrderDetailModal()" class="btn btn-ghost" style="width: 100%;">Close</button>
+                `;
+            }
+        }
+
+        async function approveOrder() {
+            if (!currentOrderId) return;
+            try {
+                await updateOrderStatus('approved');
+            } catch (error) {
+                alert(`Failed to approve order: ${error.message}`);
+            }
+        }
+
+        async function rejectOrder() {
+            if (!currentOrderId) return;
+            if (!confirm('Are you sure you want to reject this order?')) return;
+            try {
+                await updateOrderStatus('cancelled');
+            } catch (error) {
+                alert(`Failed to reject order: ${error.message}`);
+            }
+        }
+
+        async function shipOrder() {
+            if (!currentOrderId) return;
+            try {
+                await updateOrderStatus('shipped');
+            } catch (error) {
+                alert(`Failed to mark order as shipped: ${error.message}`);
+            }
+        }
+
+        async function deliverOrder() {
+            if (!currentOrderId) return;
+            try {
+                await updateOrderStatus('delivered');
+            } catch (error) {
+                alert(`Failed to mark order as delivered: ${error.message}`);
+            }
+        }
+
+        async function cancelOrder() {
+            if (!currentOrderId) return;
+            if (!confirm('Are you sure you want to cancel this order?')) return;
+            try {
+                await updateOrderStatus('cancelled');
+            } catch (error) {
+                alert(`Failed to cancel order: ${error.message}`);
+            }
+        }
+
+        async function updateOrderStatus(newStatus) {
+            if (!currentOrderId) return;
+
+            try {
+                // Call API to update order status
+                const result = await api.supplier.updateOrderStatus(currentOrderId, newStatus);
+
+                // Close modal
+                closeOrderDetailModal();
+
+                // Refresh orders list
+                await loadOrders();
+
+                // Show success message
+                const statusLabels = {
+                    'approved': 'approved',
+                    'shipped': 'marked as shipped',
+                    'delivered': 'marked as delivered',
+                    'cancelled': 'cancelled'
+                };
+                console.log(`✅ Order ${statusLabels[newStatus]}`);
+            } catch (error) {
+                console.error(`Error updating order status:`, error);
+                throw error;
+            }
+        }
+
+        function closeOrderDetailModal() {
+            const modal = document.getElementById('orderDetailModal');
+            if (modal) {
+                modal.style.display = 'none';
+                currentOrderId = null;
+                currentOrderStatus = null;
+            }
+        }
+
+        // Close modal on outside click
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('orderDetailModal');
+            if (e.target === modal) {
+                closeOrderDetailModal();
+            }
+        });
+
+        // Load user info on page load
+        loadUserInfo();
     </script>
+
+    <!-- ══ ORDER DETAIL MODAL ══ -->
+    <div id="orderDetailModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div
+            style="background: white; border-radius: 12px; padding: 32px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 id="orderDetailId" style="margin: 0; font-size: 20px; font-weight: 600;">Order</h2>
+                <button onclick="closeOrderDetailModal()"
+                    style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text2);">&times;</button>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                    <div>
+                        <div style="color: var(--text2); font-size: 12px; margin-bottom: 4px;">Farm / Buyer</div>
+                        <div id="orderDetailFarmer" style="font-weight: 600;">Loading...</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--text2); font-size: 12px; margin-bottom: 4px;">Email</div>
+                        <div id="orderDetailEmail" style="font-weight: 600;">N/A</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--text2); font-size: 12px; margin-bottom: 4px;">Order Date</div>
+                        <div id="orderDetailDate" style="font-weight: 600;">Loading...</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--text2); font-size: 12px; margin-bottom: 4px;">Status</div>
+                        <div id="orderDetailStatus" style="font-weight: 600;">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--border); padding-top: 16px; margin-bottom: 24px;">
+                <div style="font-size: 12px; color: var(--text2); margin-bottom: 12px; font-weight: 600;">ORDER ITEMS
+                </div>
+                <table style="width: 100%; font-size: 13px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <th style="text-align: left; padding: 8px 0; font-weight: 600;">Product</th>
+                            <th style="text-align: center; padding: 8px 0; font-weight: 600;">Qty</th>
+                            <th style="text-align: right; padding: 8px 0; font-weight: 600;">Unit Price</th>
+                            <th style="text-align: right; padding: 8px 0; font-weight: 600;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderDetailsItems" style="">
+                    </tbody>
+                </table>
+            </div>
+
+            <div
+                style="border-top: 1px solid var(--border); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <div style="font-size: 12px; color: var(--text2);">Total Amount</div>
+                <div id="orderDetailTotal" style="font-size: 20px; font-weight: 700;">KES 0.00</div>
+            </div>
+
+            <div id="orderDetailActions" style="margin-top: 24px;">
+                <button onclick="closeOrderDetailModal()" class="btn btn-ghost" style="width: 100%;">Close</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

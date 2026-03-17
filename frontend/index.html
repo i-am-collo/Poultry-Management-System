@@ -1238,6 +1238,7 @@
         <span class="trust-label">Trusted by</span>
         <div class="trust-scroll-wrap">
             <div class="trust-logos">
+
                 <span class="trust-logo-item">AGROTECH FARMS</span>
                 <span class="trust-logo-item">NOVA POULTRY CO.</span>
                 <span class="trust-logo-item">GREENFIELD FEEDS</span>
@@ -1560,12 +1561,14 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <span>© 2026 PoultryHub. All rights reserved.</span>
+                <span>© <span id="currentYear">2026</span> PoultryHub. All rights reserved.</span>
                 <span>Farm to Market Intelligence</span>
             </div>
         </div>
     </footer>
 
-</body>
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
 
 </html>
